@@ -3,10 +3,16 @@ const $ = id => document.getElementById(id);
 function statusMessage(message, error = false) {
   $('auth-status').textContent = message;
   $('auth-status').className = 'status ' + (error ? 'error' : 'success');
+  $('auth-status').setAttribute('role', error ? 'alert' : 'status');
+  $('auth-status').setAttribute('aria-live', error ? 'assertive' : 'polite');
 }
-async function redirectSession(session) {
+async function redirectSession(session, notify = false) {
   if (!session?.user) return;
   const { profile } = await accountAccess();
+  if (notify) {
+    statusMessage('Signup successful! Opening your dashboard...');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
   location.replace(roleHome(profile.role));
 }
 $('signup-form').addEventListener('submit', async event => {
@@ -21,9 +27,9 @@ $('signup-form').addEventListener('submit', async event => {
       options: { data: { full_name: $('full-name').value.trim() }, emailRedirectTo: new URL('login.html', location.href).href }
     });
     if (error) throw error;
-    if (data.session) await redirectSession(data.session);
-    else { $('signup-form').reset(); statusMessage('Account created. Check your email to verify your account, then log in.'); }
-  } catch (error) { statusMessage(error.message, true); }
+    if (data.session) await redirectSession(data.session, true);
+    else { $('signup-form').reset(); statusMessage('Signup submitted! Check your email to verify your account, then log in. If you already have an account, log in or reset your password.'); }
+  } catch (error) { statusMessage('Signup failed. ' + (error.message || 'Please try again.'), true); }
   finally { $('submit-auth').disabled = false; }
 });
 async function start() {
