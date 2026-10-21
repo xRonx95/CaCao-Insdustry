@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Boundary mapping | Cacao Field Manager</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/field/mapping.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  </head>
+  <body data-page-role="field">
+    <div class="map-heading">
+      <div>
+        <h3>Plantation boundary</h3>
+        <p>Draw with the polygon tool, or capture GPS corners as you walk.</p>
+      </div>
+      <span class="map-pill">GPS + Manual</span>
+    </div>
+    <p id="recovery-notice" class="status hidden" role="status">
+    </p>
+    <section class="walking-panel" aria-labelledby="walking-title">
+      <div class="section-title">
+        <h3 id="walking-title">GPS walking survey</h3>
+        <span id="tracking-state" class="map-pill">Ready</span>
+      </div>
+      <p>Walk the plantation perimeter. Keep this page open and your device awake.</p>
+      <div class="map-tools">
+        <button type="button" class="btn primary" id="start-walk">Start GPS mapping</button>
+        <button type="button" class="btn secondary" id="pause-walk" disabled>Pause</button>
+        <button type="button" class="btn secondary" id="resume-walk" disabled>Resume</button>
+        <button type="button" class="btn secondary" id="finish-walk" disabled>Finish &amp; review</button>
+        <button type="button" class="btn danger-outline" id="cancel-walk" disabled>Cancel walk</button>
+      </div>
+      <label>Maximum accepted GPS error (meters)<input type="number" id="max-accuracy" value="25" min="5" max="100" step="1">
+      </label>
+      <p class="muted small">Readings over this limit are skipped. Points less than 3 meters apart are not added. GPS measurements are approximate, not legal surveys.</p>
+      <p id="gps-status" class="status" role="status">
+      </p>
+      <div class="map-tools">
+        <button id="save-gps-draft" class="btn secondary" type="button">Save encrypted walking draft</button>
+        <button id="restore-gps-draft" class="btn secondary" type="button">Restore walking draft</button>
+        <button id="delete-gps-draft" class="btn danger-outline" type="button">Delete local draft</button>
+      </div>
+      <p class="muted small">Drafts stay encrypted on this device and require your passphrase to reopen. They do not automatically sync or store map tiles.</p>
+    </section>
+    <div class="map-tools">
+      <button type="button" class="btn secondary" id="locate">◎ My location</button>
+      <button type="button" class="btn secondary" id="gps-point">+ GPS corner</button>
+      <button type="button" class="btn secondary" id="finish-gps">Close GPS boundary</button>
+      <button type="button" class="btn danger-outline" id="clear-map">Clear boundary</button>
+    </div>
+    <section class="geojson-tools">
+      <h3>GeoJSON files</h3>
+      <div class="map-tools">
+        <button id="export-geojson" class="btn secondary" type="button">Export boundary</button>
+        <label>Import parcel file<input id="import-geojson" type="file" accept=".geojson,.json,application/geo+json,application/json">
+        </label>
+      </div>
+      <div id="import-controls" class="hidden">
+        <label>Parcel<select id="import-parcel">
+          </select>
+        </label>
+        <button id="load-import-parcel" type="button" class="btn secondary">Load selected parcel</button>
+      </div>
+    </section>
+    <div id="map" role="region" aria-label="Interactive plantation boundary map">
+    </div>
+    <p class="muted small">Use the polygon icon on the left of the map for manual drawing. GPS corner points must be captured around the perimeter (at least 3). Move to each corner before tapping “GPS corner”. Editing a polygon uses the map's edit tool.</p>
+    <div class="map-readout">
+      <div>
+        <span>Mapped area</span>
+        <strong id="area-sqm">0.00 m²</strong>
+      </div>
+      <div>
+        <span>In hectares</span>
+        <strong id="area-ha">0.0000 ha</strong>
+      </div>
+      <div>
+        <span>GPS points</span>
+        <strong id="gps-count">0</strong>
+      </div>
+    </div>
+    <p id="form-status" class="status" role="status">
+    </p>
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js">
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js">
+    </script>
+    <script defer src="../assets/js/config.js">
+    </script>
+    <script defer src="../assets/js/drafts.js">
+    </script>
+    <script defer src="../assets/js/record-integrity.js">
+    </script>
+    <script defer src="../assets/js/gps-mapping.js">
+    </script>
+    <script defer src="../assets/js/field/mapping.js">
+    </script>
+  </body>
+</html>

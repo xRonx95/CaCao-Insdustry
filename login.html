@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log in | CACAO INDUSTRY</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/ui.css">
+    <script defer src="assets/js/ui.js">
+    </script>
+      <link rel="stylesheet" href="assets/css/mobile-public.css">
+    <script defer src="assets/js/mobile-public.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <img class="brand-logo" src="images/cacao.png" alt="Cacao Industry logo" width="56" height="56">
+        <div>
+          <strong>CACAO INDUSTRY</strong>
+          <small>Farmer Profiling &amp; GPS Plantation Mapping</small>
+        </div>
+      </a>
+      <nav class="public-nav" aria-label="Main navigation">
+        <a href="index.html">Cacao community</a>
+        <a href="about.html">About</a>
+        <a href="impact.html">Impact</a>
+        <a href="login.html" aria-current="page">Log in</a>
+        <a href="signup.html">Sign up</a>
+      </nav>
+    </header>
+    <main class="shell">
+      <section class="auth-wrap">
+        <div class="auth-panel">
+          <span class="eyebrow">CACAO FIELD MANAGER</span>
+          <h1>Welcome back to the field.</h1>
+          <p>Sign in to manage your plantations and share updates.</p>
+          <a href="index.html">Browse farmer posts</a>
+        </div>
+        <form id="login-form" class="panel auth-form">
+          <h2>Farmer and admin log in</h2>
+          <label>Email<input id="email" required type="email" autocomplete="email" placeholder="farmer@example.com">
+          </label>
+          <label>Password<input id="password" required type="password" minlength="6" autocomplete="current-password" placeholder="At least 6 characters">
+          </label>
+          <button id="show-password" class="text-btn" type="button" aria-controls="password" aria-pressed="false">Show password</button>
+          <a href="forgot-password.html">Forgot password?</a>
+          <button id="submit-auth" class="btn primary" type="submit">Log in</button>
+          <p id="auth-status" class="status" role="status">
+          </p>
+          <p>New farmer? <a href="signup.html">Create an account</a>
+          </p>
+        </form>
+      </section>
+    </main>
+    <footer>CACAO INDUSTRY &middot; From our farms to our community. &middot; <a href="privacy.html">Privacy notice</a>
+    </footer>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
+    <script defer src="assets/js/config.js">
+    </script>
+    <script defer src="assets/js/db.js">
+    </script>
+    <script defer src="assets/js/login.js">
+    </script>
+  <script defer src="assets/js/offline.js"></script>
+</body>
+</html>
+
+

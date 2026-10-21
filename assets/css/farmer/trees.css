@@ -1,0 +1,2 @@
+/* farmer trees: shared layout is in assets/css/platform.css. */
+body[data-feature="trees"] .page-heading { margin-bottom: 24px; }

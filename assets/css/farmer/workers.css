@@ -1,0 +1,2 @@
+/* farmer workers: shared layout is in assets/css/platform.css. */
+body[data-feature="workers"] .page-heading { margin-bottom: 24px; }

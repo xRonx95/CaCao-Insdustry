@@ -1,0 +1,2 @@
+/* field reports: shared layout is in assets/css/platform.css. */
+body[data-feature="reports"] .page-heading { margin-bottom: 24px; }

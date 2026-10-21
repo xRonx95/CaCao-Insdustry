@@ -1,0 +1,2 @@
+/* admin users: shared layout is in assets/css/platform.css. */
+body[data-feature="users"] .page-heading { margin-bottom: 24px; }

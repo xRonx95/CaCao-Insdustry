@@ -1,0 +1,1233 @@
+[
+  {
+    "file": "about.html",
+    "bytes": 4345,
+    "sha256": "dfcde50ed28bef1c60dc380db3e734cdade49b84f99b5ed67c2376c41aa2caa8",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\admin.html",
+    "bytes": 11746,
+    "sha256": "e49288caea06f94538f49ec8b9a57e057517fbcb7098242127bd729d17ed2a49",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\assignments.html",
+    "bytes": 9048,
+    "sha256": "82d1a0c77658886827e94b19548f51123e292d6ebb0f213dcb479bd4ca84a7f9",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\atlas.html",
+    "bytes": 7784,
+    "sha256": "d3571be2006a484d76942c416f7185ba2befb19e7d17c17bc9ec2fac3d3fa650",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\audit.html",
+    "bytes": 7800,
+    "sha256": "ebc3089dacf4e2ad93da04415f8ab72306d7b002294cc27fd1767ba4315af8a3",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\farmers.html",
+    "bytes": 14806,
+    "sha256": "dabb2a598b2ad2eaf60f4ba70e1f891d97bc5d911f80480525eb341400e38ef1",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\mapping.html",
+    "bytes": 4378,
+    "sha256": "9bdada815aab0356ca162fb96759d5563806d8f2630ac4bbc815b5d31f91ec0d",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\plantation-form.html",
+    "bytes": 10676,
+    "sha256": "2b58b088bd086590bd41497b5a8a1d332f54668da6cfadbdfada58677e602006",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\plantations.html",
+    "bytes": 6033,
+    "sha256": "7ac90d28f523ea9cb43a3f05db09c422f4a29d856c3781eaf7062d284364018f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\reports.html",
+    "bytes": 8604,
+    "sha256": "2c24a73fcbd2d68bacfac27a4b67d1bc387239fc9ae78f06c760c6c9bcdcebf3",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\trees.html",
+    "bytes": 11144,
+    "sha256": "08998d2dc88fbc0f856c9da96efb5422fdc86933aaf0a518f2ec47ef810d82aa",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\users.html",
+    "bytes": 9838,
+    "sha256": "d0541fa3aaaa57cadd5a1b4cf37909dcd1f2642abed22e5e27f1e9119e4e5187",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "admin\\workers.html",
+    "bytes": 11655,
+    "sha256": "3b9270983e1c9291a701ead4601e4f8b732bea295c698870b5856a8f0a17efc3",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\about.css",
+    "bytes": 1187,
+    "sha256": "c6a6c8c3e9cda29c69a9b19d59ad1113d234942513e3897c176be924aedb9d24",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\admin.css",
+    "bytes": 138,
+    "sha256": "3b026516ead71bd636c38864fc2cceac929cca15f8617ab19d6466e381b53cbb",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\assignments.css",
+    "bytes": 142,
+    "sha256": "900f903de1ad46d6ea7db66be157f09225a9b5d76815e48833f35391558b0ed5",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\atlas.css",
+    "bytes": 130,
+    "sha256": "61e550669108528eff88982ab263868ed455ba3e449bd989f54ca0480eee6193",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\audit.css",
+    "bytes": 130,
+    "sha256": "0e0de0b8150811ab326d4486a27d696cb0797b0eeacf39706d1f05a377655ba8",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\farmers.css",
+    "bytes": 134,
+    "sha256": "45d8abaa4fc18f8457a9bed3e131f5eca54db70b8326869913be4d9c8032e7a4",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\mapping.css",
+    "bytes": 337,
+    "sha256": "3c67f38eb8c95b5122d29db0fb3b25a5834af9b521c19b73add1d38e2024be27",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\plantation-form.css",
+    "bytes": 247,
+    "sha256": "ac73802230e05333ee994cb325fd8c0b1431140d9acada1552558f373484f55f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\plantations.css",
+    "bytes": 188,
+    "sha256": "f47babcb8d70ae03d035bdec0b365350b3e8cd766bee504898467e7fc3011758",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\reports.css",
+    "bytes": 134,
+    "sha256": "30822d139aa14c3c9d5c978a77ccb23027950b7a4410519a87aae1fbfc99081f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\trees.css",
+    "bytes": 130,
+    "sha256": "f1b78e9e492aad229a81df9739a8696e0164cda7f2858243f94b080829f2e0ac",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\users.css",
+    "bytes": 130,
+    "sha256": "e1cc3e3181ce42f7ee59f93e99abf40680fd0ffe85a5e79e63f1c3659c389d78",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\admin\\workers.css",
+    "bytes": 134,
+    "sha256": "25c5239c78a04682af88211f98ff585d89c13c45e69bf3b89d4751ed7be7c2e7",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\assignments.css",
+    "bytes": 143,
+    "sha256": "f40401fe53e3ff3b6a6b2ee8b5eda49c8e8a7e287f42f0c4a059119774e50707",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\atlas.css",
+    "bytes": 131,
+    "sha256": "90341a1e32d37b167840f335ea59b44939f1d28036c7d1ccd2b582587c7a83e4",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\audit.css",
+    "bytes": 131,
+    "sha256": "942b6488459d65a0997ebb49862582cab0992746f4274424ddc72681755e56e9",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\farmer.css",
+    "bytes": 139,
+    "sha256": "7d30319095b6c8f5cd3fa63b7fc1f71cc6d5c08f0e994dc20f1d3ad6cad96d59",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\farmers.css",
+    "bytes": 135,
+    "sha256": "34c4d67d5ac6af729e2114e3c7548b4eebde0e8d9fdef0f8277a7d3585387a5b",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\mapping.css",
+    "bytes": 337,
+    "sha256": "3c67f38eb8c95b5122d29db0fb3b25a5834af9b521c19b73add1d38e2024be27",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\plantation-form.css",
+    "bytes": 247,
+    "sha256": "ac73802230e05333ee994cb325fd8c0b1431140d9acada1552558f373484f55f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\plantations.css",
+    "bytes": 188,
+    "sha256": "f47babcb8d70ae03d035bdec0b365350b3e8cd766bee504898467e7fc3011758",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\posts.css",
+    "bytes": 429,
+    "sha256": "23037bc4e11f7000f602308b8e8ed8a83e298dbd26d4e066b092e9f428898920",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\reports.css",
+    "bytes": 135,
+    "sha256": "b5ed98b25f3cfbc67a5496251ede0fb2e277ac8b95e10abb2cb4efb62e6a624e",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\trees.css",
+    "bytes": 131,
+    "sha256": "65e77dd7551a01361072a7f3dbf09b015c3ed1b7dfbf0d1ece1eac7748252ff0",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\farmer\\workers.css",
+    "bytes": 135,
+    "sha256": "23450b4206a1c28925355104f365f0e2773c85c7fcc32db7bcd42b72058beb1a",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\assignments.css",
+    "bytes": 142,
+    "sha256": "c5263c9c398d52539c152606f5473529f96a1906e2593860cc85ba95f40ad9c6",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\atlas.css",
+    "bytes": 130,
+    "sha256": "b55ae3000ecf38a424c7c9b1671ef3ebc9f23d0814b4c7f04cb8003d40cad7d7",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\audit.css",
+    "bytes": 130,
+    "sha256": "1dd9f287f6ca18ef4ed218c4f274f5a5cd38687b09d930041a84ad4130a7bb62",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\farmers.css",
+    "bytes": 134,
+    "sha256": "704c8633c1f196636f69e38eaf53e0f3598e61cae7e1475fdc672e28d394eafe",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\field.css",
+    "bytes": 138,
+    "sha256": "ee2666eec022572fc048fc0659c8182978067816521ffa4f2154b7ba65cd1c23",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\mapping.css",
+    "bytes": 337,
+    "sha256": "3c67f38eb8c95b5122d29db0fb3b25a5834af9b521c19b73add1d38e2024be27",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\plantation-form.css",
+    "bytes": 247,
+    "sha256": "ac73802230e05333ee994cb325fd8c0b1431140d9acada1552558f373484f55f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\plantations.css",
+    "bytes": 188,
+    "sha256": "f47babcb8d70ae03d035bdec0b365350b3e8cd766bee504898467e7fc3011758",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\reports.css",
+    "bytes": 134,
+    "sha256": "4c0cad35c8a7a065844ae9106951800f303a8e527554c56f574eafa5cf4a6b14",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\trees.css",
+    "bytes": 130,
+    "sha256": "04e78907f0de94742fa894303e8670183647ea3b7325ac0f220c358cef646a11",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\field\\workers.css",
+    "bytes": 134,
+    "sha256": "f80ba60eb79bdcaf362a3b31af06de3271953c098d4909b75e56fe0804dc24be",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\forgot-password.css",
+    "bytes": 172,
+    "sha256": "c2a4a51a7a0ef6f8b2a7ec96b967b60797524d3c2795131955e416c2cb4a4efd",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\impact.css",
+    "bytes": 809,
+    "sha256": "9889b44c10ca0b6116af02cf68c8a24f20f0913fbe658b6762f63d1af3b1b716",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\index.css",
+    "bytes": 1375,
+    "sha256": "1d37ac96e25960714d6cc77fa7d1ec0654d270799dcd81ccd89db84dd849fb4f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\login.css",
+    "bytes": 286,
+    "sha256": "f380ef822b1b5232cb28425a13b62f45dbd150a7c106f9770b816a6a87885a79",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\platform.css",
+    "bytes": 5454,
+    "sha256": "29f3beb44df12653b5cae168800154555e987223db80929a2cb28af12f4f2915",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\privacy.css",
+    "bytes": 233,
+    "sha256": "3d43a3d921fb68a27279715be74a50d85c9bdcd7b5c6235b20305e6aba43aeee",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\reset-password.css",
+    "bytes": 172,
+    "sha256": "c2a4a51a7a0ef6f8b2a7ec96b967b60797524d3c2795131955e416c2cb4a4efd",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\signup.css",
+    "bytes": 415,
+    "sha256": "170ec978301b493bb4499999f8582a1b3ccd93f32f8e4a4d0d21afd220fd7b87",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\style.css",
+    "bytes": 7541,
+    "sha256": "b97142114b85eeda90ac1b602b036c641ebf3cee81e889008b82c90ebd766d2e",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\css\\ui.css",
+    "bytes": 5051,
+    "sha256": "43a506cd8dcdc953bc2388ef989d252a1c559bb0c8428b33cd48fb06afcd45fb",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\about.js",
+    "bytes": 758,
+    "sha256": "044169ebea8fd70e9446bf49002555676cfdf0a60476051d4e36b2a0334974d1",
+    "tables": [],
+    "functions": [
+      "updateToggle"
+    ]
+  },
+  {
+    "file": "assets\\js\\admin\\admin.js",
+    "bytes": 107,
+    "sha256": "389572a8ca80c094fc73d407829aaa4d44bebb00399b65b124e71e2e709ebfb7",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\assignments.js",
+    "bytes": 111,
+    "sha256": "a9e18bf61856df7ea997d6a1381cc2c94b6f4b28b7e5d213159ee273929d2574",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\atlas.js",
+    "bytes": 99,
+    "sha256": "8fd519391a76d0640cbb15c371f0698a7d4ef04448832fcd0671958097a72f0d",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\audit.js",
+    "bytes": 99,
+    "sha256": "d583e35d23b38a7830012b7b0921c6dd291ccc8f3e706e6db7ec1861093c4a7b",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\farmers.js",
+    "bytes": 103,
+    "sha256": "4bf4e2bf3a115cc2b8801cc1ea548bcd344b397a3c002c69e1dbe27a9e3d8140",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\mapping.js",
+    "bytes": 44,
+    "sha256": "999e72461382f249903f49eff23f137e16d893c05c371c8b76777d3fa16581eb",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\plantation-form.js",
+    "bytes": 6960,
+    "sha256": "dde7164dbcdc4d0b525288e9cfcccec4bd8c258c0c2767e15ffa0457e3d015c8",
+    "tables": [],
+    "functions": [
+      "sendBoundary",
+      "setFarmer",
+      "resetForm",
+      "loadPhotos",
+      "startForm"
+    ]
+  },
+  {
+    "file": "assets\\js\\admin\\plantations.js",
+    "bytes": 1260,
+    "sha256": "eebfc7b385248d3a6c947a2dca1635d5a073f72f78e93d85eb97fc0d135bf7f5",
+    "tables": [],
+    "functions": [
+      "refreshFarms"
+    ]
+  },
+  {
+    "file": "assets\\js\\admin\\reports.js",
+    "bytes": 103,
+    "sha256": "1d486d63c61b864b54c5428d68d84c10d4c033e5caa5f3d88ce4aafd3b8f9217",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\trees.js",
+    "bytes": 99,
+    "sha256": "0623ce1a55fb5f989d903954aaad58dbb0cb9a85937865bf951ce01cb60cda41",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\users.js",
+    "bytes": 99,
+    "sha256": "44bc9454989bdbf660db5ee6f8e6640dc2c4409e1b07c127ef5f0ffa7a67efc1",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\admin\\workers.js",
+    "bytes": 103,
+    "sha256": "9715050efe3db7d8dc44822e168fab7b8fb30d54e2f17b92f08219de3b9e6e76",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\config.js",
+    "bytes": 813,
+    "sha256": "0b5ec9869879bf248e9b465e8151675d3f8eb46b07aa7e211c5c8c7413f2da6e",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\db.js",
+    "bytes": 2084,
+    "sha256": "1176c4406573dc01a3a54cc8875b9f8ca9d13afd7603902b5d346ed2e849487f",
+    "tables": [],
+    "functions": [
+      "accountRole",
+      "roleHome",
+      "accountAccess",
+      "listAll",
+      "listPlantations",
+      "savePlantation"
+    ]
+  },
+  {
+    "file": "assets\\js\\drafts.js",
+    "bytes": 2996,
+    "sha256": "bac9a8107dd446e51ec3dbc7f6013777c6aaf6797ce7e6344ddc94eaa0a671db",
+    "tables": [],
+    "functions": [
+      "open",
+      "transaction",
+      "key",
+      "save",
+      "restore",
+      "createVault"
+    ]
+  },
+  {
+    "file": "assets\\js\\farmer\\assignments.js",
+    "bytes": 112,
+    "sha256": "1c1ed417849a89f569ef2bcd1191afd449b19e9d198a6f1e6c86dd7e60302513",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\atlas.js",
+    "bytes": 100,
+    "sha256": "29a47e937c285788b547e1e878e2f1acfc3c49c88639adbd83094f88dc9fa8cd",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\audit.js",
+    "bytes": 100,
+    "sha256": "40fb90ffa06d1736ab9dcabbfab37ca688d07848d9ee5680fd2233ffb4edc874",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\farmer.js",
+    "bytes": 108,
+    "sha256": "a2d12ed220ed82abdfce928beca87c1dfd3e49b51b5b07ca1dbcd01ad89ee12e",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\farmers.js",
+    "bytes": 104,
+    "sha256": "06787ca02fbeaa8733309a7fff67992fd781d9cec76a4b97d2a53020a4d140c0",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\mapping.js",
+    "bytes": 45,
+    "sha256": "2514c9cf414ebed76fe3d451f0fcb46d193e7c12259ec18b8f26ba1bd49fca8d",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\plantation-form.js",
+    "bytes": 6960,
+    "sha256": "dde7164dbcdc4d0b525288e9cfcccec4bd8c258c0c2767e15ffa0457e3d015c8",
+    "tables": [],
+    "functions": [
+      "sendBoundary",
+      "setFarmer",
+      "resetForm",
+      "loadPhotos",
+      "startForm"
+    ]
+  },
+  {
+    "file": "assets\\js\\farmer\\plantations.js",
+    "bytes": 1260,
+    "sha256": "eebfc7b385248d3a6c947a2dca1635d5a073f72f78e93d85eb97fc0d135bf7f5",
+    "tables": [],
+    "functions": [
+      "refreshFarms"
+    ]
+  },
+  {
+    "file": "assets\\js\\farmer\\posts.js",
+    "bytes": 3259,
+    "sha256": "5c59357fa9d8a93ece81130315d73093da77435506abb2262f63cbb613d60d26",
+    "tables": [],
+    "functions": [
+      "validatePhoto",
+      "clearPreview",
+      "startPosts"
+    ]
+  },
+  {
+    "file": "assets\\js\\farmer\\reports.js",
+    "bytes": 104,
+    "sha256": "7089fee733f38fceaea4a0158e9c15844a6fe135a18d1f2be915f59bf6bf28cc",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\trees.js",
+    "bytes": 100,
+    "sha256": "c492b8eec9bbfb61d7e2a6838c8232a9fd7eb1b98acbdf890ba05fe3b5154c31",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\farmer\\workers.js",
+    "bytes": 104,
+    "sha256": "aee7fb70ebf5494aaf2f1da44b55f410a64828d7a301db472b3a9ea522a917d2",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\assignments.js",
+    "bytes": 111,
+    "sha256": "85be9bb584d58d2b01f12c934f802f6e713d9e4b5718f29bc05a115f2823d800",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\atlas.js",
+    "bytes": 99,
+    "sha256": "5d563036ad292b728f0a9ed08f0060fb0073141bd6b6d04852fab3e28207e1cb",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\audit.js",
+    "bytes": 99,
+    "sha256": "2835bf0210bfb4601f8cc17675fc3786cd820de1520814a9f243b16f725ba2d9",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\farmers.js",
+    "bytes": 103,
+    "sha256": "70741d97a9bb958b53d1273708683346da461de319bccf161bdadddbdfc519c4",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\field.js",
+    "bytes": 107,
+    "sha256": "ecbeafc2e2ded7fc72eb4d02c9492d1955e07c6ae0efc074a0cf97230a7056a3",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\mapping.js",
+    "bytes": 44,
+    "sha256": "8538be9476eecfd18d283cbb87f18816b651d842daa24653fa75a077f066b05c",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\plantation-form.js",
+    "bytes": 6960,
+    "sha256": "dde7164dbcdc4d0b525288e9cfcccec4bd8c258c0c2767e15ffa0457e3d015c8",
+    "tables": [],
+    "functions": [
+      "sendBoundary",
+      "setFarmer",
+      "resetForm",
+      "loadPhotos",
+      "startForm"
+    ]
+  },
+  {
+    "file": "assets\\js\\field\\plantations.js",
+    "bytes": 1260,
+    "sha256": "eebfc7b385248d3a6c947a2dca1635d5a073f72f78e93d85eb97fc0d135bf7f5",
+    "tables": [],
+    "functions": [
+      "refreshFarms"
+    ]
+  },
+  {
+    "file": "assets\\js\\field\\reports.js",
+    "bytes": 103,
+    "sha256": "b0d55e4ea78f5c43efdd1dbf8f47d0878191172dd2e7bfeff7b0fc56d7c50fc6",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\trees.js",
+    "bytes": 99,
+    "sha256": "612bd18fa6c43f5531863722ab599828bb57c72584f91c389d5c98791dddb478",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\field\\workers.js",
+    "bytes": 103,
+    "sha256": "1674b27cdc942ce5705e9ee865585cb5e2e526ba1d359ab276189b3404663dfa",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\forgot-password.js",
+    "bytes": 787,
+    "sha256": "ddf721ae6db232f5f5f25112e94fbdc9bf993986ea3daab91507cd152d15c9ec",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\gps-mapping.js",
+    "bytes": 12448,
+    "sha256": "0f279b8390473219557ecedc1c220e2c3f320282ee4ddf6a3f0ddfab1446e546",
+    "tables": [],
+    "functions": [
+      "validatePosition",
+      "ringFor",
+      "validateRing",
+      "data",
+      "publish",
+      "updateButtons",
+      "stop",
+      "clear",
+      "applyPolygon",
+      "showPosition",
+      "accept",
+      "geoAvailable",
+      "watch",
+      "finish",
+      "button",
+      "onePosition",
+      "start"
+    ]
+  },
+  {
+    "file": "assets\\js\\impact.js",
+    "bytes": 764,
+    "sha256": "56f2c4a2fbc1dbc72102be95c89290d1be1d461e54eb07a67e436f9b85cc9c8b",
+    "tables": [],
+    "functions": [
+      "updateToggle"
+    ]
+  },
+  {
+    "file": "assets\\js\\index.js",
+    "bytes": 3068,
+    "sha256": "434d44c63b76bfc150c6e4afa2f9696ccdd63abb912573a69a6c27073e946592",
+    "tables": [],
+    "functions": [
+      "publicPhoto",
+      "renderPost",
+      "loadFeed"
+    ]
+  },
+  {
+    "file": "assets\\js\\login.js",
+    "bytes": 1530,
+    "sha256": "153694351690828de2a393905e1772a7a4a797de5b2378b07cf3291fb6b3b407",
+    "tables": [],
+    "functions": [
+      "statusMessage",
+      "redirectSession",
+      "start"
+    ]
+  },
+  {
+    "file": "assets\\js\\platform.js",
+    "bytes": 31786,
+    "sha256": "26128ca519db2a951428e7fb31ac497e7666de3f06d440fe8377b6c737ef20cc",
+    "tables": [],
+    "functions": [
+      "result",
+      "busy",
+      "filtered",
+      "option",
+      "setOptions",
+      "toolbar",
+      "table",
+      "bindTable",
+      "formValues",
+      "loadForm",
+      "upload",
+      "viewPhoto",
+      "ownerOptions",
+      "registry",
+      "refresh",
+      "inventory",
+      "assignments",
+      "chart",
+      "group",
+      "dashboard",
+      "drawMap",
+      "atlas",
+      "reportRows",
+      "csvValue",
+      "reports",
+      "load",
+      "audit",
+      "accounts",
+      "refreshAssignments",
+      "listAllAssignments",
+      "start"
+    ]
+  },
+  {
+    "file": "assets\\js\\reset-password.js",
+    "bytes": 1070,
+    "sha256": "d2c8f64dca44da31908346a550db671d4d6e5cfc7e44f4c2c9edcd8601d99885",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "assets\\js\\session.js",
+    "bytes": 1622,
+    "sha256": "d2de73c48058d42d77256f2b675dd7141056ebd638cc91c445c9cd8382ccb602",
+    "tables": [],
+    "functions": [
+      "requireSession"
+    ]
+  },
+  {
+    "file": "assets\\js\\signup.js",
+    "bytes": 1743,
+    "sha256": "5e8bf92e4c3b7f3011c0a4f50fdcaad79233f3f061b61925ec427b6f5579b695",
+    "tables": [],
+    "functions": [
+      "statusMessage",
+      "redirectSession",
+      "start"
+    ]
+  },
+  {
+    "file": "assets\\js\\ui.js",
+    "bytes": 3204,
+    "sha256": "98d95981a61bab09a8897b7a2bffbb11c6ba35950b3c3b0fcda17c4073ad16cc",
+    "tables": [],
+    "functions": [
+      "updateHeader",
+      "register",
+      "stopAnimations"
+    ]
+  },
+  {
+    "file": "assets\\js\\workspace.js",
+    "bytes": 936,
+    "sha256": "1188871b5fa315a477ff3c046a283bd12760b257b0b49297780d2f81da260968",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "capacitor.config.json",
+    "bytes": 92,
+    "sha256": "191ed9bbcf757de417a8e2ef2966aa0bf09cc92bbfdccda2b9286f2091f31609",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "docs\\PROJECT-BRIEF.md",
+    "bytes": 19237,
+    "sha256": "df2a504273f7d10848197fe75848e73211e0c9b54e9da823d2d6eae143eaae1e",
+    "tables": [],
+    "functions": [
+      "without"
+    ]
+  },
+  {
+    "file": "docs\\RELEASE-STATUS.md",
+    "bytes": 6811,
+    "sha256": "eea31545c5e403f9824cd41cdbfc4089deb731654df003c1118c51e94bf0526a",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\assignments.html",
+    "bytes": 9013,
+    "sha256": "bd706ebf12f5aab2d4fd88ea5a46134cc7e42db7f51e26677e8d305ed53c85d7",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\atlas.html",
+    "bytes": 7749,
+    "sha256": "b4ec35270f8f057b8d5a6aa149f0e296592dc7007aa6c884e8fa06b0b4049654",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\audit.html",
+    "bytes": 7765,
+    "sha256": "1fb153cc3bc01e6b03a0ae29b2c7404ab34a5815cebfa63b465533473e9ed65e",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\farmer.html",
+    "bytes": 11711,
+    "sha256": "ae955cf76c33b8a6e367aba6d20bdd36c583b94dcbfed09045bdf0fa2d1c6943",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\farmers.html",
+    "bytes": 14771,
+    "sha256": "cc3ab02fb1904408a7b6fb008a36bc84137baf59edcdcb93129260fd8106cb75",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\mapping.html",
+    "bytes": 4381,
+    "sha256": "fb5c999a990b390962d58b771a4b30067bb368499fcdb2ed8034269cb989b85a",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\plantation-form.html",
+    "bytes": 10641,
+    "sha256": "28b694c3b552518f7f6e15a570dffe7d6ab432b471c2e84031141b065f5833e8",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\plantations.html",
+    "bytes": 6001,
+    "sha256": "1661dee91c3dfed61428faa8a588050b8349b366cbd8f24e93318f8e58c6db12",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\posts.html",
+    "bytes": 6784,
+    "sha256": "a840e6c94d348f31ae509365ad2098e309c719be45c4f6814c03846e569a88c6",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\reports.html",
+    "bytes": 8569,
+    "sha256": "9efac7065e865aa561f2f90526b60d3bf6daf321f4b36ce4a7cd9003667631ff",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\trees.html",
+    "bytes": 11109,
+    "sha256": "5177df4a8a6d50ab57ba7a12992e74be3f88354b7164fbfba59f5f553362e407",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "farmer\\workers.html",
+    "bytes": 11620,
+    "sha256": "4d3c2b3b64351b7929d6b5bd94b900ca28180ad31812b461fe7ebf98fa8a1775",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\assignments.html",
+    "bytes": 8662,
+    "sha256": "4d2a286962238315ba3c0b827cc7b1c03cfab6e993519c726dfaf735ef9f34f3",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\atlas.html",
+    "bytes": 7440,
+    "sha256": "4812d5d90fc221a3c8a2cd8d1c1678ca32d2eb1c47cedf1737f2e931e01c4bba",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\audit.html",
+    "bytes": 7454,
+    "sha256": "dcc8d703d957d4ad29a78a4704f79ef1225cef42611499a92a9fb53584a30999",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\farmers.html",
+    "bytes": 14266,
+    "sha256": "72ba8a385c50b3ec589bb4bb047cd19faaf92584ee9c26c01dee471e7c187b81",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\field.html",
+    "bytes": 11276,
+    "sha256": "00915bd40e651e48b690a7a06efa726584791f45a5e675e91359c0f64553b5fe",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\mapping.html",
+    "bytes": 4378,
+    "sha256": "2176a2af61c44cf817774983d2bebb2698da865ca06f25c59a82a483f5149107",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\plantation-form.html",
+    "bytes": 10248,
+    "sha256": "83e87f57eeb923624967bca5f15db2f7c8a4ce36bc89a3ebd3ccabb165858afe",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\plantations.html",
+    "bytes": 5742,
+    "sha256": "6a1af0632474a24200818632c9940ab447ba0f1531895dee5e9c2b6c636642ab",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\reports.html",
+    "bytes": 8238,
+    "sha256": "ab1373da397e3daf2dd53b09da4cff22c5d7fab50074dd57abf28e1a1d5b1c38",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\trees.html",
+    "bytes": 10712,
+    "sha256": "b058b569c1352a56827cf911f385777de590dc08161d0e2f1b6f23b5e3d4ba03",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "field\\workers.html",
+    "bytes": 11189,
+    "sha256": "e78c7a465910164f8ab952242abaae34e9e4219a4bd8068651245d5bf8e37efa",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "forgot-password.html",
+    "bytes": 2352,
+    "sha256": "9ccee010bd156fd997109634f06377b71eb10547262d877ea8de94d530cdb7cb",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "impact.html",
+    "bytes": 4244,
+    "sha256": "0ee8236325a90919edd5bcb8c08450f0ab11684eb3813beb64635ffee420441f",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "index.html",
+    "bytes": 4179,
+    "sha256": "c529f02788466b7f232ca26e6076ae76af58fea45ab14c47d67aeb1e6c4095d1",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "login.html",
+    "bytes": 2807,
+    "sha256": "0edfad523bc6fb3f645991d9665c461ecfcb13ac068084f770bbc635f56fbb48",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "privacy.html",
+    "bytes": 3453,
+    "sha256": "4e607883359190a8876e6918a51339468d5d5ba82fc8e670f67367b86bfe21a2",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "README.md",
+    "bytes": 11656,
+    "sha256": "fb07612260528a31ebf887dd7624b879586e6eec5abf523657059f47e6949125",
+    "tables": [],
+    "functions": [
+      "after",
+      "explicitly",
+      "credentials"
+    ]
+  },
+  {
+    "file": "reset-password.html",
+    "bytes": 2525,
+    "sha256": "628e3ca046c273deebdfd79f5e7e3748158a0a0e2c0f4a097f604e5f4c95eece",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "scripts\\prepare-android.ps1",
+    "bytes": 811,
+    "sha256": "f8b2ddb78213d739fff2b7ed061bf1a53f712590ba00d1af84c904e3f6c48f81",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "signup.html",
+    "bytes": 3187,
+    "sha256": "0b2eaf8ba0042c8f01e5c4f689e0a79e211ba84c3366346ff942ce19a4d077f9",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "sql\\001_schema.sql",
+    "bytes": 7030,
+    "sha256": "4c4abba2ff6abf961e42e13432f802856ee2cfa336d015259bac3d19b5122395",
+    "tables": [
+      "profiles",
+      "farmers",
+      "plantations",
+      "plantation_boundaries",
+      "cacao_trees",
+      "workers",
+      "worker_assignments",
+      "activity_logs"
+    ],
+    "functions": [
+      "public",
+      "public"
+    ]
+  },
+  {
+    "file": "sql\\002_admin_access.sql",
+    "bytes": 745,
+    "sha256": "5eaf144b453b9a2e4d79e5ba30bb141db3a40daab3fb0bcb6c2a05fd86be3ef9",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "sql\\003_public_posts.sql",
+    "bytes": 3215,
+    "sha256": "664cae4305503aa3afe4f547cd0d283073ffde9762c7b978bfe0fa9ef2e75cac",
+    "tables": [
+      "cacao_posts"
+    ],
+    "functions": []
+  },
+  {
+    "file": "sql\\004_platform.sql",
+    "bytes": 26728,
+    "sha256": "359ac4fab2bc3ffd7e6195c023f5070d86cf63b16b3a7b7781f4a6eb90f67831",
+    "tables": [
+      "staff_farmer_assignments",
+      "cacao_tree_inventories",
+      "gps_tracking_sessions",
+      "gps_tracking_points",
+      "farmer_documents",
+      "plantation_photos"
+    ],
+    "functions": [
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "private",
+      "public",
+      "public",
+      "public",
+      "public",
+      "private",
+      "private"
+    ]
+  },
+  {
+    "file": "supabase\\functions\\invite-team\\index.ts",
+    "bytes": 3136,
+    "sha256": "64c167563f2f2f8fea0a368e567b6942be47aec32b66ae74ef76c303441b6d1a",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "tests\\platform.test.cjs",
+    "bytes": 7106,
+    "sha256": "6786d6500e7b4b1b3a4d4628025946a04f73ca88e17fe8a216caa64767acd57d",
+    "tables": [],
+    "functions": [
+      "databaseContext"
+    ]
+  },
+  {
+    "file": "tests\\rls-staging.sql",
+    "bytes": 5307,
+    "sha256": "be156980116660e9d949b480ced0661b17d7e09686d99309b3b864b602a1f4bf",
+    "tables": [],
+    "functions": []
+  },
+  {
+    "file": "vercel.json",
+    "bytes": 1023,
+    "sha256": "ed2e5c899a34127a5fb78aacb7492b841a8d26e6466d2b01145599512af5711f",
+    "tables": [],
+    "functions": []
+  }
+]

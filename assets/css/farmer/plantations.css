@@ -1,0 +1,8 @@
+/* Plantation directory layout. */
+.directory { max-width: 900px; }
+.farm-item { text-decoration: none; }
+.plantation-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+.directory .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.directory .farm-item small { display: block; margin-top: 6px; }
+.directory .farm-item a { overflow-wrap: anywhere; }

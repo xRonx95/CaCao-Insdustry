@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.49.1"
+  },
+  "compilerOptions": {
+    "strict": true
+  },
+  "tasks": {
+    "check": "deno check index.ts",
+    "lint": "deno lint index.ts"
+  }
+}

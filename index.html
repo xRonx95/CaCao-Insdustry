@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cacao community | CACAO INDUSTRY</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/ui.css">
+    <script defer src="assets/js/ui.js">
+    </script>
+      <link rel="stylesheet" href="assets/css/mobile-public.css">
+    <script defer src="assets/js/mobile-public.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <img class="brand-logo" src="images/cacao.png" alt="Cacao Industry logo" width="56" height="56">
+        <div>
+          <strong>CACAO INDUSTRY</strong>
+          <small>Farmer Profiling &amp; GPS Plantation Mapping</small>
+        </div>
+      </a>
+      <nav class="public-nav" aria-label="Main navigation">
+        <a href="index.html" aria-current="page">Cacao community</a>
+        <a href="about.html">About</a>
+        <a href="impact.html">Impact</a>
+        <a href="login.html">Log in</a>
+        <a href="signup.html">Sign up</a>
+      </nav>
+    </header>
+    <main class="shell">
+      <section class="community-hero">
+        <div class="hero-copy">
+          <span class="eyebrow">GROWN BY OUR COMMUNITY</span>
+          <h1>Cacao stories, straight from the farm.</h1>
+          <p>See the cacao, harvests and everyday moments shared by our farmers.</p>
+          <a id="share-link" class="btn primary" href="login.html">Share your cacao</a>
+          <a id="dashboard-link" class="btn secondary hidden" href="farmer/farmer.html">My dashboard</a>
+        </div>
+        <figure class="hero-visual">
+          <img src="images/cacao.png" alt="Cacao Industry: cacao pods and leaves" width="320" height="320">
+          <figcaption>Rooted in the farmer community</figcaption>
+        </figure>
+      </section>
+      <section class="public-capabilities" aria-labelledby="capabilities-title">
+        <div class="section-title">
+          <h2 id="capabilities-title">From farmer profiles to field insights</h2>
+          <span class="eyebrow">ISABELA CITY, BASILAN</span>
+        </div>
+        <div class="capability-grid">
+          <article class="panel">
+            <span class="eyebrow">01 · REGISTER</span>
+            <h3>Put the farmer first</h3>
+            <p>Keep private farmer profiles and plantation records organized under authorized account access.</p>
+          </article>
+          <article class="panel">
+            <span class="eyebrow">02 · MAP</span>
+            <h3>Bring the field into focus</h3>
+            <p>Walk GPS boundaries or draw polygons, then review estimated square meters and hectares.</p>
+          </article>
+          <article class="panel">
+            <span class="eyebrow">03 · MONITOR</span>
+            <h3>Follow the work over time</h3>
+            <p>Record tree inventories, coordinate workers and prepare reports from the data your team collects.</p>
+          </article>
+        </div>
+        <p class="muted small">Independent cacao management platform. Not an official DA, PSA or RSBSA registry. GPS areas are estimates, not legal cadastral surveys.</p>
+      </section>
+      <section aria-labelledby="feed-heading">
+        <div class="section-title">
+          <h2 id="feed-heading">Latest farmer posts</h2>
+          <button id="refresh-feed" class="text-btn" type="button">Refresh</button>
+        </div>
+        <p id="feed-status" class="status" role="status">
+        </p>
+        <div id="public-feed" class="public-feed" aria-live="polite">
+        </div>
+        <button id="load-more" class="btn secondary hidden" type="button">Load more posts</button>
+      </section>
+    </main>
+    <footer>CACAO INDUSTRY &middot; From our farms to our community. &middot; <a href="privacy.html">Privacy notice</a>
+    </footer>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
+    <script defer src="assets/js/config.js">
+    </script>
+    <script defer src="assets/js/db.js">
+    </script>
+    <script defer src="assets/js/index.js">
+    </script>
+  <script defer src="assets/js/offline.js"></script>
+</body>
+</html>
+
+

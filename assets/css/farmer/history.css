@@ -1,0 +1,4 @@
+/* Historical GIS records and administrator review. */
+#history-map { min-height: 340px; }
+#mapping-review-form textarea { width: 100%; font: inherit; padding: 12px; border: 1px solid #d9e4da; border-radius: 8px; }
+#gps-session-list li,#history-log li,#review-list li { padding: 10px 0; font-size: 12px; overflow-wrap: anywhere; }

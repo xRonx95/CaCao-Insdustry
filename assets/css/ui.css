@@ -1,0 +1,241 @@
+/* Shared visual polish and motion. Feature layouts stay in their own CSS files. */
+:root {
+  --ui-ease: cubic-bezier(.22, 1, .36, 1);
+  --ui-shadow: 0 14px 34px rgba(24, 63, 42, .09);
+}
+
+body {
+  background: radial-gradient(ellipse at 90% 0%, #e9f0e5 0, transparent 48%), #f5f7f2;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, .96);
+  transition: box-shadow 240ms ease, border-color 240ms ease;
+}
+
+.topbar.is-scrolled {
+  box-shadow: 0 5px 24px rgba(24, 63, 42, .08);
+  border-color: #d7e2d7;
+}
+
+.brand-logo {
+  transition: transform 320ms var(--ui-ease);
+}
+
+.public-nav a {
+  position: relative;
+  padding-block: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.public-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #9a7637;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms var(--ui-ease);
+}
+
+.public-nav a[aria-current="page"] {
+  text-decoration: none;
+}
+
+.public-nav a[aria-current="page"]::after,
+.public-nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.btn,
+.feature-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: background-color 180ms ease, border-color 180ms ease,
+    box-shadow 240ms ease, transform 240ms var(--ui-ease);
+}
+
+.btn.primary {
+  box-shadow: 0 4px 12px rgba(33, 98, 62, .12);
+}
+
+.btn:active:not(:disabled),
+.feature-nav a:active {
+  transform: translateY(1px);
+}
+
+input,
+select,
+textarea {
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+:where(a, button, summary, input, select, textarea):focus-visible {
+  outline: 2px solid #9a7637;
+  outline-offset: 4px;
+}
+
+.panel,
+.stat,
+.post-card,
+.farm-item {
+  transition: box-shadow 260ms ease, border-color 260ms ease,
+    transform 300ms var(--ui-ease);
+}
+
+.post-photo {
+  transition: transform 600ms var(--ui-ease);
+}
+
+.post-card {
+  isolation: isolate;
+}
+
+.post-content {
+  position: relative;
+  background: #fff;
+}
+
+.community-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, .8fr);
+  align-items: center;
+  gap: 44px;
+  max-width: none;
+  padding-block: 46px 56px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #dce5da;
+}
+
+.community-hero h1 {
+  max-width: 700px;
+  line-height: 1.15;
+}
+
+.hero-visual {
+  margin: 0;
+  padding: 18px;
+  background: #fffcf5;
+  border: 1px solid #e9e2d4;
+  border-radius: 22px;
+  box-shadow: var(--ui-shadow);
+}
+
+.hero-visual img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 14px;
+}
+
+.hero-visual figcaption {
+  text-align: center;
+  color: #746445;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 14px 0 4px;
+}
+
+.about-hero h1,
+.impact-hero h1,
+.auth-panel h1 {
+  line-height: 1.16;
+}
+
+.about-hero,
+.impact-hero {
+  border-bottom: 1px solid #dce5da;
+  margin-bottom: 32px;
+}
+
+.auth-form {
+  border-top: 3px solid #9a7637;
+  box-shadow: var(--ui-shadow);
+}
+
+details summary {
+  transition: color 180ms ease;
+}
+
+details[open] summary {
+  color: #21623e;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover .brand-logo { transform: scale(1.04); }
+  .public-nav a:hover::after { transform: scaleX(1); }
+  .btn:hover:not(:disabled), .feature-nav a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(24, 63, 42, .12);
+  }
+  .post-card:hover, .stat:hover, .about-grid .panel:hover,
+  .impact-grid .panel:hover, .dashboard-links a:hover, .farm-item:hover {
+    transform: translateY(-3px);
+    border-color: #bdcfbd;
+    box-shadow: var(--ui-shadow);
+  }
+  .post-card:hover .post-photo { transform: scale(1.025); }
+}
+
+@media (max-width: 700px) {
+  .community-hero { grid-template-columns: 1fr; gap: 24px; padding-block: 24px 32px; }
+  .hero-visual { width: min(100%, 320px); justify-self: center; }
+  .public-nav { gap: 12px; }
+  .public-nav a { font-size: 12px; }
+  .section-title { flex-wrap: wrap; }
+}
+
+/* Native cross-document transitions enhance supported browsers. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: page-out 120ms ease both;
+}
+
+::view-transition-new(root) {
+  animation: page-in 180ms ease both;
+}
+
+@keyframes page-out {
+  to { opacity: 0; }
+}
+
+@keyframes page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-old(root), ::view-transition-new(root) {
+    animation: none !important;
+  }
+  @view-transition { navigation: none; }
+  .btn:hover, .feature-nav a:hover, .brand:hover .brand-logo,
+  .post-card:hover, .stat:hover, .about-grid .panel:hover,
+  .impact-grid .panel:hover, .dashboard-links a:hover, .farm-item:hover,
+  .post-card:hover .post-photo {
+    transform: none;
+  }
+}

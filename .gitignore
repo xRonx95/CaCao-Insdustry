@@ -1,0 +1,52 @@
+
+# ==========================================
+# PROJECT .GITIGNORE
+# Node.js | HTML | CSS | JavaScript
+# Capacitor | Vercel | GitHub
+# ==========================================
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Node.js dependencies
+node_modules/
+
+# Build and distribution files
+dist/
+build/
+
+# Vercel deployment files
+.vercel/
+
+# Android native project
+android/
+
+# Backups
+backups/
+*.bak
+*.backup
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+test-results/
+
+# IDE and editor settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp

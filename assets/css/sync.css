@@ -1,0 +1,14 @@
+/* Field status, encrypted outbox and conflict-review controls. */
+.field-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:0 0 18px; padding:12px 14px; background:#eaf5ec; border:1px solid #d9e5d9; border-radius:9px; font-size:12px; }
+.field-toolbar span { margin-right:auto; }
+.field-toolbar a { color:#173d2b; font-weight:700; }
+.field-dialog { max-width:520px; width:calc(100% - 28px); border:1px solid #cddccd; border-radius:14px; padding:28px; color:#24342b; background:#fff; box-shadow:0 20px 80px #173d2b33; }
+.field-dialog::backdrop { background:#102b1d77; }
+.field-dialog p { font-size:13px; color:#64796a; margin:12px 0; }
+.field-dialog label { margin-top:20px; }
+.sync-actions { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
+#conflict-map { height:360px; z-index:0; margin-top:18px; }
+#conflict-body input { min-width:160px; }
+#conflict-review { border-top:3px solid #9a7637; }
+.sync-warning { color:#754c32; font-size:12px; }
+@media print { .field-toolbar,.field-dialog,.sync-actions { display:none!important; } }
