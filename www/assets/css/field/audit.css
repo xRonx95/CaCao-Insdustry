@@ -1,0 +1,2 @@
+/* field audit: shared layout is in assets/css/platform.css. */
+body[data-feature="audit"] .page-heading { margin-bottom: 24px; }

@@ -1,0 +1,12 @@
+/* Impact page: intended benefits and community participation. */
+.impact-hero { max-width: 800px; padding: 40px 0 48px; }
+.impact-hero h1 { font-size: clamp(32px, 4vw, 50px); margin-top: 14px; }
+.impact-hero p { color: #64796a; margin-top: 18px; }
+.impact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 18px; margin-top: 22px; }
+.impact-grid summary { font: 700 18px Manrope, Arial, sans-serif; color: #1e3d2b; cursor: pointer; }
+.impact-grid p { color: #64796a; margin-top: 14px; }
+.impact-note { margin-top: 32px; background: #edf5ee; }
+.impact-note p { max-width: 800px; }
+.impact-invite { margin-top: 40px; }
+.impact-invite .btn { display: inline-block; text-decoration: none; }
+@media (max-width: 700px) { .impact-grid { grid-template-columns: 1fr; } }

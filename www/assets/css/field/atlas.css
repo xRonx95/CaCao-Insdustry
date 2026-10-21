@@ -1,0 +1,2 @@
+/* field atlas: shared layout is in assets/css/platform.css. */
+body[data-feature="atlas"] .page-heading { margin-bottom: 24px; }

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create account | CACAO INDUSTRY</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/signup.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/ui.css">
+    <script defer src="assets/js/ui.js">
+    </script>
+      <link rel="stylesheet" href="assets/css/mobile-public.css">
+    <script defer src="assets/js/mobile-public.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <img class="brand-logo" src="images/cacao.png" alt="Cacao Industry logo" width="56" height="56">
+        <div>
+          <strong>CACAO INDUSTRY</strong>
+          <small>Farmer Profiling &amp; GPS Plantation Mapping</small>
+        </div>
+      </a>
+      <nav class="public-nav" aria-label="Main navigation">
+        <a href="index.html">Cacao community</a>
+        <a href="about.html">About</a>
+        <a href="impact.html">Impact</a>
+        <a href="login.html">Log in</a>
+        <a href="signup.html" aria-current="page">Sign up</a>
+      </nav>
+    </header>
+    <main class="shell">
+      <section class="auth-wrap">
+        <div class="auth-panel">
+          <span class="eyebrow">CACAO FIELD MANAGER</span>
+          <h1>Join our cacao community.</h1>
+          <p>Create a farmer account to manage plantations and share your cacao.</p>
+          <a href="index.html">Browse farmer posts</a>
+        </div>
+        <form id="signup-form" class="panel auth-form">
+          <h2>Create farmer account</h2>
+          <label>Your name<input id="full-name" required maxlength="120" autocomplete="name" placeholder="Your full name">
+          </label>
+          <label>Email<input id="email" required type="email" autocomplete="email" placeholder="farmer@example.com">
+          </label>
+          <label>Password<input id="password" required type="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+          </label>
+          <label>Confirm password<input id="confirm-password" required type="password" minlength="6" autocomplete="new-password">
+          </label>
+          <label class="privacy-consent">
+            <input id="privacy-consent" type="checkbox" required>I have read the <a href="privacy.html">privacy notice</a> and agree to submit my account information.</label>
+            <button id="submit-auth" class="btn primary" type="submit">Create account</button>
+            <p id="auth-status" class="status" role="status">
+            </p>
+            <p>Already have an account? <a href="login.html">Log in</a>
+            </p>
+          </form>
+        </section>
+      </main>
+      <footer>CACAO INDUSTRY &middot; From our farms to our community. &middot; <a href="privacy.html">Privacy notice</a>
+      </footer>
+      <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+      </script>
+      <script defer src="assets/js/config.js">
+      </script>
+      <script defer src="assets/js/db.js">
+      </script>
+      <script defer src="assets/js/signup.js">
+      </script>
+    <script defer src="assets/js/offline.js"></script>
+</body>
+  </html>
+  
+  

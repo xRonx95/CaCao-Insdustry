@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pest & disease reports | CACAO INDUSTRY</title>
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/platform.css">
+    <link rel="stylesheet" href="../assets/css/admin/pests.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="../assets/css/sync.css">
+    <link rel="stylesheet" href="../assets/css/mobile-workspace.css">
+  </head>
+  <body data-page-role="admin" data-feature="pests" class="workspace-page">
+    <header class="topbar">
+      <a class="brand" href="admin.html">
+        <img class="brand-logo" src="../images/cacao.png" width="56" height="56" alt="Cacao Industry logo">
+        <div>
+          <strong>CACAO INDUSTRY</strong>
+          <small>Farmer Profiling &amp; GPS Plantation Mapping</small>
+        </div>
+      </a>
+      <div class="account">
+        <span class="role-badge">admin</span>
+        <span id="account-email">
+        </span>
+        <button id="logout" class="text-btn">Sign out</button>
+      </div>
+    </header>
+    <button id="nav-toggle" class="btn secondary mobile-menu" type="button" aria-expanded="false" aria-controls="workspace-nav">Menu</button>
+    <nav id="workspace-nav" class="feature-nav" aria-label="Workspace navigation">
+      <div class="sidebar-heading">FIELD OPERATIONS</div>
+      <a href="admin.html">
+        <i data-lucide="layout-dashboard" aria-hidden="true">
+        </i>Overview</a>
+      <a href="farmers.html">
+        <i data-lucide="users" aria-hidden="true">
+        </i>Farmer profiles</a>
+      <a href="plantations.html">
+        <i data-lucide="sprout" aria-hidden="true">
+        </i>Plantations</a>
+      <a href="plantation-form.html">
+        <i data-lucide="map-pin-plus" aria-hidden="true">
+        </i>Register plantation</a>
+      <a href="atlas.html">
+        <i data-lucide="map" aria-hidden="true">
+        </i>Plantation map</a>
+      <a href="trees.html">
+        <i data-lucide="trees" aria-hidden="true">
+        </i>Tree inventories</a>
+      <a href="workers.html">
+        <i data-lucide="contact" aria-hidden="true">
+        </i>Workers</a>
+      <a href="assignments.html">
+        <i data-lucide="clipboard-list" aria-hidden="true">
+        </i>Worker assignments</a>
+      <a href="reports.html">
+        <i data-lucide="chart-column" aria-hidden="true">
+        </i>Reports & exports</a>
+      <a href="audit.html">
+        <i data-lucide="history" aria-hidden="true">
+        </i>Activity log</a>
+      <a href="users.html" data-super-only class="hidden">
+        <i data-lucide="shield-check" aria-hidden="true">
+        </i>Users & access</a>
+      <a href="../index.html">
+        <i data-lucide="globe" aria-hidden="true">
+        </i>Public community</a>
+      <a href="../privacy.html">
+        <i data-lucide="lock-keyhole" aria-hidden="true">
+        </i>Privacy notice</a>
+      <a href="history.html">
+        <i data-lucide="git-branch" aria-hidden="true">
+        </i>Boundary history &amp; review</a>
+      <a href="harvests.html">Harvest & production</a>
+      <a href="pests.html" aria-current="page">Pest & disease reports</a>
+      <a href="treatments.html">Treatment history</a>
+      <a href="inspections.html">Follow-up inspections</a>
+      <a href="tasks.html">Plantation task schedule</a>
+      <a href="maintenance.html">Farm maintenance history</a>
+      <a href="attendance.html">Daily worker attendance</a>
+      <a href="tree-events.html">Planting, mortality & replacement</a>
+      <a href="tree-tags.html">Individual cacao tree tags</a>
+      <a href="sync.html">Sync &amp; recovery</a>
+      <div class="sidebar-location">Isabela City, Basilan<br>Philippines</div>
+    </nav>
+    <main class="shell">
+      <p id="page-status" class="status" role="status" aria-live="polite">
+      </p>
+      <div id="field-toolbar" class="field-toolbar hidden">
+        <span id="field-sync-status" role="status">Field data locked</span>
+        <button id="unlock-field-data" type="button" class="text-btn">Unlock field data</button>
+        <a href="sync.html">Sync &amp; recovery</a>
+      </div>
+      <div id="page-content" class="hidden">
+        <div class="page-heading">
+          <div>
+            <span class="eyebrow">AGRICULTURAL MONITORING</span>
+            <h1>Pest & disease reports</h1>
+            <p>Authorized farm records with original dates, attribution and change history.</p>
+          </div>
+        </div>
+        <section id="monitor-editor" class="panel record-editor">
+          <h2 id="monitor-form-title">New record</h2>
+          <form id="monitor-form">
+            <div class="fields">
+              <label>Plantation *<select id="plantation_id" name="plantation_id" required>
+                  <option value="">Select…</option>
+                </select>
+              </label>
+              <label>Date observed *<input id="observed_on" name="observed_on" required type="date">
+              </label>
+              <label>Pest / disease name *<input id="pest_name" name="pest_name" required maxlength="200">
+              </label>
+              <label>Severity *<select id="severity" name="severity" required>
+                  <option value="low">low</option>
+                  <option value="moderate">moderate</option>
+                  <option value="high">high</option>
+                  <option value="critical">critical</option>
+                </select>
+              </label>
+              <label>Estimated affected trees *<input id="affected_trees" name="affected_trees" required type="number" min="0" max="999999999" step="1" value="0">
+              </label>
+              <label>Resolution status *<select id="resolution_status" name="resolution_status" required>
+                  <option value="open">open</option>
+                  <option value="monitoring">monitoring</option>
+                  <option value="resolved">resolved</option>
+                </select>
+              </label>
+              <label>Photographic evidence (up to 5 MB)<input id="evidence" name="evidence" type="file" accept="image/jpeg,image/png,image/webp">
+              </label>
+              <label>Observations<textarea id="remarks" name="remarks" maxlength="2000" rows="3">
+                </textarea>
+              </label>
+            </div>
+            <div class="button-row">
+              <button id="monitor-save" class="btn primary" type="submit">Save record</button>
+              <button id="monitor-reset" class="btn secondary" type="button">New record</button>
+            </div>
+          </form>
+        </section>
+        <section class="panel">
+          <div class="section-title">
+            <h2>Recorded history</h2>
+            <button id="monitor-refresh" class="text-btn" type="button">Refresh</button>
+          </div>
+          <div class="filter-bar">
+            <label>Search<input id="monitor-search" type="search" placeholder="Search records or farm names">
+            </label>
+            <label>Plantation<select id="farm-filter">
+              </select>
+            </label>
+            <label>From<input id="monitor-from" type="date">
+            </label>
+            <label>To<input id="monitor-to" type="date">
+            </label>
+            <button id="monitor-export" type="button" class="btn secondary">Export CSV</button>
+            <button id="monitor-print" type="button" class="btn secondary">Print / Save PDF</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr id="monitor-head">
+                </tr>
+              </thead>
+              <tbody id="monitor-body">
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <p id="monitor-count">
+            </p>
+            <button id="monitor-previous" class="btn secondary" type="button">Previous</button>
+            <button id="monitor-next" class="btn secondary" type="button">Next</button>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>Independent cacao management system &middot; Not an official DA or PSA registry. GPS areas are approximate.</footer>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
+    <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
+    </script>
+    <script defer src="../assets/js/config.js">
+    </script>
+    <script defer src="../assets/js/db.js">
+    </script>
+    <script defer src="../assets/js/session.js">
+    </script>
+    <script defer src="../assets/js/sync.js">
+    </script>
+    <script defer src="../assets/js/ui.js">
+    </script>
+    <script defer src="../assets/js/workspace.js">
+    </script>
+    <script defer src="../assets/js/module-definitions.js">
+    </script>
+    <script defer src="../assets/js/monitoring.js">
+    </script>
+    <script defer src="../assets/js/platform.js">
+    </script>
+    <script defer src="../assets/js/admin/pests.js">
+    </script>
+    <dialog id="field-unlock-dialog" class="field-dialog" aria-labelledby="field-unlock-title">
+      <form id="field-unlock-form">
+        <h2 id="field-unlock-title">Protect your field work</h2>
+        <p>Choose or enter this account's field-data passphrase for this device. It encrypts pending work and is required again after a page is reopened.</p>
+        <label>Field-data passphrase<input id="field-passphrase" type="password" minlength="12" maxlength="256" required autocomplete="off">
+        </label>
+        <p id="field-unlock-error" class="status error" role="status">
+        </p>
+        <div class="button-row">
+          <button class="btn primary" type="submit">Unlock field data</button>
+          <button id="field-unlock-cancel" class="btn secondary" type="button">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+    <script defer src="../assets/js/offline.js">
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+/* field dashboard: shared layout is in assets/css/platform.css. */
+body[data-feature="dashboard"] .page-heading { margin-bottom: 24px; }

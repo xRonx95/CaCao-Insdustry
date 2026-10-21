@@ -1,0 +1,2 @@
+/* admin assignments: shared layout is in assets/css/platform.css. */
+body[data-feature="assignments"] .page-heading { margin-bottom: 24px; }

@@ -1,0 +1,23 @@
+/* About page: introduction, platform purpose and questions. */
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, 1fr);
+  align-items: center;
+  gap: 40px;
+  padding: 32px 0 52px;
+}
+.about-hero h1 { font-size: clamp(30px, 4vw, 48px); margin-top: 14px; }
+.about-hero p { margin: 18px 0 26px; color: #64796a; max-width: 640px; }
+.about-hero img { width: 100%; max-width: 360px; height: auto; justify-self: center; border-radius: 20px; }
+.about-hero .btn { display: inline-block; text-decoration: none; }
+.about-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 22px 0 40px; }
+.about-grid p, .about-questions p, .about-invite p { color: #64796a; }
+.about-questions details { padding: 18px 0; border-bottom: 1px solid #dce8df; }
+.about-questions summary { cursor: pointer; color: #1e3d2b; font-weight: 700; }
+.about-invite { margin-top: 32px; }
+.about-invite a { display: inline-block; margin-top: 16px; color: #21623e; font-weight: 700; }
+@media (max-width: 850px) {
+  .about-hero { grid-template-columns: 1fr; gap: 24px; }
+  .about-hero img { max-width: 260px; }
+  .about-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,105 @@
+/* Mobile app layout. Shared by admin, farmer and field pages; desktop uses platform.css. */
+.mobile-dock, .mobile-shortcuts, .mobile-nav-shade { display: none; }
+@media (max-width: 850px) {
+  .workspace-page { background: #eef2f8; }
+  .workspace-page .topbar {
+    position: relative; z-index: 910; min-height: 92px; padding: 16px;
+    background: linear-gradient(120deg, #174d30, #338454); color: white; border: 0; box-shadow: none; gap: 12px;
+  }
+  .workspace-page .brand { min-width: 0; flex: 1; gap: 9px; color: white; }
+  .workspace-page .brand strong { font-size: 12px; letter-spacing: .035em; color: #fff; }
+  .workspace-page .brand small { display: none; }
+  .workspace-page .brand-logo { width: 38px; height: 38px; border-radius: 13px; background: white; }
+  .workspace-page .account { max-width: 105px; gap: 4px; font-size: 10px; }
+  .workspace-page #account-email { max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .workspace-page .account .text-btn { color: #e5d7a8; font-size: 10px; }
+  .workspace-page .role-badge { background: #315840; color: #eff7eb; border: 1px solid #56745c; }
+  .workspace-page .mobile-menu {
+    display: inline-flex; align-items: center; justify-content: center; margin: 0;
+    width: 42px; height: 44px; flex-shrink: 0; padding: 10px;
+    color: white; border: 1px solid #52725b; background: #234b35; border-radius: 14px;
+  }
+  .mobile-menu svg, .mobile-dock svg { width: 22px; height: 22px; }
+  .workspace-page .shell {
+    position: relative; margin: 0; padding: 20px 16px 28px; min-width: 0;
+    border-radius: 28px 28px 0 0; background: #eef2f8;
+  }
+  .workspace-page .page-heading { margin: 10px 0 24px; }
+  .workspace-page .page-heading h1 { font-size: clamp(23px, 6vw, 30px); letter-spacing: -.045em; line-height: 1.15; }
+  .workspace-page .page-heading p { font-size: 12px; line-height: 1.7; color: #718078; }
+  .workspace-page .eyebrow { font-size: 9px; letter-spacing: .15em; }
+  .workspace-page[data-feature="dashboard"] .page-heading {
+    position: relative; overflow: hidden; padding: 24px; border-radius: 24px;
+    background: linear-gradient(125deg, #173d2b, #2b6746); color: white;
+    box-shadow: 0 14px 30px #173d2b1c;
+  }
+  .workspace-page[data-feature="dashboard"] .page-heading::after {
+    content: ""; position: absolute; width: 190px; height: 190px; border-radius: 40px;
+    right: -110px; top: -90px; background: #ffffff0a; transform: rotate(35deg); pointer-events: none;
+  }
+  .workspace-page[data-feature="dashboard"] .page-heading .eyebrow { color: #ddc991; }
+  .workspace-page[data-feature="dashboard"] .page-heading h1 { color: #fff; }
+  .workspace-page[data-feature="dashboard"] .page-heading p { color: #d2e2d7; margin-bottom: 0; }
+  .mobile-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0 0 26px; }
+  .mobile-shortcut {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    min-height: 132px; padding: 18px 12px; background: white; border-radius: 20px;
+    color: #42584b; font-size: 12px; font-weight: 600; text-decoration: none;
+    box-shadow: 0 10px 24px #2c44680a; border: 1px solid #ffffff;
+  }
+  .mobile-shortcut-icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 17px; background: #e7f3ea; color: #2b7750; }
+  .mobile-shortcut:nth-child(2n) .mobile-shortcut-icon { background: #fff2d6; color: #9b7130; }
+  .mobile-shortcut:nth-child(3n) .mobile-shortcut-icon { background: #e9edff; color: #6475ac; }
+  .mobile-shortcut svg { width: 29px; height: 29px; }
+  .workspace-page .panel, .workspace-page .stat, .workspace-page .farm-item {
+    border: 1px solid #ffffff; border-radius: 22px; box-shadow: 0 10px 28px #2c446808;
+  }
+  .workspace-page .panel { padding: 20px; margin-bottom: 18px; min-width: 0; }
+  .workspace-page .panel h2 { font-size: 16px; letter-spacing: -.02em; }
+  .workspace-page .stat { border: 0; padding: 18px; }
+  .workspace-page .stat span { font-size: 11px; line-height: 1.5; }
+  .workspace-page .stat strong { font-size: 24px; color: #285e40; }
+  .workspace-page .stats { gap: 12px; margin-bottom: 16px; }
+  .workspace-page .field-toolbar { border: 0; background: #e2ebe5; border-radius: 14px; padding: 12px; font-size: 10px; }
+  .workspace-page .field-toolbar .text-btn, .workspace-page .field-toolbar a { font-size: 10px; }
+  .workspace-page input, .workspace-page select, .workspace-page textarea { font-size: 16px; border-radius: 12px; }
+  .workspace-page .btn { min-height: 44px; border-radius: 13px; }
+  .workspace-page .button-row { flex-wrap: wrap; }
+  .workspace-page footer { padding: 24px 18px calc(122px + env(safe-area-inset-bottom, 0px)); margin: 0; font-size: 10px; }
+  .workspace-page .feature-nav.nav-open {
+    position: fixed; z-index: 940; inset: 100px 14px auto; width: auto;
+    max-height: calc(100dvh - 225px - env(safe-area-inset-bottom, 0px));
+    margin: 0; padding: 20px 14px; border-radius: 24px;
+    box-shadow: 0 25px 70px #102e3340;
+  }
+  .workspace-page .feature-nav a { min-height: 44px; border-radius: 12px; }
+  .mobile-nav-shade.is-open { display: block; position: fixed; inset: 0; border: 0; background: #102e3359; backdrop-filter: blur(3px); z-index: 930; }
+  .mobile-dock {
+    display: flex; align-items: center; justify-content: space-around; position: fixed;
+    z-index: 950; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px;
+    height: 76px; max-width: 540px; margin: 0 auto; padding: 6px 8px;
+    background: linear-gradient(120deg, #174d30, #338454); border-radius: 26px; box-shadow: 0 12px 35px #173d2b36;
+  }
+  .mobile-dock a, .mobile-dock button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    min-width: 48px; min-height: 48px; padding: 6px; border: 0; background: transparent;
+    color: #bfd3c5; text-decoration: none; font: inherit; font-size: 9px; cursor: pointer;
+  }
+  .mobile-dock [aria-current="page"] { color: #f1d899; }
+  .mobile-dock .mobile-map-action {
+    width: 64px; min-width: 64px; height: 64px; margin-top: -34px;
+    border: 7px solid #eef2f8; border-radius: 50%; background: #dcb966; color: #173d2b;
+    box-sizing: content-box; box-shadow: 0 0 0 1px #eef2f8;
+  }
+  .mobile-dock .mobile-map-action svg { width: 26px; height: 26px; }
+  .mobile-dock a:focus-visible, .mobile-dock button:focus-visible, .mobile-shortcut:focus-visible { outline: 3px solid #c69c46; outline-offset: 3px; }
+}
+@media (max-width: 360px) {
+  .workspace-page .topbar { gap: 8px; padding-inline: 12px; }
+  .workspace-page .brand strong { font-size: 10px; }
+  .workspace-page .brand-logo { width: 30px; height: 30px; }
+  .workspace-page .account { max-width: 82px; }
+  .workspace-page #account-email { max-width: 82px; }
+  .mobile-dock a, .mobile-dock button { min-width: 40px; }
+}
+@media print { .mobile-dock, .mobile-shortcuts, .mobile-nav-shade { display: none !important; } }

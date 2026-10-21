@@ -1,0 +1,5 @@
+/* Login page. Shared fields and layout are in style.css. */
+.auth-form > .btn { width: 100%; margin-top: 24px; }
+.auth-form a, .auth-panel a { color: #21623e; }
+.public-nav { display: flex; flex-wrap: wrap; gap: 14px; }
+.public-nav a, .brand { color: #21623e; text-decoration: none; }

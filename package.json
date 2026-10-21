@@ -1,0 +1,32 @@
+{
+  "name": "cacaoindustry-web",
+  "version": "1.0.0",
+  "description": "Farmer Profiling and GPS Plantation Mapping System for Isabela City, Basilan, Philippines.",
+  "main": "service-worker.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xRonx95/CaCao-Insdustry.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/xRonx95/CaCao-Insdustry/issues"
+  },
+  "homepage": "https://github.com/xRonx95/CaCao-Insdustry#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3"
+  }
+}

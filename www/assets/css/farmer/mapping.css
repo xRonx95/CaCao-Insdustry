@@ -1,0 +1,7 @@
+/* Standalone boundary mapping feature, embedded by plantation-form.html. */
+body { background: #fff; padding: 4px; }
+.map-heading { margin-top: 0; }
+#map { height: 350px; }
+
+.walking-panel { padding: 16px; background: #f1f7ee; border: 1px solid #dce8df; border-radius: 10px; margin: 18px 0; }
+.walking-panel label { max-width: 320px; }

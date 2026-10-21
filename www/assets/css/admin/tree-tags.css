@@ -1,0 +1,4 @@
+/* Individual cacao tree tags layout. */
+#monitor-form textarea { width: 100%; padding: 12px; font: inherit; border: 1px solid #d9e4da; border-radius: 8px; }
+#monitor-editor { margin-bottom: 24px; }
+@media print { #monitor-editor { display: none; } .production-panel { break-before: page; } }

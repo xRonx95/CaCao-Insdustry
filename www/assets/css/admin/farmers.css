@@ -1,0 +1,2 @@
+/* admin farmers: shared layout is in assets/css/platform.css. */
+body[data-feature="farmers"] .page-heading { margin-bottom: 24px; }
