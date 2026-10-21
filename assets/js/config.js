@@ -1,30 +1,30 @@
 
 /*
  * CACAO INDUSTRY
- * Supabase and Map Configuration
+ * Supabase and GPS Mapping Configuration
  *
- * Use ONLY the public Supabase publishable/anon key.
- * Never use sb_secret or service_role keys here.
+ * Only use a public Supabase publishable key.
  */
 
 window.CACAO_SUPABASE_URL =
   "https://qirfqeprpbcnakztjfsj.supabase.co";
 
-// Replace this with your PUBLIC publishable key.
+// Replace with your real sb_publishable_ key.
 window.CACAO_SUPABASE_KEY =
-  "YOUR_PUBLIC_PUBLISHABLE_KEY";
+  "sb_publishable_WI0dXdbsMb68RoNUxZH5zw_7Xit_9mY";
 
-// Check if Supabase is configured.
+// Validate Supabase configuration.
 const configured =
   /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(
     window.CACAO_SUPABASE_URL
   ) &&
   typeof window.CACAO_SUPABASE_KEY === "string" &&
-  window.CACAO_SUPABASE_KEY.length > 20 &&
-  !window.CACAO_SUPABASE_KEY.includes("YOUR_") &&
-  !window.CACAO_SUPABASE_KEY.startsWith("sb_secret");
+  window.CACAO_SUPABASE_KEY.startsWith(
+    "sb_publishable_"
+  ) &&
+  window.CACAO_SUPABASE_KEY.length > 20;
 
-// GPS / OpenStreetMap Configuration
+// GPS / OpenStreetMap
 window.CACAO_MAP = {
   tiles:
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
