@@ -239,3 +239,32 @@ details[open] summary {
     transform: none;
   }
 }
+.password-field {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.password-field > input { width: 100%; padding-right: 54px; box-sizing: border-box; }
+.password-field > .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #21623e;
+  cursor: pointer;
+}
+.password-toggle:hover { background: #edf8f0; }
+.password-toggle:focus-visible { outline: 2px solid #21623e; outline-offset: -2px; }
+.password-toggle .password-eye-slash { display: none; }
+.password-toggle[aria-pressed="true"] .password-eye-slash { display: block; }
+

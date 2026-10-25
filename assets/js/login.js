@@ -44,7 +44,3 @@ async function start() {
 }
 start().catch(error => statusMessage(error.message, true));
 
-$('show-password').addEventListener('click',()=>{
-  const show=$('password').type==='password';$('password').type=show?'text':'password';
-  $('show-password').textContent=show?'Hide password':'Show password';$('show-password').setAttribute('aria-pressed',String(show));
-});

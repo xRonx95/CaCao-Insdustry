@@ -1,3 +1,33 @@
+// Password controls work independently of authentication and motion support.
+(() => {
+  const eye = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="password-eye-slash" d="m3 3 18 18"/></svg>';
+  function enhance() {
+    document.querySelectorAll('input[type="password"]').forEach(input => {
+      if (input.closest('.password-field')) return;
+      const wrapper = document.createElement('span');
+      wrapper.className = 'password-field';
+      input.before(wrapper);
+      wrapper.append(input);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'password-toggle';
+      button.innerHTML = eye;
+      button.setAttribute('aria-label', 'Show password');
+      button.setAttribute('aria-pressed', 'false');
+      if (input.id) button.setAttribute('aria-controls', input.id);
+      button.addEventListener('click', () => {
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        button.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        button.setAttribute('aria-pressed', String(show));
+      });
+      wrapper.append(button);
+    });
+  }
+  enhance();
+  new MutationObserver(enhance).observe(document.body, { childList: true, subtree: true });
+})();
+
 // Shared motion enhancement. Content stays visible if JavaScript is unavailable.
 (() => {
   const header = document.querySelector('.topbar');
