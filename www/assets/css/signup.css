@@ -4,5 +4,15 @@
 .public-nav { display: flex; flex-wrap: wrap; gap: 14px; }
 .public-nav a, .brand { color: #21623e; text-decoration: none; }
 
+#auth-status.success, #auth-status.error {
+  padding: 14px 16px;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+#auth-status.success { background: #edf8f0; border-color: #27714a; color: #195333; }
+#auth-status.error { background: #fff1f0; border-color: #b54b44; color: #8c2923; }
+
 .privacy-consent { display: block; font-weight: 400; }
 .privacy-consent input { width: 16px; margin-right: 8px; }

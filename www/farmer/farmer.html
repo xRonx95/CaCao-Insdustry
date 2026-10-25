@@ -31,16 +31,16 @@
     </header>
     <button id="nav-toggle" class="btn secondary mobile-menu" type="button" aria-expanded="false" aria-controls="workspace-nav">Menu</button>
     <nav id="workspace-nav" class="feature-nav" aria-label="Workspace navigation">
-      <div class="sidebar-heading">FIELD OPERATIONS</div>
+      <div class="sidebar-heading">MY FARM</div>
       <a href="farmer.html" aria-current="page">
         <i data-lucide="layout-dashboard" aria-hidden="true">
         </i>Overview</a>
       <a href="farmers.html">
         <i data-lucide="users" aria-hidden="true">
-        </i>Farmer profiles</a>
+        </i>My farmer profile</a>
       <a href="plantations.html">
         <i data-lucide="sprout" aria-hidden="true">
-        </i>Plantations</a>
+        </i>My plantations</a>
       <a href="plantation-form.html">
         <i data-lucide="map-pin-plus" aria-hidden="true">
         </i>Register plantation</a>
@@ -50,18 +50,6 @@
       <a href="trees.html">
         <i data-lucide="trees" aria-hidden="true">
         </i>Tree inventories</a>
-      <a href="workers.html">
-        <i data-lucide="contact" aria-hidden="true">
-        </i>Workers</a>
-      <a href="assignments.html">
-        <i data-lucide="clipboard-list" aria-hidden="true">
-        </i>Worker assignments</a>
-      <a href="reports.html">
-        <i data-lucide="chart-column" aria-hidden="true">
-        </i>Reports & exports</a>
-      <a href="audit.html">
-        <i data-lucide="history" aria-hidden="true">
-        </i>Activity log</a>
       <a href="posts.html">
         <i data-lucide="image" aria-hidden="true">
         </i>Share cacao</a>
@@ -77,10 +65,7 @@
       <a href="harvests.html">Harvest & production</a>
       <a href="pests.html">Pest & disease reports</a>
       <a href="treatments.html">Treatment history</a>
-      <a href="inspections.html">Follow-up inspections</a>
-      <a href="tasks.html">Plantation task schedule</a>
       <a href="maintenance.html">Farm maintenance history</a>
-      <a href="attendance.html">Daily worker attendance</a>
       <a href="tree-events.html">Planting, mortality & replacement</a>
       <a href="tree-tags.html">Individual cacao tree tags</a>
       <a href="sync.html">Sync &amp; recovery</a>
@@ -99,12 +84,12 @@
           <div>
             <span class="eyebrow">CACAO INDUSTRY &middot; ISABELA CITY</span>
             <h1>My farm overview</h1>
-            <p>Live totals, mapping and activity from records authorized for your account.</p>
+            <p>Manage your farmer profile, plantations and daily farm records. Staff administration is handled by your administrator.</p>
           </div>
         </div>
         <div class="stats">
           <article class="stat">
-            <span>Registered farmers</span>
+            <span>My farmer profiles</span>
             <strong id="stat-farmers">&mdash;</strong>
           </article>
           <article class="stat">
@@ -124,15 +109,11 @@
             <strong id="stat-ha">&mdash;</strong>
           </article>
           <article class="stat">
-            <span>Registered workers</span>
-            <strong id="stat-workers">&mdash;</strong>
-          </article>
-          <article class="stat">
             <span>Active plantations</span>
             <strong id="stat-active">&mdash;</strong>
           </article>
           <article class="stat">
-            <span>Pending farmer registrations</span>
+            <span>My pending registrations</span>
             <strong id="stat-pending">&mdash;</strong>
           </article>
         </div>
@@ -170,7 +151,7 @@
         </p>
         <div class="analytics-grid">
           <section class="panel">
-            <h2>Farmer registrations</h2>
+            <h2>My profile registrations</h2>
             <div class="chart-box">
               <canvas id="registration-chart" role="img" aria-label="Farmer registrations by month">
               </canvas>
@@ -199,7 +180,7 @@
         </div>
         <section class="panel">
           <div class="section-title">
-            <h2>Authorized plantation locations</h2>
+            <h2>My plantation locations</h2>
             <a href="atlas.html">Open full map</a>
           </div>
           <div id="dashboard-map" class="overview-map" aria-label="Plantation map">

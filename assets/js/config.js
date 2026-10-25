@@ -9,7 +9,7 @@
 window.CACAO_SUPABASE_URL =
   "https://qirfqeprpbcnakztjfsj.supabase.co";
 
-// Replace with your real sb_publishable_ key.
+// Public Supabase publishable key shared by the website and Android app.
 window.CACAO_SUPABASE_KEY =
   "sb_publishable_WI0dXdbsMb68RoNUxZH5zw_7Xit_9mY";
 

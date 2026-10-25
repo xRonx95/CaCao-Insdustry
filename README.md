@@ -120,7 +120,7 @@ Headless Chrome checks covered desktop/mobile rendering, mobile navigation, mapp
 
 ## Android preparation
 
-`capacitor.config.json` points to `dist`. `scripts/prepare-android.ps1` copies only public web assets into that folder. This is preparation, not a compiled or tested Android application.
+`capacitor.config.json` points to `www`. Run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-android.ps1`, then `npx.cmd cap sync android` to copy the latest public web assets into the Android project. Build a debug APK with `android\gradlew.bat -p android assembleDebug`. Device testing is a separate step.
 
 Follow [Capacitor installation](https://capacitorjs.com/docs/getting-started) and its [environment setup](https://capacitorjs.com/docs/getting-started/environment-setup) to install compatible core/CLI/Android packages, then add Android and run `npx cap sync android` after preparing the bundle. Native location permission handling, WebView origin/auth redirects, secure draft key storage, offline dependencies and actual-device GPS behavior must be implemented/tested before shipping an APK.
 

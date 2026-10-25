@@ -3,10 +3,16 @@ const $ = id => document.getElementById(id);
 function statusMessage(message, error = false) {
   $('auth-status').textContent = message;
   $('auth-status').className = 'status ' + (error ? 'error' : 'success');
+  $('auth-status').setAttribute('role', error ? 'alert' : 'status');
+  $('auth-status').setAttribute('aria-live', error ? 'assertive' : 'polite');
 }
-async function redirectSession(session) {
+async function redirectSession(session, notify = false) {
   if (!session?.user) return;
   const { profile } = await accountAccess();
+  if (notify) {
+    statusMessage('Login successful! Opening your dashboard...');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
   location.replace(roleHome(profile.role));
 }
 $('login-form').addEventListener('submit', async event => {
@@ -19,8 +25,9 @@ $('login-form').addEventListener('submit', async event => {
     if (error) throw error;
     sessionStorage.removeItem('cacao-logout-pending');
     localStorage.removeItem('cacao-logout-pending');
-    await redirectSession(data.session);
-  } catch (error) { statusMessage(error.message, true); }
+    if (!data.session?.user) throw new Error('No session was created. Please try again.');
+    await redirectSession(data.session, true);
+  } catch (error) { statusMessage('Login failed. ' + (error.message || 'Please try again.'), true); }
   finally { $('submit-auth').disabled = false; }
 });
 async function start() {

@@ -309,10 +309,10 @@ window.CacaoApp = (() => {
     const counts=new Map();for(const row of rows){const label=key(row)||'Unspecified';counts.set(label,(counts.get(label)||0)+Number(value(row)||0));}return counts;
   }
   async function dashboard() {
-    const [farmers,plantations,workers,inventory,activity,harvests,gpsSessions]=await Promise.all(['farmers','plantations','workers','cacao_tree_inventories','activity_logs','harvests','gps_tracking_sessions'].map(t=>listAll(t)));
+    const [farmers,plantations,workers,inventory,activity,harvests,gpsSessions]=await Promise.all(['farmers','plantations','workers','cacao_tree_inventories','activity_logs','harvests','gps_tracking_sessions'].map(t=>t==='workers'&&!staff()?[]:listAll(t)));
     const area=plantations.reduce((sum,farm)=>sum+Number(farm.area_sqm||0),0);
     const metrics={'farmers':farmers.length,'farms':plantations.length,'trees':plantations.reduce((s,f)=>s+Number(f.tree_count),0),'sqm':number(area),'ha':(area/10000).toFixed(4),'workers':workers.length,'active':plantations.filter(f=>f.status==='active').length,'pending':farmers.filter(f=>f.registration_status==='pending').length};
-    for(const [key,value] of Object.entries(metrics))el('stat-'+key).textContent=typeof value==='number'?number(value):value;
+    for(const [key,value] of Object.entries(metrics))if(el('stat-'+key))el('stat-'+key).textContent=typeof value==='number'?number(value):value;
     el('stat-dry').textContent=number(harvests.reduce((sum,row)=>sum+Number(row.dry_bean_kg),0));
     el('stat-wet').textContent=number(harvests.reduce((sum,row)=>sum+Number(row.wet_bean_kg),0));
     el('stat-pending-maps').textContent=number(plantations.filter(row=>row.verification_status==='pending').length);
