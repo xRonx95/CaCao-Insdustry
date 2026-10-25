@@ -8,7 +8,16 @@ function statusMessage(message, error = false) {
 }
 async function redirectSession(session, notify = false) {
   if (!session?.user) return;
-  const { profile } = await accountAccess();
+  let account;
+  try {
+    account = await accountAccess();
+    rememberVerifiedAccount(account);
+  } catch (error) {
+    if (notify || !connectionFailure(error)) throw error;
+    account = savedOfflineAccount(session.user.id);
+    if (!account) throw error;
+  }
+  const { profile } = account;
   if (notify) {
     statusMessage('Login successful! Opening your dashboard...');
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -33,10 +42,17 @@ $('login-form').addEventListener('submit', async event => {
 async function start() {
   if (!configured) return statusMessage('Set your Supabase credentials in assets/js/config.js.', true);
   if(sessionStorage.getItem('cacao-logout-pending')||localStorage.getItem('cacao-logout-pending')){
+    if (!navigator.onLine) return statusMessage('Connect to log in again after signing out.', true);
     const {error}=await db.auth.signOut({scope:'local'});
     if(error)throw new Error('Private field data is locked. Reconnect to complete sign-out, or explicitly log in again.');
     sessionStorage.removeItem('cacao-logout-pending');
     localStorage.removeItem('cacao-logout-pending');
+  }
+  if (!navigator.onLine) {
+    const saved = savedOfflineAccount();
+    if (saved?.profile.role === 'farmer') { location.replace('farmer/plantations.html'); return; }
+    if (saved) return statusMessage('Staff accounts require an internet connection. Offline mapping and inventory are available only to farmers.', true);
+    return statusMessage('Connect and log in once before using this device offline.', true);
   }
   const { data, error } = await db.auth.getSession();
   if (error) throw error;

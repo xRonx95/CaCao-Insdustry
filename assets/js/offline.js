@@ -3,6 +3,7 @@ window.CacaoOffline = (() => {
   const script=document.currentScript;
   const root=script?new URL('../../',script.src):new URL('./',location.href);
   let registration;
+  const nativeBundle=()=>window.Capacitor?.isNativePlatform?.()===true;
   async function register(){
     if(!('serviceWorker' in navigator)||!window.isSecureContext||location.protocol==='file:')return null;
     registration=await navigator.serviceWorker.register(new URL('service-worker.js',root),{scope:root.pathname});
@@ -10,6 +11,7 @@ window.CacaoOffline = (() => {
     return registration;
   }
   async function prepareLibraries(){
+    if(nativeBundle())return {failed:[],native:true};
     if(!('serviceWorker' in navigator))throw new Error('This browser does not support the offline page cache.');
     const registered=await register();
     if(!registered)throw new Error('Offline preparation requires HTTPS or localhost. Open the site through a web server, not directly as a file.');
@@ -24,5 +26,5 @@ window.CacaoOffline = (() => {
     return report;
   }
   register().catch(()=>{});
-  return {register,prepareLibraries};
+  return {register,prepareLibraries,nativeBundle};
 })();

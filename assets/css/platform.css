@@ -36,6 +36,13 @@
 .workspace-page .feature-nav a:hover { background: #234e38; box-shadow: none; transform: none; }
 .workspace-page .feature-nav a[aria-current="page"] { background: #287a4b; color: #fff; }
 .feature-nav svg { width: 17px; height: 17px; flex-shrink: 0; }
+.feature-nav .nav-group { border: 1px solid #ffffff20; border-radius: 8px; margin: 3px 0; padding: 0; background: transparent; color: #e4efe6; }
+.feature-nav .nav-group summary { display: flex; align-items: center; gap: 10px; padding: 13px; font-size: 12px; font-weight: 600; cursor: pointer; list-style: none; }
+.feature-nav .nav-group summary::-webkit-details-marker { display: none; }
+.feature-nav .nav-group summary::after { content: ''; width: 7px; height: 7px; border-right: 2px solid; border-bottom: 2px solid; transform: rotate(45deg); margin-left: auto; margin-top: -4px; }
+.feature-nav .nav-group[open] summary::after { transform: rotate(225deg); margin-top: 4px; }
+.feature-nav .nav-group summary:focus-visible { outline: 2px solid #e5d7a8; outline-offset: -3px; border-radius: 8px; }
+.feature-nav .nav-group a { display: flex; margin: 3px 7px; padding-left: 18px; }
 .sidebar-heading { padding: 0 13px 16px; font-size: 10px; font-weight: 700; letter-spacing: .15em; color: #a1bda9; }
 .sidebar-location { margin-top: auto; padding: 24px 13px 4px; font-size: 11px; color: #b1c7b7; line-height: 1.7; }
 .mobile-menu { display: none; }

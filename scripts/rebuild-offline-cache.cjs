@@ -4,6 +4,7 @@ const root=path.resolve(__dirname,'..');
 const files=[];
 function walk(folder){for(const entry of fs.readdirSync(path.join(root,folder),{withFileTypes:true})){const file=folder+'/'+entry.name;if(entry.isDirectory())walk(file);else files.push(file);}}
 for(const folder of ['assets/css','assets/js','images','admin','farmer','field'])walk(folder);
+if(fs.existsSync(path.join(root,'assets/vendor')))walk('assets/vendor');
 files.push(...fs.readdirSync(root).filter(file=>file.endsWith('.html')),'favicon.ico');
 const libraries=new Set();
 for(const file of files.filter(file=>file.endsWith('.html'))){for(const match of fs.readFileSync(path.join(root,file),'utf8').matchAll(/(?:src|href)="(https:\/\/[^\"]+)"/g))if(/\.(js|css)(\?|$)/.test(match[1]))libraries.add(match[1]);}

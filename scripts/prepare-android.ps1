@@ -15,4 +15,15 @@ Copy-Item -LiteralPath (Join-Path $projectRoot 'service-worker.js') -Destination
 if (Test-Path -LiteralPath (Join-Path $projectRoot 'android/app/src/main/res')) {
     & (Join-Path $PSScriptRoot 'prepare-android-icons.ps1')
 }
+$manifestPath = Join-Path $projectRoot 'android/app/src/main/AndroidManifest.xml'
+if (Test-Path -LiteralPath $manifestPath) {
+    $manifestText = Get-Content -LiteralPath $manifestPath -Raw
+    foreach ($locationPermission in @('ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION')) {
+        if (-not $manifestText.Contains("android.permission.$locationPermission")) {
+            $permissionTag = '    <uses-permission android:name="android.permission.' + $locationPermission + '" />'
+            $manifestText = $manifestText.Replace('</manifest>', $permissionTag + "`n</manifest>")
+        }
+    }
+    [System.IO.File]::WriteAllText($manifestPath, $manifestText)
+}
 Write-Output "Public web bundle prepared in $($config.webDir). Run npx cap sync android before compiling the APK."

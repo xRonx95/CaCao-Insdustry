@@ -12,18 +12,30 @@ const farmerFeatures = new Set(['dashboard','farmers','plantations','plantation-
 async function requireSession() {
   if (!configured) throw new Error('Set your Supabase credentials in assets/js/config.js and run SQL migrations 001 through 007.');
   if(sessionStorage.getItem('cacao-logout-pending')||localStorage.getItem('cacao-logout-pending')){location.replace('../login.html?locked=1');return false;}
-  if(!navigator.onLine){
-    const saved=JSON.parse(sessionStorage.getItem('cacao-last-account')||localStorage.getItem('cacao-offline-account')||'null');
-    if(!saved||Date.now()-saved.verifiedAt>24*60*60*1000)throw new Error('Connect and verify your account before opening offline field records.');
-    currentAccount=saved.account;
+  function useOfflineAccount(expectedUserId) {
+    const saved = savedOfflineAccount(expectedUserId);
+    if(!saved)throw new Error('Connect and verify your account before opening offline field records.');
+    currentAccount=saved;
+    if (saved.profile.role !== 'farmer') throw new Error('Offline work is available only to farmers. Connect to use the staff workspace.');
+    window.cacaoOfflineSession=true;
     notify('page-status','Offline draft mode. Unlock encrypted field data; permissions will be checked again before synchronization.');
+  }
+  window.cacaoOfflineSession=false;
+  if(!navigator.onLine){
+    useOfflineAccount();
   }else{
+    let sessionUserId;
+    try {
     const { data, error } = await db.auth.getSession();
     if (error) throw error;
     if (!data.session) { location.replace('../login.html'); return false; }
+    sessionUserId=data.session.user?.id;
     currentAccount = await accountAccess();
-    sessionStorage.setItem('cacao-last-account',JSON.stringify({account:{user:{id:currentAccount.user.id,email:currentAccount.user.email},profile:currentAccount.profile},verifiedAt:Date.now()}));
-    localStorage.setItem('cacao-offline-account',JSON.stringify({account:{user:{id:currentAccount.user.id,email:''},profile:{id:currentAccount.user.id,role:currentAccount.profile.role,account_status:'active'}},verifiedAt:Date.now()}));
+    rememberVerifiedAccount(currentAccount);
+    } catch (error) {
+      if (!connectionFailure(error)) throw error;
+      useOfflineAccount(sessionUserId);
+    }
   }
   const role = currentAccount.profile.role;
   const pageRole = document.body.dataset.pageRole;
@@ -33,10 +45,13 @@ async function requireSession() {
   if (role === 'farmer' && !farmerFeatures.has(document.body.dataset.feature)) {
     location.replace(roleHome(role, '../')); return false;
   }
+  if (window.cacaoOfflineSession && !['plantations','plantation-form','atlas','trees','sync'].includes(document.body.dataset.feature)) {
+    location.replace('../farmer/plantations.html'); return false;
+  }
   $('account-email').textContent = currentAccount.user.email || 'Offline field account';
   $('page-content').classList.remove('hidden');
   document.querySelectorAll('[data-super-only]').forEach(el => el.classList.toggle('hidden', role !== 'super_admin'));
-  document.getElementById('field-toolbar')?.classList.remove('hidden');
+  if (role === 'farmer') document.getElementById('field-toolbar')?.classList.remove('hidden');
   window.CacaoSync?.accountReady();
   return true;
 }

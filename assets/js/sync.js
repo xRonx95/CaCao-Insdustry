@@ -4,6 +4,7 @@ window.CacaoSync = (() => {
   let actor=null,key=null,running=false,retryTimer=null,unlockWaiters=[];
   const activeStates=['pending','conflict','attention','blocked'];
   const account=()=>typeof currentAccount!=='undefined'?currentAccount:null;
+  const offlineEntities=new Set(['plantations','cacao_tree_inventories']);
   async function open(){return new Promise((resolve,reject)=>{
     const request=indexedDB.open('cacao-field-outbox',1);
     request.onupgradeneeded=()=>{for(const name of ['vaults','queue','snapshots'])request.result.createObjectStore(name,{keyPath:'id'});};
@@ -79,6 +80,7 @@ window.CacaoSync = (() => {
     try{
       // Recheck active account and current permissions before sending queued records.
       const access=await accountAccess();if(access.user.id!==actor)throw new Error('The active account changed. Unlock this account again.');
+      window.cacaoOfflineSession=false;
       const queue=await envelopes();
       for(const envelope of queue){
         if(envelope.status!=='pending'||envelope.retryAt>Date.now()||!unlocked())continue;
@@ -104,6 +106,9 @@ window.CacaoSync = (() => {
     }
   }
   async function submit(command){
+    if ((!navigator.onLine || window.cacaoOfflineSession) && (account()?.profile.role !== 'farmer' || !offlineEntities.has(command.entity))) {
+      throw new Error('Offline saving is available only to farmers for GPS plantation mapping and tree inventories. Connect to save other records.');
+    }
     await ensureUnlocked();
     const change=JSON.parse(JSON.stringify({...command,changeId:command.changeId||crypto.randomUUID(),recordId:command.recordId||crypto.randomUUID(),operation:command.operation||((command.expected||command.revision!=null)?'update':'create')}));
     const previous=await storage('queue','readonly',store=>store.get(change.changeId));
@@ -147,14 +152,23 @@ window.CacaoSync = (() => {
   async function archive(id){const item=await inspect(id);if(item.metadata.status==='synced')throw new Error('Use Remove confirmed receipts for synchronized entries.');await storage('queue','readwrite',store=>store.put({...item.metadata,status:'archived'}));emit();}
   async function retry(){for(const row of await envelopes())if(['pending','blocked','attention'].includes(row.status))await storage('queue','readwrite',store=>store.put({...row,status:'pending',retryAt:0}));emit();await flush();}
   async function clearConfirmed(){for(const row of await envelopes())if(row.status==='synced')await storage('queue','readwrite',store=>store.delete(row.id));emit();}
-  async function prepare(){await ensureUnlocked();if(!navigator.onLine)throw new Error('Connect before preparing field records.');
-    for(const table of ['farmers','plantations','workers','worker_assignments','pest_reports','cacao_tree_inventories','harvests','pest_treatments','pest_inspections','plantation_tasks','maintenance_records','worker_attendance','tree_events','cacao_trees','activity_logs','gps_tracking_sessions'])await cache(table,await listAll(table));
-    if(account().profile.role==='super_admin')await cache('profiles',await listAll('profiles'));
-    const {data,error}=await db.from('staff_farmer_assignments').select('*');if(error)throw error;await cache('staff_farmer_assignments',data);emit();
+  async function prepare(){
+    if(account()?.profile.role!=='farmer')throw new Error('Offline preparation is available only to farmers.');
+    await ensureUnlocked();if(!navigator.onLine)throw new Error('Connect before preparing field records.');
+    const access=await accountAccess();
+    if(access.user.id!==actor||access.profile.role!=='farmer')throw new Error('Log in to the farmer account again before preparing records.');
+    window.cacaoOfflineSession=false;
+    for(const table of ['farmers','plantations','cacao_tree_inventories','cacao_trees','gps_tracking_sessions'])await cache(table,await listAll(table));
+    emit();
     if(window.CacaoOffline)await CacaoOffline.prepareLibraries();
   }
   async function refreshBadge(){const badge=document.getElementById('field-sync-status');if(!badge)return;const queued=(await envelopes()).filter(row=>activeStates.includes(row.status));badge.textContent=(navigator.onLine?'Online':'Offline')+' · '+queued.length+' queued · '+(unlocked()?'unlocked':'locked');}
-  function accountReady(){if(actor&&actor!==account()?.user?.id)lock();refreshBadge().catch(()=>{});}
+  function accountReady(){
+    if(actor&&actor!==account()?.user?.id)lock();refreshBadge().catch(()=>{});
+    if(account()?.profile.role==='farmer'&&navigator.onLine)envelopes().then(rows=>{
+      if(rows.some(row=>row.status==='pending'))return ensureUnlocked().then(flush);
+    }).catch(()=>{});
+  }
   const form=document.getElementById('field-unlock-form'),dialog=document.getElementById('field-unlock-dialog');
   form?.addEventListener('submit',async event=>{
     event.preventDefault();const button=event.submitter||form.querySelector('button[type="submit"]');if(button)button.disabled=true;

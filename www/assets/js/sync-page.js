@@ -13,7 +13,7 @@ window.CacaoSyncPage = (() => {
       const actions=document.createElement('td');actions.append(action('Inspect / review',()=>review(row.id)));tr.append(actions);body.append(tr);}
     if(!rows.length){const tr=document.createElement('tr'),cell=node('td','No queued submissions for this account on this device.');cell.colSpan=6;tr.append(cell);body.append(tr);}
     $('sync-lock-state').textContent=CacaoSync.unlocked()?'Field data is unlocked in this tab. Retries run automatically while connected.':'Field data is locked. Unlock it to view records and resume retries.';
-    $('service-worker-state').textContent=navigator.serviceWorker?.controller?'Offline page cache is active. Map tiles and private file downloads still require a connection.':'The offline page cache is not active yet. Prepare this device online and reload before field use.';
+    $('service-worker-state').textContent=window.CacaoOffline?.nativeBundle()?'Offline pages and mapping tools are included in this Android app. Map tiles and private file downloads require a connection.':navigator.serviceWorker?.controller?'Offline page cache is active. Map tiles and private file downloads still require a connection.':'The offline page cache is not active yet. Prepare this device online and reload before field use.';
   }
   function comparisons(){
     const body=$('conflict-body');body.replaceChildren();

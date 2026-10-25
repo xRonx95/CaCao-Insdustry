@@ -60,7 +60,7 @@ $('plantation-form').addEventListener('submit',async event=>{
   finally{$('save-farm').disabled=false;}
 });
 async function loadPhotos(id){
-  if(!navigator.onLine)return;
+  if(!navigator.onLine||window.cacaoOfflineSession)return;
   const {data,error}=await db.from('plantation_photos').select('path,created_at').eq('plantation_id',id).order('created_at',{ascending:false});
   if(error)throw error;
   $('plantation-photos').replaceChildren();

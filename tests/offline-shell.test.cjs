@@ -48,3 +48,11 @@ test('directory filters combine farmer search, barangay, farm status and review 
   assert.equal(context.window.CacaoDirectory.matches(farm, { search: 'Ana', review: 'verified' }), false);
   assert.equal(context.window.CacaoDirectory.matches(farm, { barangay: 'Other' }), false);
 });
+
+test('Android preparation uses bundled tools without requiring service workers', async () => {
+  const context = { URL, window: { Capacitor: { isNativePlatform: () => true }, isSecureContext: true }, document: { currentScript: null }, location: { href: 'https://localhost/index.html', protocol: 'https:' }, navigator: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../assets/js/offline.js'), 'utf8'), context);
+  const result=await context.window.CacaoOffline.prepareLibraries();
+  assert.equal(result.native,true);
+  assert.equal(result.failed.length,0);
+});

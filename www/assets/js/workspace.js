@@ -10,7 +10,9 @@
     leaf: ['M20 4c-10-2-17 4-14 11s15 5 14-11Z', 'M4 21 16 9'],
     chart: ['M4 3v18h17', 'M8 16v-4M13 16V7M18 16v-6'],
     task: ['M8 4H5v17h14V4h-3', 'M8 2h8v5H8z', 'm8 14 3 3 5-6'],
-    harvest: ['M4 9h16l-2 12H6L4 9Z', 'm8 9 4-7 4 7', 'M9 13v4M15 13v4']
+    harvest: ['M4 9h16l-2 12H6L4 9Z', 'm8 9 4-7 4 7', 'M9 13v4M15 13v4'],
+    sync: ['M20 7a8 8 0 0 0-14-2L3 8', 'M3 3v5h5', 'M4 17a8 8 0 0 0 14 2l3-3', 'M16 16h5v5'],
+    shield: ['m12 3 8 4v5c0 5-8 9-8 9s-8-4-8-9V7l8-4Z', 'm8 12 3 3 5-6']
   };
   function icon(name) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -20,6 +22,7 @@
     }
     return svg;
   }
+  navigation?.querySelectorAll('[data-local-icon]').forEach(node=>node.replaceWith(icon(node.dataset.localIcon)));
   let dockMenu, shade;
   function setExpanded(expanded) {
     navigation?.classList.toggle('nav-open',expanded);
@@ -47,7 +50,8 @@
     document.body.append(shade);
     const role=document.body.dataset.pageRole;
     const dock=document.createElement('nav');dock.className='mobile-dock';dock.setAttribute('aria-label','Mobile workspace');
-    for (const [label,href,image] of [['Home',role+'.html','home'],['Farmers','farmers.html','people'],['Map','atlas.html','map'],['Harvests','harvests.html','harvest']]) {
+    const dockLinks=role==='farmer'?[['Home','farmer.html','home'],['Plantations','plantations.html','leaf'],['Map','atlas.html','map'],['Trees','trees.html','chart']]:[['Home',role+'.html','home'],['Farmers','farmers.html','people'],['Map','atlas.html','map'],['Harvests','harvests.html','harvest']];
+    for (const [label,href,image] of dockLinks) {
       const link=document.createElement('a');link.href=href;link.append(icon(image));
       const caption=document.createElement('span');caption.textContent=label;link.append(caption);
       if(image==='map')link.className='mobile-map-action';
@@ -62,7 +66,8 @@
     window.matchMedia('(max-width: 850px)').addEventListener('change',()=>setExpanded(false));
     if(document.body.dataset.feature==='dashboard') {
       const grid=document.createElement('nav');grid.className='mobile-shortcuts';grid.setAttribute('aria-label','Quick field actions');
-      for(const [label,href,image] of [['Farmer profiles','farmers.html','people'],['Plantations','plantations.html','leaf'],['Map plantation','plantation-form.html','map'],['Harvest records','harvests.html','harvest'],['Farm tasks','tasks.html','task'],['Reports','reports.html','chart']]) {
+      const shortcuts=role==='farmer'?[['My Plantation','plantations.html','leaf'],['Register Plantation','plantation-form.html','map'],['Plantation Map','atlas.html','map'],['Tree Inventories','trees.html','chart'],['Harvest records','harvests.html','harvest'],['Sync & recovery','sync.html','sync']]:[['Farmer profiles','farmers.html','people'],['Plantations','plantations.html','leaf'],['Map plantation','plantation-form.html','map'],['Harvest records','harvests.html','harvest'],['Farm tasks','tasks.html','task'],['Reports','reports.html','chart']];
+      for(const [label,href,image] of shortcuts) {
         const link=document.createElement('a');link.href=href;link.className='mobile-shortcut';
         const badge=document.createElement('span');badge.className='mobile-shortcut-icon';badge.append(icon(image));
         const title=document.createElement('span');title.textContent=label;link.append(badge,title);grid.append(link);

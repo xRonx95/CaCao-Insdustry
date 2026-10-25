@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../assets/css/ui.css">
     <link rel="stylesheet" href="../assets/css/platform.css">
     <link rel="stylesheet" href="../assets/css/farmer/tree-tags.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="../assets/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="../assets/css/sync.css">
     <link rel="stylesheet" href="../assets/css/mobile-workspace.css">
   </head>
@@ -30,45 +30,31 @@
       </div>
     </header>
     <button id="nav-toggle" class="btn secondary mobile-menu" type="button" aria-expanded="false" aria-controls="workspace-nav">Menu</button>
-    <nav id="workspace-nav" class="feature-nav" aria-label="Workspace navigation">
+    <nav id="workspace-nav" class="feature-nav" aria-label="Farmer workspace navigation">
       <div class="sidebar-heading">MY FARM</div>
-      <a href="farmer.html">
-        <i data-lucide="layout-dashboard" aria-hidden="true">
-        </i>Overview</a>
-      <a href="farmers.html">
-        <i data-lucide="users" aria-hidden="true">
-        </i>My farmer profile</a>
-      <a href="plantations.html">
-        <i data-lucide="sprout" aria-hidden="true">
-        </i>My plantations</a>
-      <a href="plantation-form.html">
-        <i data-lucide="map-pin-plus" aria-hidden="true">
-        </i>Register plantation</a>
-      <a href="atlas.html">
-        <i data-lucide="map" aria-hidden="true">
-        </i>Plantation map</a>
-      <a href="trees.html">
-        <i data-lucide="trees" aria-hidden="true">
-        </i>Tree inventories</a>
-      <a href="posts.html">
-        <i data-lucide="image" aria-hidden="true">
-        </i>Share cacao</a>
-      <a href="../index.html">
-        <i data-lucide="globe" aria-hidden="true">
-        </i>Public community</a>
-      <a href="../privacy.html">
-        <i data-lucide="lock-keyhole" aria-hidden="true">
-        </i>Privacy notice</a>
-      <a href="history.html">
-        <i data-lucide="git-branch" aria-hidden="true">
-        </i>Boundary history &amp; review</a>
-      <a href="harvests.html">Harvest & production</a>
-      <a href="pests.html">Pest & disease reports</a>
-      <a href="treatments.html">Treatment history</a>
-      <a href="maintenance.html">Farm maintenance history</a>
-      <a href="tree-events.html">Planting, mortality & replacement</a>
-      <a href="tree-tags.html" aria-current="page">Individual cacao tree tags</a>
-      <a href="sync.html">Sync &amp; recovery</a>
+      <a href="farmer.html"><i data-local-icon="home" aria-hidden="true"></i>Overview</a>
+      <details class="nav-group"><summary><i data-local-icon="leaf" aria-hidden="true"></i>Plantation management</summary>
+        <a href="plantations.html"><i data-local-icon="leaf" aria-hidden="true"></i>My Plantation</a>
+        <a href="plantation-form.html"><i data-local-icon="map" aria-hidden="true"></i>Register Plantation</a>
+        <a href="atlas.html"><i data-local-icon="map" aria-hidden="true"></i>Plantation Map</a>
+        <a href="trees.html"><i data-local-icon="chart" aria-hidden="true"></i>Tree Inventories</a>
+      </details>
+      <details class="nav-group" open><summary><i data-local-icon="harvest" aria-hidden="true"></i>Farm records</summary>
+        <a href="harvests.html"><i data-local-icon="harvest" aria-hidden="true"></i>Harvest & production</a>
+        <a href="pests.html"><i data-local-icon="leaf" aria-hidden="true"></i>Pest & disease reports</a>
+        <a href="treatments.html"><i data-local-icon="task" aria-hidden="true"></i>Treatment history</a>
+        <a href="maintenance.html"><i data-local-icon="task" aria-hidden="true"></i>Farm maintenance</a>
+        <a href="tree-events.html"><i data-local-icon="leaf" aria-hidden="true"></i>Planting & replacement</a>
+        <a href="tree-tags.html" aria-current="page"><i data-local-icon="leaf" aria-hidden="true"></i>Cacao tree tags</a>
+        <a href="history.html"><i data-local-icon="map" aria-hidden="true"></i>Mapping history</a>
+      </details>
+      <details class="nav-group"><summary><i data-local-icon="people" aria-hidden="true"></i>Account & community</summary>
+        <a href="farmers.html"><i data-local-icon="people" aria-hidden="true"></i>My farmer profile</a>
+        <a href="posts.html"><i data-local-icon="leaf" aria-hidden="true"></i>Share cacao</a>
+        <a href="sync.html"><i data-local-icon="sync" aria-hidden="true"></i>Sync & recovery</a>
+        <a href="../index.html"><i data-local-icon="home" aria-hidden="true"></i>Public community</a>
+        <a href="../privacy.html"><i data-local-icon="shield" aria-hidden="true"></i>Privacy notice</a>
+      </details>
       <div class="sidebar-location">Isabela City, Basilan<br>Philippines</div>
     </nav>
     <main class="shell">
@@ -168,9 +154,9 @@
       </div>
     </main>
     <footer>Independent cacao management system &middot; Not an official DA or PSA registry. GPS areas are approximate.</footer>
-    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    <script defer src="../assets/vendor/supabase/supabase.min.js">
     </script>
-    <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js">
+    <script defer src="../assets/vendor/lucide/lucide.min.js">
     </script>
     <script defer src="../assets/js/config.js">
     </script>

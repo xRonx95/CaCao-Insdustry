@@ -18,11 +18,12 @@ function database(){
 }
 function context(storage,rpc,online=false){
   const account={user:{id:'actor-a'},profile:{role:'farmer'}};
-  const browser={dispatchEvent(){},addEventListener(){}};
+  const listeners={};
+  const browser={dispatchEvent(){},addEventListener(name,callback){listeners[name]=callback;},fire(name){listeners[name]?.();}};
   const values={window:browser,document:{getElementById:()=>null},currentAccount:account,navigator:{onLine:online},crypto,TextEncoder,TextDecoder,indexedDB:storage.api,CustomEvent:class{},setTimeout:()=>1,clearTimeout(){},db:{rpc},accountAccess:async()=>account};
   const ctx=vm.createContext(values);vm.runInContext(fs.readFileSync(path.join(__dirname,'../assets/js/sync.js'),'utf8'),ctx);return {sync:ctx.window.CacaoSync,ctx};
 }
-const change={changeId:'change-one',entity:'farmers',recordId:'farmer-one',payload:{owner_id:'actor-a',first_name:'Private',last_name:'Farmer',full_name:'Private Farmer'}};
+const change={changeId:'change-one',entity:'plantations',recordId:'plantation-one',payload:{owner_id:'actor-a',first_name:'Private',last_name:'Farmer',full_name:'Private Farmer'}};
 test('offline submissions are encrypted, survive reload, and synchronize only after unlock',async()=>{
   const store=database();let calls=0;
   const rpc=async(name,body)=>{calls++;return {data:{confirmed:true,record:{...body.payload,id:body.record_id,updated_at:'2026-10-21T00:00:00Z'}},error:null};};
@@ -59,4 +60,22 @@ test('queued outcomes cannot be replaced by a changed payload or another account
   await assert.rejects(sync.submit({...change,payload:{...change.payload,first_name:'Changed'}}),/unresolved outcome/);
   sync.lock();ctx.currentAccount={user:{id:'actor-b'},profile:{role:'farmer'}};await sync.unlock('a second field passphrase');
   assert.equal((await sync.envelopes()).length,0);await assert.rejects(sync.inspect('change-one'),/unavailable/);
+});
+
+test('offline writes are limited to farmer mapping and inventories',async()=>{
+  const store=database(), {sync,ctx}=context(store,async()=>({}));
+  await sync.unlock('a protected field passphrase');
+  await assert.rejects(sync.submit({...change,entity:'harvests'}),/only to farmers/);
+  ctx.currentAccount.profile.role='admin';
+  await assert.rejects(sync.submit(change),/only to farmers/);
+  ctx.currentAccount.profile.role='farmer';
+  assert.equal((await sync.submit({...change,changeId:'inventory-one',recordId:'inventory-one',entity:'cacao_tree_inventories'})).status,'queued');
+});
+test('reconnecting automatically uploads the farmer queue while unlocked',async()=>{
+  const store=database();let calls=0;
+  const {sync,ctx}=context(store,async(name,body)=>{calls++;return {data:{confirmed:true,record:{...body.payload,id:body.record_id}},error:null};});
+  await sync.unlock('a protected field passphrase');await sync.submit(change);
+  ctx.navigator.onLine=true;ctx.window.fire('online');
+  for(let attempt=0;attempt<50&&(await sync.envelopes())[0].status!=='synced';attempt++)await new Promise(resolve=>setTimeout(resolve,10));
+  assert.equal((await sync.envelopes())[0].status,'synced');assert.equal(calls,1);
 });
