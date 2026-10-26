@@ -11,7 +11,7 @@ let currentAccount;
 const farmerFeatures = new Set(['dashboard','reviews','plantation-workspace','farmers','plantations','plantation-form','atlas','trees','posts','history','harvests','pests','treatments','maintenance','tree-events','tree-tags','sync']);
 async function requireSession() {
   if (!configured) throw new Error('Set your Supabase credentials in assets/js/config.js and run SQL migrations 001 through 007.');
-  if(sessionStorage.getItem('cacao-logout-pending')||localStorage.getItem('cacao-logout-pending')){location.replace('../login.html?locked=1');return false;}
+  if(sessionStorage.getItem('cacao-logout-pending')||localStorage.getItem('cacao-logout-pending')){location.replace('../login.html?reason=locked');return false;}
   function useOfflineAccount(expectedUserId) {
     const saved = savedOfflineAccount(expectedUserId);
     if(!saved)throw new Error('Connect and verify your account before opening offline field records.');
@@ -26,9 +26,10 @@ async function requireSession() {
   }else{
     let sessionUserId;
     try {
+    if(typeof ensureDatabaseClient==='function')await ensureDatabaseClient();
     const { data, error } = await db.auth.getSession();
     if (error) throw error;
-    if (!data.session) { location.replace('../login.html'); return false; }
+    if (!data.session) { location.replace('../login.html?reason=session_missing'); return false; }
     sessionUserId=data.session.user?.id;
     currentAccount = await accountAccess();
     rememberVerifiedAccount(currentAccount);
@@ -75,6 +76,6 @@ $('logout')?.addEventListener('click', async () => {
   } catch { location.replace('../login.html?locked=1'); }
 });
 if (db) db.auth.onAuthStateChange((event,session) => {
-  if (event === 'SIGNED_OUT') {window.CacaoSync?.lock();sessionStorage.removeItem('cacao-last-account');localStorage.removeItem('cacao-offline-account');location.replace('../login.html');}
-  if(event==='SIGNED_IN'&&currentAccount&&session?.user?.id!==currentAccount.user.id){window.CacaoSync?.lock();sessionStorage.removeItem('cacao-last-account');$('page-content')?.classList.add('hidden');location.replace('../login.html');}
+  if (event === 'SIGNED_OUT') {window.CacaoSync?.lock();sessionStorage.removeItem('cacao-last-account');localStorage.removeItem('cacao-offline-account');location.replace('../login.html?reason=signed_out');}
+  if(event==='SIGNED_IN'&&currentAccount&&session?.user?.id!==currentAccount.user.id){window.CacaoSync?.lock();sessionStorage.removeItem('cacao-last-account');$('page-content')?.classList.add('hidden');location.replace('../login.html?reason=account_changed');}
 });

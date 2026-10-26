@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-function setup({error=null,profileError=null,online=true,auth}={}) {
+function setup({error=null,profileError=null,online=true,auth,persist=true,search=''}={}) {
   const elements=Object.fromEntries(['login-form','auth-status','submit-auth','email','password'].map(id=>[id,{value:'',handlers:{},setAttribute(k,v){this[k]=v;},addEventListener(k,fn){this.handlers[k]=fn;}}]));
   elements.email.value='farmer@example.com';elements.password.value='example-password';
   const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
-  const redirects=[],calls=[];
-  const context=vm.createContext({document:{getElementById:id=>elements[id]},configured:true,navigator:{onLine:online},sessionStorage:storage,localStorage:storage,location:{replace:url=>redirects.push(url)},connectionFailure:e=>/fetch|network/i.test(e?.message||''),savedOfflineAccount:()=>null,rememberVerifiedAccount(){},roleHome:role=>role+'/'+role+'.html',accountAccess:async()=>{if(profileError)throw profileError;return {profile:{role:'farmer'}};},db:{auth:{getSession:async()=>({data:{session:null}}),signInWithPassword:async values=>{calls.push(values);return auth?auth():{data:{session:{user:{id:'farmer'}}},error};}}}});
+  const redirects=[],calls=[];let session=null;
+  const context=vm.createContext({URLSearchParams,document:{getElementById:id=>elements[id]},configured:true,navigator:{onLine:online},sessionStorage:storage,localStorage:storage,location:{search,replace:url=>redirects.push(url)},connectionFailure:e=>/fetch|network/i.test(e?.message||''),savedOfflineAccount:()=>null,rememberVerifiedAccount(){},roleHome:role=>role+'/'+role+'.html',accountAccess:async()=>{if(profileError)throw profileError;return {profile:{role:'farmer'}};},db:{auth:{getSession:async()=>({data:{session}}),signInWithPassword:async values=>{calls.push(values);const response=await (auth?auth():{data:{session:{user:{id:'farmer'}}},error});if(persist&&!response.error)session=response.data.session;return response;}}}});
   vm.runInContext(fs.readFileSync('assets/js/login.js','utf8'),context);
   return {elements,calls,redirects,values,context,submit:()=>elements['login-form'].handlers.submit({preventDefault(){}})};
 }
@@ -26,4 +26,13 @@ test('offline and invalid email submissions do not contact authentication',async
 });
 test('double submission makes only one authentication request',async()=>{
   let finish;const s=setup({auth:()=>new Promise(resolve=>finish=resolve)});const pending=s.submit();await s.submit();assert.equal(s.calls.length,1);finish({data:{session:{user:{id:'farmer'}}}});await pending;
+});
+test('missing persisted session stays on login with an explanation instead of bouncing to the dashboard',async()=>{
+  const s=setup({persist:false});await s.submit();assert.equal(s.redirects.length,0);assert.match(s.elements['auth-status'].textContent,/session was not saved/);assert(!s.values.has('cacao-login-success'));
+});
+test('dashboard session failure explains the return and prevents automatic redirect loops',async()=>{
+  const s=setup({search:'?reason=session_missing'});await Promise.resolve();assert.match(s.elements['auth-status'].textContent,/could not restore/);assert.equal(s.redirects.length,0);await s.submit();assert.equal(s.redirects[0],'farmer/farmer.html');
+});
+test('blocked browser storage prevents authentication and explains how to proceed',async()=>{
+  const s=setup();s.context.localStorage={setItem(){throw Error('Storage blocked');}};await s.submit();assert.equal(s.calls.length,0);assert.match(s.elements['auth-status'].textContent,/browser cannot save/);
 });

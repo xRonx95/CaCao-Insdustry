@@ -10,6 +10,7 @@ function statusMessage(message,error=false) {
 function loginError(error) {
   const code=error?.code||'',message=error?.message||'';
   if(/login library|login service configuration/i.test(message))return message;
+  if(/browser.*sav.*session|session.*not saved/i.test(message))return message;
   if(['invalid_credentials','invalid_login_credentials'].includes(code)||/invalid login credentials/i.test(message))return 'The email or password is incorrect. Check both, or use Forgot password. The login service does not identify which one is incorrect.';
   if(code==='email_not_confirmed'||/email not confirmed/i.test(message))return 'Your email has not been verified. Open the confirmation email and verify your account before logging in.';
   if(code==='user_banned'||/suspended|banned/i.test(message))return 'Your account is suspended. Contact the system administrator.';
@@ -28,6 +29,9 @@ async function redirectSession(session,showSuccess=false,version=initialization)
   catch(error) {if(showSuccess||!connectionFailure(error))throw error;account=savedOfflineAccount(session.user.id);if(!account)throw error;}
   if(!showSuccess&&(signingIn||version!==initialization))return false;
   if(showSuccess) {
+    const {data,error}=await db.auth.getSession();
+    if(error)throw error;
+    if(!data.session?.user||data.session.user.id!==session.user.id)throw new Error('Your login session was not saved. Allow site storage in your browser, reload the page, and try again.');
     statusMessage('Login successful! Opening your dashboard...');
     try {sessionStorage.setItem('cacao-login-success','1');}catch{}
   }
@@ -42,6 +46,11 @@ $('login-form').addEventListener('submit',async event=>{
   if(!navigator.onLine)return statusMessage('Login failed. Connect to the internet before signing in.',true);
   signingIn=true;$('submit-auth').disabled=true;$('submit-auth').textContent='Signing in...';$('login-form').setAttribute('aria-busy','true');statusMessage('Checking your email and password...');
   try {
+    try {
+      localStorage.setItem('cacao-storage-check','ready');
+      if(localStorage.getItem('cacao-storage-check')!=='ready')throw new Error();
+      localStorage.removeItem('cacao-storage-check');
+    }catch{throw new Error('Your browser cannot save the login session. Allow site storage for this website and try again.');}
     if(typeof ensureDatabaseClient==='function')await ensureDatabaseClient();
     if(!db)throw new Error('The login library is unavailable. Reload this page or contact the administrator.');
     const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;
@@ -51,8 +60,15 @@ $('login-form').addEventListener('submit',async event=>{
   }catch(error){statusMessage('Login failed. '+loginError(error),true);}
   finally{signingIn=false;$('submit-auth').disabled=false;$('submit-auth').textContent='Log in';$('login-form').setAttribute('aria-busy','false');}
 });
+$('submit-auth').disabled=false;
 async function start() {
   const version=initialization;
+  const reason=new URLSearchParams(location.search).get('reason');
+  if(reason){
+    const reasons={session_missing:'Your dashboard could not restore the login session. Allow site storage, refresh this page, and sign in again.',signed_out:'Your session ended. Please sign in again.',account_changed:'The signed-in account changed. Please sign in again.',locked:'Your previous sign-out has not finished. Please sign in again.'};
+    statusMessage(reasons[reason]||'Please sign in again to continue.',true);
+    return;
+  }
   if(!configured)return statusMessage(loginError({}),true);
   if(!db){
     statusMessage('Loading the secure login service...');
