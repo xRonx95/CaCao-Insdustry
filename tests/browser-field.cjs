@@ -29,7 +29,7 @@ function fixtures(){
     catch(error){return {error:{message:error.message}};}
   }};
   Object.defineProperty(window,'CACAO_SUPABASE_URL',{get:()=> 'https://fixture-only.supabase.co',set(){}});
-  Object.defineProperty(window,'CACAO_SUPABASE_KEY',{get:()=> 'fixture-public-key',set(){}});
+  Object.defineProperty(window,'CACAO_SUPABASE_KEY',{get:()=> 'sb_publishable_fixture_public_key_not_real',set(){}});
   Object.defineProperty(window,'supabase',{get:()=>({createClient:()=>client}),set(){}});
 }
 async function waitFor(callback,label,timeout=20000){const start=Date.now();while(Date.now()-start<timeout){if(await callback())return;await pause(50);}throw new Error('Timed out: '+label);}

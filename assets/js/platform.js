@@ -299,7 +299,14 @@ window.CacaoApp = (() => {
   }
 
   function chart(id,type,labels,data,label) {
-    if(!window.Chart) { if(el('chart-notice'))el('chart-notice').textContent='Charts are unavailable. Statistics and records remain visible.'; return; }
+    const canvas=el(id);if(!canvas)return;
+    const box=canvas.parentElement;
+    if(!labels.length||!window.Chart){
+      canvas.hidden=true;box.classList.add('chart-empty');
+      const title=text('strong',!labels.length?'No records available':'Chart temporarily unavailable');
+      const detail=text('p',!labels.length?'This chart will appear after the first authorized record is submitted.':'Recorded totals remain available. Reconnect to load the chart library.');
+      box.append(title,detail);return;
+    }
     state.charts.push(new Chart(el(id),{type,data:{labels,datasets:[{label,data,backgroundColor:['#287a4b','#754c32','#9fba85','#c3a561','#173d2b'],borderColor:'#287a4b',tension:.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut'}},scales:type==='doughnut'?{}:{y:{beginAtZero:true}}}}));
   }
   function group(rows,key,value=()=>1) {
@@ -330,7 +337,7 @@ window.CacaoApp = (() => {
     chart('production-overview-chart','bar',production.map(row=>row[0]),production.map(row=>row[1]),'Dry beans harvested (kg)');
     const gpsList=el('recent-gps');gpsList.replaceChildren();
     for(const session of gpsSessions.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,5))gpsList.append(text('li',(plantations.find(farm=>farm.id===session.plantation_id)?.name||'Plantation')+' · revision '+(session.boundary_revision||'legacy')+' · '+dateTime(session.created_at)));
-    if(!gpsSessions.length)gpsList.append(text('li','No saved GPS mapping sessions.'));
+    if(!gpsSessions.length)gpsList.append(text('li','No GPS sessions recorded. Saved mapping sessions will appear here.','empty-list-item'));
     const registrations=group(farmers,f=>f.created_at.slice(0,7));const monthly=[...registrations].sort((a,b)=>a[0].localeCompare(b[0]));
     chart('registration-chart','bar',monthly.map(v=>v[0]),monthly.map(v=>v[1]),'Farmer registrations');
     const barangays=group(plantations,f=>f.barangay);
@@ -341,7 +348,7 @@ window.CacaoApp = (() => {
     const list=el('recent-activity');list.replaceChildren();
     const recentActivity=activity.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,6);
     for(const row of recentActivity)list.append(text('li',row.action+' · '+(row.record_type||'record')+' · '+dateTime(row.created_at)));
-    if(!recentActivity.length)list.append(text('li','No activity recorded yet.'));
+    if(!recentActivity.length)list.append(text('li','No activity recorded. Authorized submissions and changes will appear here.','empty-list-item'));
     const body=el('barangay-body');for(const [name,count] of barangays){const tr=document.createElement('tr');tr.append(text('td',name),text('td',count),text('td',humanArea(plantations.filter(f=>f.barangay===name).reduce((s,f)=>s+Number(f.area_sqm),0))));body.append(tr);}
     if(!barangays.size){const td=text('td','No plantations recorded.');td.colSpan=3;const tr=document.createElement('tr');tr.append(td);body.append(tr);}
     message('Overview updated from records available to your account.');

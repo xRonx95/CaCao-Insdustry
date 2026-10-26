@@ -11,6 +11,7 @@ foreach ($appFolder in @('assets', 'images', 'admin', 'farmer', 'field')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $appFolder) -Destination $bundleRoot -Recurse -Force
 }
 Copy-Item -LiteralPath (Join-Path $projectRoot 'favicon.ico') -Destination $bundleRoot -Force
+Copy-Item -LiteralPath (Join-Path $projectRoot 'manifest.webmanifest') -Destination $bundleRoot -Force
 Copy-Item -LiteralPath (Join-Path $projectRoot 'service-worker.js') -Destination $bundleRoot -Force
 if (Test-Path -LiteralPath (Join-Path $projectRoot 'android/app/src/main/res')) {
     & (Join-Path $PSScriptRoot 'prepare-android-icons.ps1')

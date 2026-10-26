@@ -14,7 +14,7 @@ for(const role of ['admin','field','farmer']){
       ['Work & personnel','people',[item('tasks','Task schedule','task'),item('workers','Workers','people'),item('assignments','Worker assignments','task'),item('attendance','Worker attendance','people')]],
       ['Reports & activity','chart',[item('reports','Reports & exports','chart'),item('audit','Activity log','task')]]
     ]:[]),
-    ['Tools & access','sync',[item('sync','Sync & recovery','sync'),...(role==='admin'?[{...item('users','Users & access','shield'),superOnly:true}]:[])]],
+    ['Tools & access','sync',[item('sync','Sync & recovery','sync'),item('../install','Install web app','home'),...(role==='admin'?[{...item('users','Users & access','shield'),superOnly:true}]:[])]],
     ['Community & help','home',[...(farmer?[item('posts','Share cacao','leaf')]:[]),item('../index','Public community','home'),item('../privacy','Privacy notice','shield')]]
   ];
   for(const file of fs.readdirSync(path.join(root,role)).filter(file=>file.endsWith('.html'))){

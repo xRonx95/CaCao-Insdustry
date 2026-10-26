@@ -1,14 +1,14 @@
 // Regenerate after adding/changing public application files. Never include SQL or secrets.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const root=path.resolve(__dirname,'..');
+const root=path.resolve(process.argv[2]||path.join(__dirname,'..'));
 const files=[];
 function walk(folder){for(const entry of fs.readdirSync(path.join(root,folder),{withFileTypes:true})){const file=folder+'/'+entry.name;if(entry.isDirectory())walk(file);else files.push(file);}}
 for(const folder of ['assets/css','assets/js','images','admin','farmer','field'])walk(folder);
 if(fs.existsSync(path.join(root,'assets/vendor')))walk('assets/vendor');
 files.push(...fs.readdirSync(root).filter(file=>file.endsWith('.html')),'favicon.ico');
+if(fs.existsSync(path.join(root,'manifest.webmanifest')))files.push('manifest.webmanifest');
 const libraries=new Set();
 for(const file of files.filter(file=>file.endsWith('.html'))){for(const match of fs.readFileSync(path.join(root,file),'utf8').matchAll(/(?:src|href)="(https:\/\/[^\"]+)"/g))if(/\.(js|css)(\?|$)/.test(match[1]))libraries.add(match[1]);}
-for(const file of ['layers.png','layers-2x.png','marker-icon.png','marker-icon-2x.png','marker-shadow.png'])libraries.add('https://unpkg.com/leaflet@1.9.4/dist/images/'+file);
 const digest=crypto.createHash('sha256');
 for(const file of files)digest.update(fs.readFileSync(path.join(root,file)));
 const version=digest.digest('hex').slice(0,12);
@@ -17,7 +17,7 @@ const CACHE='cacao-shell-VERSION';
 const ROOT=new URL('./',self.location.href);
 const ASSETS=new Set(ASSET_LIST.map(path=>new URL(path,ROOT).href));
 const LIBRARIES=LIBRARY_LIST;
-const CORE=['login.html','assets/css/style.css','assets/css/login.css','assets/css/ui.css','assets/css/mobile-public.css','assets/js/ui.js','assets/js/mobile-public.js','assets/js/config.js','assets/js/db.js','assets/js/login.js','assets/js/offline.js','assets/vendor/supabase/supabase.min.js','images/caaps-mark.png','favicon.ico'];
+const CORE=['login.html','assets/css/style.css','assets/css/login.css','assets/css/ui.css','assets/css/mobile-public.css','assets/css/professional.css','assets/js/ui.js','assets/js/mobile-public.js','assets/js/config.js','assets/js/db.js','assets/js/login.js','assets/js/offline.js','assets/vendor/supabase/supabase.min.js','images/caaps-mark.png','manifest.webmanifest','favicon.ico'];
 const libraryImage=url=>url.startsWith('https://unpkg.com/leaflet@1.9.4/dist/images/')||url.startsWith('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/images/');
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE.map(path=>new URL(path,ROOT).href))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{

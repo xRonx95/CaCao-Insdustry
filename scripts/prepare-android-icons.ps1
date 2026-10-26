@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $resourceRoot = Join-Path $projectRoot 'android/app/src/main/res'
-$source = [System.Drawing.Image]::FromFile((Join-Path $projectRoot 'images/cacao.png'))
+$source = [System.Drawing.Image]::FromFile((Join-Path $projectRoot 'images/cacao-logo.png'))
 function Save-Icon([string]$destination, [int]$size, [double]$fraction) {
     $bitmap = New-Object System.Drawing.Bitmap($size, $size)
     $graphics = [System.Drawing.Graphics]::FromImage($bitmap)

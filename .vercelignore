@@ -13,6 +13,10 @@ tests
 !assets/vendor/supabase/supabase.min.js
 sql
 scripts
+!scripts/
+scripts/*
+!scripts/prepare-release.cjs
+!scripts/rebuild-offline-cache.cjs
 node_modules
 android
 dist

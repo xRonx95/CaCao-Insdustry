@@ -2,7 +2,7 @@
 
 Farmer Profiling and GPS Plantation Mapping System for Isabela City, Basilan, Philippines.
 
-An independent cacao registry, not an official DA, PSA or RSBSA service. The web application uses plain HTML, CSS and JavaScript with Supabase. No frontend build step is required.
+An independent cacao registry, not an official DA, PSA or RSBSA service. The web application uses plain HTML, CSS and JavaScript with Supabase. Local preview does not require a bundler. Deployment uses `npm run build` to create a versioned public release in `dist/`.
 
 ## Start here
 
@@ -121,7 +121,7 @@ Headless Chrome checks covered desktop/mobile rendering, mobile navigation, mapp
 ## GitHub and Vercel
 
 1. Review local changes, exclude backups/secrets, create a Git repository and push it to your chosen GitHub repository. No repository has been created or published automatically.
-2. Import the repository into Vercel as an **Other / static** project. Leave the build command empty and serve the project root. `vercel.json` supplies security headers; `.vercelignore` excludes backend files, SQL, docs, tests and backups from the static deployment.
+2. Import the repository into Vercel as an **Other / static** project. Use the checked-in build command `node scripts/prepare-release.cjs` and output directory `dist` from `vercel.json`. Remove old project-setting overrides that force an empty build or the repository root as output. `vercel.json` supplies security headers; `.vercelignore` excludes backend files, SQL, docs, tests and backups from the static deployment.
 3. Set the real public Supabase values in `assets/js/config.js` before deployment. Public keys are intentionally browser-visible; RLS protects data.
 4. Set the HTTPS deployment URL in Supabase Auth Site URL and allowed redirects, deploy `invite-team` separately, then repeat acceptance checks on the deployed site.
 5. Configure the organization's privacy contact/retention policy, backups and operational monitoring before collecting production personal information.
@@ -164,4 +164,14 @@ CaAPs branding: the user-supplied `images/cacao-logo.png` is preserved. Headers 
 
 ## Professional presentation design
 
-`assets/css/professional.css` is the final shared presentation layer for public and role pages. It standardizes system typography, forest-green accents, compact navigation, forms, tables and responsive cards without remote font dependencies. Dashboard headings and four primary indicators precede operational priorities. Remaining indicators are available in an expandable section, and process guidance is collapsed by default. All counts remain sourced from authorized operational records; no pitch/demo totals are inserted. Desktop/mobile visual browser verification was attempted in this workspace but dashboard rendering timed out, so deployed visual and device acceptance remains required.
+`assets/css/professional.css` is the final shared presentation layer for public and role pages. It standardizes system typography, forest-green accents, compact navigation, forms, tables and responsive cards without remote font dependencies. Dashboard headings and four primary indicators precede operational priorities. Remaining indicators are available in an expandable section, and process guidance is collapsed by default. All counts remain sourced from authorized operational records; no pitch/demo totals are inserted. Desktop/mobile dashboard hierarchy, empty states, menu behavior and overflow have now been verified using isolated browser fixtures at 1440, 390 and 320 pixel widths. Production-data and actual-device installation acceptance checks remain required.
+
+## Installable web app and deployment updates
+
+Run `npm run build` before deploying. The build copies only public files into `dist/`, appends content hashes to local resource references, and generates the offline worker for that release. Vercel uses the committed build command and `dist` output. `.vercelignore` includes the two build scripts while backend functions, SQL, tests, docs and credentials stay outside the published output. Hosted resources revalidate rather than serving an indefinitely cached design.
+
+Open `install.html` on the deployed HTTPS site and install CaAPs through the browser. The manifest has a stable identity, standalone display and 192/512 px icons. The installed web app uses the same deployed website and account. Published web changes arrive on subsequent online loads; updates detected during a session show a reload notice and never force an unsaved form to reload. Installation prompts depend on the browser; manual Android/iPhone instructions are provided. See https://web.dev/learn/pwa/update for the update lifecycle.
+
+The existing Capacitor APK remains a bundled native app. It does not gain web-delivered updates simply because the website changes. Use the installable web app once for website-delivered updates without subsequent APK installations. Synchronize existing APK submissions before switching: browser and native device-local encrypted drafts are separate. Native plugin/permission changes and database migrations still need their own deployment process. No hosted `server.url` live-reload shortcut was added to the production APK.
+
+Chart.js is bundled locally. Empty dashboard charts show a record-specific empty state instead of misleading empty axes. Browser layout checks use isolated fixtures: `node tests/browser-design.cjs` verifies desktop/mobile widths, dashboard order, empty states and menu operation. Full automated checks include `tests/release.test.cjs` and `tests/app-updates.test.cjs`; run the build before release tests.

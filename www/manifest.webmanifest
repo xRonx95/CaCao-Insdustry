@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "CaAPs — Cacao Industry",
+  "short_name": "CaAPs",
+  "description": "Farmer profiles, GPS plantation mapping and agricultural monitoring for Isabela City, Basilan.",
+  "start_url": "./login.html?source=installed",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f4",
+  "theme_color": "#163d2d",
+  "lang": "en-PH",
+  "icons": [
+    {"src": "images/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "images/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}

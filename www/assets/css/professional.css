@@ -80,3 +80,45 @@ footer{border-top:1px solid var(--line);font-size:11px;color:#687a6e;background:
 }
 @media(max-width:480px){.workflow-grid{grid-template-columns:1fr}.workflow-stages{grid-template-columns:1fr}.workflow-action{padding:15px}.workflow-action p{font-size:12px}.record-editor .fields{grid-template-columns:1fr}.brand strong{font-size:14px}.account{gap:8px}.auth-panel h1{font-size:32px}}
 @media print{.dashboard-secondary{display:block}.workflow-process,.workflow-action .btn,.feature-nav,.mobile-dock{display:none!important}.panel,.stat,.workflow-panel{box-shadow:none;break-inside:avoid}.workspace-page .shell{margin:0;padding:0}body{background:#fff;color:#000}}
+
+/* Dashboard composition: one summary, a compact work queue, then recorded insights. */
+.workspace-page[data-feature="dashboard"] #page-content{max-width:1440px;margin-inline:auto}
+.workspace-page[data-feature="dashboard"] .page-heading{padding:23px 26px;border:1px solid #dbe5de;border-left:4px solid #286749;border-radius:8px;background:linear-gradient(100deg,#fff,#f5f9f5);margin-bottom:20px;align-items:flex-start}
+.workspace-page[data-feature="dashboard"] .page-heading h1{font-size:30px;letter-spacing:-.04em;margin:5px 0 8px}
+.workspace-page[data-feature="dashboard"] .primary-stats .stat{padding:18px 20px;position:relative;background:#fff;border-top:0;border-left:0;min-height:108px}
+.workspace-page[data-feature="dashboard"] .primary-stats .stat::after{content:'';height:3px;width:32px;background:#b89957;position:absolute;right:18px;top:18px;border-radius:2px}
+.workspace-page[data-feature="dashboard"] .primary-stats .stat strong{font-size:31px}
+#workflow-dashboard{border:0;background:transparent;padding:0;margin:0 0 25px;box-shadow:none}
+#workflow-dashboard>h2{font-size:17px;margin-bottom:4px}#workflow-dashboard>p{font-size:12px;margin-bottom:10px}
+#workflow-dashboard .workflow-process{border:0;font-size:11px;margin:0 0 13px;padding:0}
+#workflow-dashboard .workflow-grid{counter-reset:priority;gap:12px}
+#workflow-dashboard .workflow-action{counter-increment:priority;position:relative;padding:17px 18px 14px;border:1px solid #dde6df;background:#fff;box-shadow:0 2px 4px #173d2b03}
+#workflow-dashboard .workflow-action::before{content:counter(priority,decimal-leading-zero);position:absolute;top:17px;right:15px;font-size:10px;letter-spacing:.06em;color:#6f8276;font-weight:600}
+#workflow-dashboard .workflow-action h3{padding-right:25px;font-size:13px;margin-bottom:8px}
+#workflow-dashboard .workflow-action p{font-size:12px;line-height:1.65;margin-bottom:11px;max-width:36em}
+#workflow-dashboard .workflow-action .btn{border:0;border-radius:0;padding:0;min-height:28px;background:transparent;color:#236343;font-weight:650}
+#workflow-dashboard .workflow-action .btn::after{content:'\2192';font-size:15px;margin-left:6px}
+.analytics-grid{align-items:start}.analytics-grid>.panel{height:auto;min-height:0;margin-bottom:0}.analytics-grid{margin-bottom:20px}
+.chart-box.chart-empty{height:148px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#f7f9f7;border:1px dashed #d9e3dc;border-radius:7px;padding:20px;gap:8px;margin-bottom:15px}
+.chart-empty strong{font-size:13px;font-weight:600;color:#526b5c}.chart-empty p{font-size:11px;max-width:290px;margin:0;line-height:1.7;color:#687d6e}
+.empty-list-item{list-style:none;background:#f7f9f7;border:1px dashed #d9e3dc!important;padding:20px!important;border-radius:7px;font-size:12px;line-height:1.7;color:#64796b}
+.activity-list:has(.empty-list-item){padding-left:0;margin:18px 0}.analytics-grid .panel>a{font-size:12px;font-weight:600;text-decoration:none;align-self:flex-start}.analytics-grid .panel>a:hover{text-decoration:underline}
+.install-page{max-width:1040px;padding-block:44px}.install-page h1{margin:10px 0 16px}.install-lead{font-size:16px;line-height:1.8;max-width:760px;margin-bottom:28px}
+.install-primary{display:grid;grid-template-columns:80px 1fr;gap:22px;border-top:3px solid #236343;padding:28px;margin-bottom:22px}.install-primary h2{margin:0 0 8px}.install-primary .btn{margin:8px 8px 0 0}.install-primary img{object-fit:contain;border:1px solid var(--line);border-radius:10px}.install-primary #install-status{grid-column:1/-1;margin:0}
+.install-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.install-grid h2{font-size:16px}.install-grid p{font-size:13px}.install-grid .panel{margin:0}
+.app-update-notice{position:fixed;z-index:1200;bottom:24px;right:24px;max-width:520px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:#173d2b;color:#fff;border:1px solid #41664d;border-radius:9px;padding:16px 18px;box-shadow:0 8px 24px #173d2b24;font-size:12px}
+.app-update-notice span{flex:1 1 100%;line-height:1.6}.app-update-notice .text-btn{color:#fff}
+@media(max-width:850px){.workspace-page[data-feature="dashboard"] .page-heading{padding:20px}.workspace-page[data-feature="dashboard"] .page-heading h1{font-size:26px}.workspace-page[data-feature="dashboard"] .primary-stats .stat{min-height:102px;padding:16px}.workspace-page[data-feature="dashboard"] .primary-stats .stat strong{font-size:27px}.install-page{padding:26px 18px 110px}.app-update-notice{bottom:100px;left:14px;right:14px;max-width:none}.install-primary{padding:20px;gap:16px}.install-grid{grid-template-columns:1fr}}
+@media(max-width:480px){#workflow-dashboard .workflow-grid{grid-template-columns:1fr}.install-primary{grid-template-columns:1fr}.install-primary img{width:64px;height:64px}.install-lead{font-size:14px}.install-page h1{font-size:30px}}
+@media print{.app-update-notice,.install-primary button{display:none!important}.chart-box.chart-empty{height:auto;min-height:80px}}
+@media(min-width:851px){.workspace-page .mobile-menu{display:none}}
+@media(max-width:850px){
+  .workspace-page .mobile-menu{display:inline-flex;color:#236343;background:#eff5f0;border:1px solid #d8e4db;min-width:40px;min-height:40px;padding:10px;border-radius:6px}
+  .mobile-dock{left:0;right:0;bottom:0;max-width:none;margin:0;height:calc(66px + env(safe-area-inset-bottom,0px));padding:5px 10px calc(5px + env(safe-area-inset-bottom,0px));border-radius:0;background:#fff}
+  .mobile-dock [aria-current="page"]{color:#236343;background:#edf4ef;border-radius:6px}
+  .mobile-dock .mobile-map-action{width:auto;min-width:48px;height:48px;margin:0;border:0;border-radius:6px;background:transparent;color:#516658;box-sizing:border-box;box-shadow:none}
+  .mobile-dock .mobile-map-action svg{width:22px;height:22px}
+}
+.chart-empty canvas[hidden]{display:none!important}
+.workspace-page[data-feature="dashboard"] .primary-stats .stat::after{top:10px}
+@media(max-width:850px){.workspace-page .shell{background:transparent;border-radius:0}.workspace-page[data-feature="dashboard"] .primary-stats .stat span{min-height:30px}}
