@@ -16,7 +16,7 @@
   };
   function icon(name) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-    for (const [key,value] of Object.entries({viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':'1.6','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'})) svg.setAttribute(key,value);
+    for (const [key,value] of Object.entries({viewBox:'0 0 24 24',width:'22',height:'22',fill:'none',stroke:'currentColor','stroke-width':'1.6','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'})) svg.setAttribute(key,value);
     for (const data of paths[name] || paths.leaf) {
       const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',data);svg.append(path);
     }

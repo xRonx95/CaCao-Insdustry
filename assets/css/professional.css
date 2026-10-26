@@ -120,5 +120,6 @@ footer{border-top:1px solid var(--line);font-size:11px;color:#687a6e;background:
   .mobile-dock .mobile-map-action svg{width:22px;height:22px}
 }
 .chart-empty canvas[hidden]{display:none!important}
+.chart-box{min-width:0;max-width:100%;overflow:hidden}.chart-box canvas{max-width:100%}
 .workspace-page[data-feature="dashboard"] .primary-stats .stat::after{top:10px}
 @media(max-width:850px){.workspace-page .shell{background:transparent;border-radius:0}.workspace-page[data-feature="dashboard"] .primary-stats .stat span{min-height:30px}}

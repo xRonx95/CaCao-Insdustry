@@ -89,8 +89,16 @@ async function main(){
   await pause(500);
   const order=await evaluate('({heading:document.querySelector(".page-heading").getBoundingClientRect().top,stats:document.querySelector(".primary-stats").getBoundingClientRect().top,actions:document.getElementById("workflow-dashboard").getBoundingClientRect().top,overflow:document.documentElement.scrollWidth>innerWidth+1,emptyCharts:document.querySelectorAll(".chart-empty").length})');
   assert(order.heading<order.stats&&order.stats<order.actions,JSON.stringify(order));assert.equal(order.overflow,false);assert(order.emptyCharts>=3);
+  for(const width of [1440,1080,851]){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await pause(300);
+    assert.equal(await evaluate('getComputedStyle(document.getElementById("nav-toggle")).display'),'none','Desktop menu must be hidden at '+width);
+    assert.equal(await evaluate('document.querySelector(".topbar .brand").getBoundingClientRect().left<80'),true,'Brand must align left at '+width);
+    assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'Desktop overflow at '+width);
+  }
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   let shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'cacao-professional-desktop.png'),Buffer.from(shot.data,'base64'));
-  for(const width of [390,320]){await send('Emulation.setDeviceMetricsOverride',{width,height:844,deviceScaleFactor:1,mobile:true});await pause(250);assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'Mobile overflow '+width);}
+  for(const width of [850,390,320]){await send('Emulation.setDeviceMetricsOverride',{width,height:844,deviceScaleFactor:1,mobile:true});await pause(250);assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'Mobile overflow '+width);assert.notEqual(await evaluate('getComputedStyle(document.getElementById("nav-toggle")).display'),'none','Mobile menu must be visible at '+width);assert.equal(await evaluate('document.querySelector("#nav-toggle svg").getBoundingClientRect().width>0'),true,'Menu icon must be visible');}
   shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'cacao-professional-mobile-overview.png'),Buffer.from(shot.data,'base64'));
   await evaluate('document.getElementById("nav-toggle").click()');assert.equal(await evaluate('document.getElementById("nav-toggle").getAttribute("aria-expanded")'),'true');
   shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'cacao-professional-mobile.png'),Buffer.from(shot.data,'base64'));

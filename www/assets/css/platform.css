@@ -56,6 +56,7 @@
 .sidebar-heading { padding: 0 13px 16px; font-size: 10px; font-weight: 700; letter-spacing: .15em; color: #a1bda9; }
 .sidebar-location { margin-top: auto; padding: 24px 13px 4px; font-size: 11px; color: #b1c7b7; line-height: 1.7; }
 .mobile-menu { display: none; }
+.workspace-page #nav-toggle { display: none; }
 .workspace-page .stats { grid-template-columns: repeat(4,minmax(0,1fr)); }
 .workspace-page .stat { border-left: 3px solid #287a4b; padding: 18px; }
 .workspace-page .stat strong { font-size: 25px; }
@@ -94,6 +95,7 @@
   .record-editor .fields { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media(max-width:850px) {
+  .workspace-page #nav-toggle { display: inline-flex; }
   .workspace-page .topbar { padding: 10px 14px; }
   .workspace-page .shell { margin-left: 0; padding: 18px 14px 40px; }
   .workspace-page footer { margin-left: 0; }
