@@ -56,3 +56,27 @@ test('Android preparation uses bundled tools without requiring service workers',
   assert.equal(result.native,true);
   assert.equal(result.failed.length,0);
 });
+
+test('installation caches a small shell and explicit preparation downloads the rest with bounded concurrency',async()=>{
+  const listeners={},installed=[];let active=0,peak=0,downloads=0;
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../service-worker.js'),'utf8'),{
+    URL,AbortSignal,self:{location:{href:'https://cacao.example/service-worker.js'},addEventListener:(name,fn)=>listeners[name]=fn,skipWaiting:async()=>{}},
+    caches:{open:async()=>({addAll:async urls=>installed.push(...urls),put:async()=>{},match:async()=>null})},
+    fetch:async()=>{active++;peak=Math.max(peak,active);downloads++;await Promise.resolve();active--;return {ok:true,clone:()=>({text:async()=>''})};}
+  });
+  let work;listeners.install({waitUntil:p=>work=p});await work;assert(installed.length<20);assert(!installed.some(url=>url.includes('/admin/')));
+  let report;listeners.message({data:{type:'CACHE_LIBRARIES'},ports:[{postMessage:value=>report=value}],waitUntil:p=>work=p});await work;
+  assert(downloads>200);assert(peak<=4);assert.equal(report.ready,true);
+});
+
+test('cache upgrades retain prepared public pages without copying private responses',async()=>{
+  const listeners={},saved=new Map(),deleted=[];let claimed=false;
+  const old=new Map([['https://cacao.example/farmer/plantation-form.html',{page:true}],['https://project.supabase.co/rest/v1/farmers',{private:true}]]);
+  const current={match:async request=>saved.get(request.url),put:async(request,response)=>saved.set(request.url,response)};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../service-worker.js'),'utf8'),{
+    URL,AbortSignal,self:{location:{href:'https://cacao.example/service-worker.js'},addEventListener:(name,fn)=>listeners[name]=fn,clients:{claim:async()=>{claimed=true;}}},
+    caches:{keys:async()=>['cacao-shell-old'],open:async key=>key==='cacao-shell-old'?{keys:async()=>[...old.keys()].map(url=>({url})),match:async request=>old.get(request.url)}:current,delete:async key=>deleted.push(key)}
+  });
+  let work;listeners.activate({waitUntil:p=>work=p});await work;
+  assert(saved.has('https://cacao.example/farmer/plantation-form.html'));assert.equal(saved.size,1);assert.deepEqual(deleted,['cacao-shell-old']);assert.equal(claimed,true);
+});

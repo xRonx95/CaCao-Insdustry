@@ -306,11 +306,22 @@ window.CacaoApp = (() => {
     const counts=new Map();for(const row of rows){const label=key(row)||'Unspecified';counts.set(label,(counts.get(label)||0)+Number(value(row)||0));}return counts;
   }
   async function dashboard() {
-    const [farmers,plantations,workers,inventory,activity,harvests,gpsSessions]=await Promise.all(['farmers','plantations','workers','cacao_tree_inventories','activity_logs','harvests','gps_tracking_sessions'].map(t=>t==='workers'&&!staff()?[]:listAll(t)));
-    await window.CacaoWorkflow?.dashboard({farmers,plantations});
+    const recent=async(table,columns,limit)=>{
+      if(!navigator.onLine||window.cacaoOfflineSession)return (await listAll(table)).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,limit);
+      return result(db.from(table).select(columns).order('created_at',{ascending:false}).limit(limit));
+    };
+    const [farmers,plantations,workers]=await Promise.all(['farmers','plantations','workers'].map(t=>t==='workers'&&!staff()?[]:listAll(t)));
+    window.CacaoWorkflow?.dashboard({farmers,plantations}).catch(error=>message(error.message,true));
     const area=plantations.reduce((sum,farm)=>sum+Number(farm.area_sqm||0),0);
     const metrics={'farmers':farmers.length,'farms':plantations.length,'trees':plantations.reduce((s,f)=>s+Number(f.tree_count),0),'sqm':number(area),'ha':(area/10000).toFixed(4),'workers':workers.length,'active':plantations.filter(f=>f.status==='active').length,'pending':farmers.filter(f=>f.registration_status==='pending').length};
     for(const [key,value] of Object.entries(metrics))if(el('stat-'+key))el('stat-'+key).textContent=typeof value==='number'?number(value):value;
+    el('stat-pending-maps').textContent=number(plantations.filter(row=>row.verification_status==='pending').length);
+    drawMap(plantations,'dashboard-map');
+    message('Overview loaded. Loading production and activity details…');
+    const [inventory,activity,harvests,gpsSessions]=await Promise.all([
+      listAll('cacao_tree_inventories'),recent('activity_logs','id,action,record_type,created_at',6),
+      listAll('harvests'),recent('gps_tracking_sessions','id,plantation_id,boundary_revision,created_at',5)
+    ]);
     el('stat-dry').textContent=number(harvests.reduce((sum,row)=>sum+Number(row.dry_bean_kg),0));
     el('stat-wet').textContent=number(harvests.reduce((sum,row)=>sum+Number(row.wet_bean_kg),0));
     el('stat-pending-maps').textContent=number(plantations.filter(row=>row.verification_status==='pending').length);
@@ -328,12 +339,12 @@ window.CacaoApp = (() => {
     const trend=new Map();for(const entry of inventory){latest.set(entry.plantation_id,entry.total_trees);trend.set(entry.inventory_date,[...latest.values()].reduce((s,v)=>s+v,0));}
     chart('tree-chart','line',[...trend.keys()],[...trend.values()],'Latest known inventory total over time');
     const list=el('recent-activity');list.replaceChildren();
-    const recent=activity.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,6);
-    for(const row of recent)list.append(text('li',row.action+' · '+(row.record_type||'record')+' · '+dateTime(row.created_at)));
-    if(!recent.length)list.append(text('li','No activity recorded yet.'));
+    const recentActivity=activity.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,6);
+    for(const row of recentActivity)list.append(text('li',row.action+' · '+(row.record_type||'record')+' · '+dateTime(row.created_at)));
+    if(!recentActivity.length)list.append(text('li','No activity recorded yet.'));
     const body=el('barangay-body');for(const [name,count] of barangays){const tr=document.createElement('tr');tr.append(text('td',name),text('td',count),text('td',humanArea(plantations.filter(f=>f.barangay===name).reduce((s,f)=>s+Number(f.area_sqm),0))));body.append(tr);}
     if(!barangays.size){const td=text('td','No plantations recorded.');td.colSpan=3;const tr=document.createElement('tr');tr.append(td);body.append(tr);}
-    if(drawMap(plantations,'dashboard-map'))message('Overview updated from records available to your account.');
+    message('Overview updated from records available to your account.');
   }
   function drawMap(plantations,id='atlas-map') {
     if(!window.L){if(el(id))el(id).textContent='Map library unavailable. Check your internet connection.';message('Map library unavailable. Statistics and records remain available; check your connection to load maps.',true);return false;}

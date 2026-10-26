@@ -202,7 +202,7 @@ details[open] summary {
 
 /* Native cross-document transitions enhance supported browsers. */
 @view-transition {
-  navigation: auto;
+  navigation: none;
 }
 
 ::view-transition-old(root) {
@@ -268,3 +268,5 @@ details[open] summary {
 .password-toggle .password-eye-slash { display: none; }
 .password-toggle[aria-pressed="true"] .password-eye-slash { display: block; }
 
+
+.login-notice{padding:14px 16px;border:1px solid #27714a;border-radius:10px;background:#edf8f0;color:#195333;margin:0 0 1rem}

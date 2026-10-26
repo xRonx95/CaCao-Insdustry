@@ -50,6 +50,13 @@ async function requireSession() {
   }
   $('account-email').textContent = currentAccount.user.email || 'Offline field account';
   $('page-content').classList.remove('hidden');
+  if(sessionStorage.getItem('cacao-login-success')) {
+    sessionStorage.removeItem('cacao-login-success');
+    const notice=document.createElement('p');notice.className='login-notice';
+    notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');
+    notice.textContent='Login successful. Welcome to your workspace.';
+    $('page-content').prepend(notice);
+  }
   document.querySelectorAll('[data-super-only]').forEach(el => el.classList.toggle('hidden', role !== 'super_admin'));
   if (role === 'farmer') document.getElementById('field-toolbar')?.classList.remove('hidden');
   window.CacaoSync?.accountReady();

@@ -147,3 +147,13 @@ Open **Profile review inbox** in a role workspace. Administrators and super admi
 Review history is owner-scoped and read-only through the authenticated API. Existing profiles receive a baseline entry; earlier unrecorded correction reasons cannot be recovered. Direct approval/rejection writes are replaced by the review RPC, so older clients must reload after migration 009. Reviews and resubmission require connectivity. Offline profile edits continue to use the existing encrypted queue and reopen review when synchronized.
 
 Local verification: `node --test tests/reviews.test.cjs tests/workflow.test.cjs tests/platform.test.cjs tests/enhancements.test.cjs tests/offline-sync.test.cjs tests/offline-shell.test.cjs`. The staging SQL checks assignment scope, owner isolation, feedback requirements, stale decisions, self-approval rejection, immutable history and resubmission; it requires a staging Supabase database.
+
+## Loading and login improvements
+
+Header logos use a 21 KB thumbnail, shared styles use system fonts without an external font import, and cross-page fade transitions are disabled. Offline cache installation now downloads only a small login shell after the page load event. Use Sync & recovery ? Prepare while online to download the full offline workspace; preparation downloads at most four files concurrently. Previously prepared public files are retained across cache upgrades and refreshed when opened online.
+
+Login reports progress, explains authentication failures, prevents duplicate submissions, and displays success on the destination workspace without an artificial delay. The authentication service does not distinguish a wrong email from a wrong password. Backend HTTP requests have a 20-second network timeout. Dashboard totals and the map render before secondary details, and recent activity/GPS queries fetch only six/five rows.
+
+Run `node --test tests/login.test.cjs tests/offline-shell.test.cjs` for focused regression checks. Deploy these local changes before expecting the hosted site to change; actual load times and live authentication still require deployed verification.
+
+Login initialization recovery: `.vercelignore` excludes only the root `/supabase/` backend directory and explicitly includes the browser SDK. If the SDK is unavailable during initial page loading, login retries its same-origin vendor file and reports a connection/deployment message instead of accessing a null client. Redeploy after changing `.vercelignore`; browser refresh alone cannot restore a file excluded from deployment. Focused checks: `node --test tests/auth-bootstrap.test.cjs tests/login.test.cjs`.

@@ -13,3 +13,4 @@
 }
 #auth-status.success { background: #edf8f0; border-color: #27714a; color: #195333; }
 #auth-status.error { background: #fff1f0; border-color: #b54b44; color: #8c2923; }
+#auth-status:empty{display:none}

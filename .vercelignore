@@ -8,7 +8,9 @@
 backups
 docs
 tests
-supabase
+/supabase/
+!assets/vendor/supabase/
+!assets/vendor/supabase/supabase.min.js
 sql
 scripts
 node_modules

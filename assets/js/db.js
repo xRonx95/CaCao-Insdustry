@@ -7,9 +7,36 @@ function roleHome(role, prefix = '') {
   const folder = role === 'super_admin' ? 'admin' : role;
   return prefix + folder + '/' + folder + '.html';
 }
-const db = configured && window.supabase ? window.supabase.createClient(window.CACAO_SUPABASE_URL, window.CACAO_SUPABASE_KEY) : null;
+function initializeDatabase() {
+  return configured && typeof window.supabase?.createClient === 'function' ? window.supabase.createClient(window.CACAO_SUPABASE_URL, window.CACAO_SUPABASE_KEY, {
+  global: { fetch: (url, options = {}) => fetch(url, {...options, signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000)}) }
+  }) : null;
+}
+let db=initializeDatabase();
+const databaseScriptURL=typeof document!=='undefined'&&document.currentScript?.src;
+let databaseLibraryLoad;
+async function ensureDatabaseClient() {
+  if(db)return db;
+  if(!configured)throw new Error('The login service configuration is missing or invalid. Contact the administrator.');
+  if(typeof window.supabase?.createClient!=='function') {
+    if(!databaseLibraryLoad)databaseLibraryLoad=new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      script.src=new URL('../vendor/supabase/supabase.min.js?retry=1',databaseScriptURL||new URL('assets/js/db.js',location.href)).href;
+      script.async=true;
+      const timeout=setTimeout(()=>finish(new Error('The login library could not load. Check your connection and reload this page.')),10000);
+      function finish(error){clearTimeout(timeout);script.onload=null;script.onerror=null;if(error){script.remove();reject(error);}else resolve();}
+      script.onload=()=>finish();
+      script.onerror=()=>finish(new Error('The login library is unavailable. Reload the page; if this continues, contact the administrator to check the deployment.'));
+      document.head.append(script);
+    }).catch(error=>{databaseLibraryLoad=null;throw error;});
+    await databaseLibraryLoad;
+  }
+  db=initializeDatabase();
+  if(!db)throw new Error('The login library did not initialize. Reload the page or contact the administrator.');
+  return db;
+}
 function connectionFailure(error) {
-  return error?.name === 'AuthRetryableFetchError' || error?.name === 'AbortError' ||
+  return error?.name === 'AuthRetryableFetchError' || error?.name === 'AbortError' || error?.name === 'TimeoutError' ||
     /failed to fetch|fetch failed|network request failed|networkerror|load failed|network connection|timed out/i.test(error?.message || '');
 }
 function savedOfflineAccount(expectedUserId) {
