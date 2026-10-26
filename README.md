@@ -62,6 +62,12 @@ HTML remains in role folders. CSS and browser JavaScript remain under `assets/cs
 
 ## Operational workflow
 
+Workspace dashboards now include role-specific next actions and the registration-to-monitoring steps. Open a plantation name in the directory to access its plantation workspace: profile and boundary statuses, boundary map, recent farm activity, and links to related records. Monitoring links preselect the plantation in both the list filter and new-record form. Staff dashboards surface overdue tasks and unresolved pest reports within their existing authorized scope.
+
+These screens use the existing database permissions and review process. They do not introduce a new approval gate: profile approval is currently guidance rather than a new restriction on plantation creation. Farmer correction reasons still require contact with the reviewer; boundary review notes remain available in Boundary history & review. Offline staff account access is not supported by the current session implementation. The new workspace can show prepared farmer records offline, but activity sections may be unavailable until the device reconnects.
+
+Workflow behavior checks: `node --test tests/workflow.test.cjs`.
+
 1. Create a farmer account, or have an authorized staff member register a farmer profile under the appropriate owner account. Record required names, address, barangay and contact details. Photos/supporting files are private.
 2. An assigned administrator or super administrator reviews and approves the profile. Farmer edits to substantive profile information return it to pending review.
 3. Register a plantation and select its farmer profile. A farmer can have multiple plantations, each with its own boundary. Existing legacy plantations without a farmer link can be linked from the form without deleting them.

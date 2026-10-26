@@ -27,7 +27,9 @@ window.CacaoApp = (() => {
     const status = el('status-filter')?.value || '';
     const from = el('date-from')?.value;
     const to = el('date-to')?.value;
+    const plantation = new URLSearchParams(location.search).get('plantation');
     return rows.filter(row => {
+      if (plantation && row.plantation_id && row.plantation_id !== plantation) return false;
       const date = row.inventory_date || row.created_at?.slice(0,10) || '';
       return (!search || Object.values(row).filter(v => typeof v === 'string').join(' ').toLowerCase().includes(search))
         && (!barangay || row.barangay === barangay)
@@ -260,6 +262,8 @@ window.CacaoApp = (() => {
     if(window.CacaoSync)farms=await CacaoSync.recordsForPicker('plantations',farms);
     let recordId=crypto.randomUUID(),changeId=crypto.randomUUID();
     setOptions('plantation_id',farms);
+    const requestedFarm = new URLSearchParams(location.search).get('plantation');
+    if (farms.some(farm => farm.id === requestedFarm)) el('plantation_id').value = requestedFarm;
     const columns=[{value:row=>farms.find(f=>f.id===row.plantation_id)?.name || row.plantation_id},{key:'inventory_date'},{key:'total_trees'},{key:'productive'},{key:'dead'},{key:'variety'}];
     const render=()=>table(state.rows,columns);
     const refresh=async()=>{state.rows=await listAll('cacao_tree_inventories');state.rows.sort((a,b)=>b.inventory_date.localeCompare(a.inventory_date));render();};
@@ -310,6 +314,7 @@ window.CacaoApp = (() => {
   }
   async function dashboard() {
     const [farmers,plantations,workers,inventory,activity,harvests,gpsSessions]=await Promise.all(['farmers','plantations','workers','cacao_tree_inventories','activity_logs','harvests','gps_tracking_sessions'].map(t=>t==='workers'&&!staff()?[]:listAll(t)));
+    await window.CacaoWorkflow?.dashboard({farmers,plantations});
     const area=plantations.reduce((sum,farm)=>sum+Number(farm.area_sqm||0),0);
     const metrics={'farmers':farmers.length,'farms':plantations.length,'trees':plantations.reduce((s,f)=>s+Number(f.tree_count),0),'sqm':number(area),'ha':(area/10000).toFixed(4),'workers':workers.length,'active':plantations.filter(f=>f.status==='active').length,'pending':farmers.filter(f=>f.registration_status==='pending').length};
     for(const [key,value] of Object.entries(metrics))if(el('stat-'+key))el('stat-'+key).textContent=typeof value==='number'?number(value):value;

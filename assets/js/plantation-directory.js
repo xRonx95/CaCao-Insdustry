@@ -30,14 +30,17 @@ window.CacaoDirectory = (() => {
         const card = text('article', '');
         card.className = 'farm-item';
         const edit = text('a', farm.name);
-        edit.href = 'plantation-form.html?id=' + encodeURIComponent(farm.id);
+        edit.href = 'plantation-workspace.html?id=' + encodeURIComponent(farm.id);
         edit.append(text('small', [farm.farmer_name, farm.barangay, farm.municipality].filter(Boolean).join(' · ')));
         card.append(edit, text('small', Number(farm.tree_count || 0).toLocaleString() + ' trees · ' + humanArea(farm.area_sqm)));
         card.append(text('small', (farm.status || 'active') + ' · review: ' + (farm.verification_status || 'pending')));
         const history = text('a', 'Boundary history & review');
         history.href = 'history.html?plantation=' + encodeURIComponent(farm.id);
         history.className = 'text-btn';
-        card.append(history);
+        const editLink = text('a', 'Edit plantation');
+        editLink.href = 'plantation-form.html?id=' + encodeURIComponent(farm.id);
+        editLink.className = 'text-btn';
+        card.append(history, editLink);
         list.append(card);
       }
       if (!filtered.length) list.append(text('p', 'No plantations match these filters.'));

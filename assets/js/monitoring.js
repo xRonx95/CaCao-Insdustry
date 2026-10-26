@@ -60,6 +60,8 @@ window.CacaoMonitoring = (() => {
       $('plantation_id').addEventListener('change',dependents);dependents();
       if(definition.staffOnly&&!staff())$('monitor-editor').classList.add('hidden');
       options($('farm-filter'),farms,'name');$('farm-filter').options[0].textContent='All plantations';
+      const requestedFarm = new URLSearchParams(location.search).get('plantation');
+      if (farms.some(farm => farm.id === requestedFarm)) { $('farm-filter').value = requestedFarm; $('plantation_id').value = requestedFarm; dependents(); }
       function filtered(){const search=$('monitor-search').value.trim().toLowerCase(),farm=$('farm-filter').value,from=$('monitor-from').value,to=$('monitor-to').value;return rows.filter(row=>{
         const name=farms.find(f=>f.id===row.plantation_id)?.name||'',worker=workers.find(w=>w.id===row.worker_id)?.full_name||'';
         return (!farm||row.plantation_id===farm)&&(!from||row[definition.date]>=from)&&(!to||row[definition.date]<=to)&&(!search||Object.values(row).concat(name,worker).join(' ').toLowerCase().includes(search));
@@ -95,7 +97,7 @@ window.CacaoMonitoring = (() => {
         $('production-totals').textContent='Recorded dry beans: '+dry.toFixed(3)+' kg · wet beans: '+wet.toFixed(3)+' kg. These are separate measures and are not added together.';
       }
       async function refresh(){rows=await listAll(definition.table);rows.sort((a,b)=>(b[definition.date]||'').localeCompare(a[definition.date]||''));render();}
-      function reset(){editing=null;recordId=crypto.randomUUID();changeId=crypto.randomUUID();$('monitor-form').reset();$('plantation_id').disabled=false;dependents();$('monitor-form-title').textContent='New record';}
+      function reset(){editing=null;recordId=crypto.randomUUID();changeId=crypto.randomUUID();$('monitor-form').reset();$('plantation_id').disabled=false;if(farms.some(farm=>farm.id===requestedFarm))$('plantation_id').value=requestedFarm;dependents();$('monitor-form-title').textContent='New record';}
       $('monitor-reset').addEventListener('click',reset);
       for(const id of ['monitor-search','farm-filter','monitor-from','monitor-to','production-group'])$(id)?.addEventListener(id==='monitor-search'?'input':'change',()=>{page=0;render();});
       $('monitor-previous').addEventListener('click',()=>{page--;render();});$('monitor-next').addEventListener('click',()=>{page++;render();});
