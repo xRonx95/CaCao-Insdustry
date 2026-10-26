@@ -5,11 +5,12 @@ window.CacaoWorkflow = (() => {
   const status = value => ({pending:'Pending review', approved:'Approved', rejected:'Needs correction', verified:'Verified', flagged:'Needs review'})[value] || value || 'Pending review';
   function panel(title, description) { const section = node('section', '', 'workflow-panel'); section.append(node('h2', title)); if (description) section.append(node('p', description)); return section; }
   function stages() { const list = node('ol', '', 'workflow-stages'); for (const label of ['Complete profile', 'Profile review', 'Register & map plantation', 'Boundary review', 'Record farm activities', 'Monitor & report']) list.append(node('li', label)); return list; }
-  function action(container, title, detail, href) { const card = node('article', '', 'workflow-action'); card.append(node('h3', title), node('p', detail), link('Open', href)); container.append(card); }
+  function action(container, title, detail, href) { const card = node('article', '', 'workflow-action'); card.append(node('h3', title), node('p', detail), link('View records', href)); container.append(card); }
   async function dashboard({farmers, plantations}) {
     document.getElementById('workflow-dashboard')?.remove();
     const role = currentAccount.profile.role;
-    const section = panel('Your next actions', 'Follow the registration-to-monitoring workflow. Profile approval and boundary review are separate.'); section.id = 'workflow-dashboard'; section.append(stages());
+    const section = panel('Operational priorities', 'Review submissions, maintain plantation records, and coordinate field activities.'); section.id = 'workflow-dashboard';
+    const process=node('details','','workflow-process');process.append(node('summary','Registration and monitoring workflow'),stages());section.append(process);
     const cards = node('div', '', 'workflow-grid'); section.append(cards);
     if (role === 'farmer') {
       const own = farmers.filter(row => row.owner_id === currentAccount.user.id);
@@ -33,7 +34,9 @@ window.CacaoWorkflow = (() => {
       action(cards, 'Farm health follow-up', pests.status === 'fulfilled' ? pests.value.filter(row => row.resolution_status !== 'resolved').length + ' unresolved pest and disease reports.' : 'Farm health totals unavailable. Open reports to retry.', 'pests.html');
     }
     action(cards, 'Sync & recovery', 'Prepare records online, collect field data, then synchronize and review conflicts. Offline account access currently supports farmers only.', 'sync.html');
-    document.getElementById('page-content').prepend(section);
+    const content=document.getElementById('page-content');
+    const indicators=content.querySelector?.('.dashboard-secondary') || content.querySelector?.('.stats');
+    if(indicators)indicators.after(section);else content.prepend(section);
   }
   async function workspace() {
     try {
