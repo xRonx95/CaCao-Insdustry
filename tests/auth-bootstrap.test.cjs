@@ -18,6 +18,14 @@ test('SDK download failure explains the deployment problem and permits a retry',
 test('invalid configuration is reported before loading the SDK',async()=>{
   const {context,scripts}=setup(false);await assert.rejects(context.ensureDatabaseClient(),/configuration is missing or invalid/);assert.equal(scripts.length,0);
 });
+test('login form handlers are not blocked behind a deferred SDK download',()=>{
+  const html=fs.readFileSync('login.html','utf8');
+  assert(!/<script[^>]*src="assets\/vendor\/supabase\//.test(html));
+  assert(html.includes('assets/js/login.js'));assert(html.includes('Loading secure login'));
+});
+test('public branding uses the new CaAPs assets for both header and hero',()=>{
+  const html=fs.readFileSync('index.html','utf8');assert(html.includes('images/caaps-mark.png'));assert(html.includes('images/caaps-logo.png'));assert(!html.includes('images/cacao.png'));
+});
 test('deployment excludes backend Supabase without excluding the browser SDK',()=>{
   const rules=fs.readFileSync('.vercelignore','utf8').split(/\r?\n/);assert(rules.includes('/supabase/'));assert(!rules.includes('supabase'));assert(rules.includes('!assets/vendor/supabase/supabase.min.js'));
   const context=vm.createContext({URL,TextEncoder,TextDecoder,fetch,console});context.window=context;

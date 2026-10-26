@@ -17,7 +17,7 @@ const CACHE='cacao-shell-VERSION';
 const ROOT=new URL('./',self.location.href);
 const ASSETS=new Set(ASSET_LIST.map(path=>new URL(path,ROOT).href));
 const LIBRARIES=LIBRARY_LIST;
-const CORE=['login.html','assets/css/style.css','assets/css/login.css','assets/css/ui.css','assets/css/mobile-public.css','assets/js/ui.js','assets/js/mobile-public.js','assets/js/config.js','assets/js/db.js','assets/js/login.js','assets/js/offline.js','assets/vendor/supabase/supabase.min.js','images/cacao-logo.png','favicon.ico'];
+const CORE=['login.html','assets/css/style.css','assets/css/login.css','assets/css/ui.css','assets/css/mobile-public.css','assets/js/ui.js','assets/js/mobile-public.js','assets/js/config.js','assets/js/db.js','assets/js/login.js','assets/js/offline.js','assets/vendor/supabase/supabase.min.js','images/caaps-mark.png','favicon.ico'];
 const libraryImage=url=>url.startsWith('https://unpkg.com/leaflet@1.9.4/dist/images/')||url.startsWith('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/images/');
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE.map(path=>new URL(path,ROOT).href))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
