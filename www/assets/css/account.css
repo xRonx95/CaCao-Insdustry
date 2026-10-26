@@ -1,0 +1,65 @@
+/* Account access, registration and recovery share the CaAPs brand. */
+.account-page .auth-wrap{max-width:1040px;margin-inline:auto;gap:64px;align-items:center;padding-block:42px}
+.account-page .auth-panel{padding:12px 0}.account-page .auth-panel h1{max-width:460px;font-size:42px;line-height:1.15;color:#1b442c}.account-page .auth-panel p{font-size:14px;line-height:1.8;color:#667b69}
+.account-page .auth-form,.account-page .recovery-panel{background:#fff;border:1px solid #d7e2d7;border-top:3px solid #b39652;border-radius:18px;box-shadow:0 16px 48px #173d2b09;padding:30px;min-width:0}
+.account-brand{display:flex;align-items:center;gap:11px;margin:0 0 22px}.account-brand img{width:42px;height:42px;object-fit:contain;background:#fff;border:1px solid #e0e7db;border-radius:11px;padding:3px}.account-brand span{font-size:10px;font-weight:700;letter-spacing:.13em;color:#748262}
+.account-page .auth-form h2{font-size:23px;line-height:1.25;letter-spacing:-.03em;color:#21472e;margin:0 0 8px}
+.account-page .account-intro{font-size:12px;line-height:1.7;color:#6b7e6d;margin:0 0 25px}
+.account-page label{font-size:12px;font-weight:600;color:#425a43;margin-top:17px;gap:8px}
+.account-page input:not([type="checkbox"]){width:100%;min-height:47px;border:1px solid #d1decf;border-radius:9px;background:#f9fbf7;color:#213f2b;font-size:14px;padding:12px 13px}
+.account-page input::placeholder{color:#81917e}.account-page input:focus{border-color:#4f7950;outline-color:#447d4322}
+.account-page .btn.primary{min-height:46px;border-radius:9px;color:#fffbed;background:linear-gradient(110deg,#255436,#3b7448);border:1px solid #3d7249;box-shadow:0 5px 14px #21472e12;width:100%;font-size:13px;font-weight:650;margin-top:22px}
+.account-page .btn.primary:hover{background:#386d43;color:#fffbed}.account-page a{color:#426d3f;font-weight:500;text-decoration:none}.account-page a:hover{text-decoration:underline}
+.account-page .auth-form>a{display:inline-block;font-size:12px;margin-top:10px}.account-page .auth-form>p:last-child,.account-page .recovery-panel>a{font-size:12px;line-height:1.7}.account-page .auth-form>p:last-child{border-top:1px solid #e2e9df;padding-top:18px;margin-top:22px;text-align:center}
+.account-page .privacy-consent{font-size:11px;font-weight:400;line-height:1.8;color:#6a7c65}.account-page .privacy-consent input{accent-color:#447346;min-height:0;vertical-align:middle}
+.account-page .password-toggle{color:#4f7850;min-width:42px;min-height:42px}.account-page .password-toggle:hover{background:#eaf1e5}
+.account-page .password-field>input{padding-right:50px}
+.account-page .status:empty{display:none}.account-page .status.success:not(:empty){border:1px solid #a5c4a7;background:#eff6eb;color:#315b37;padding:12px 14px;border-radius:9px;font-size:12px;line-height:1.7}
+.account-page .status.error:not(:empty){border:1px solid #ddb5ac;background:#fff2ee;color:#963f34;padding:12px 14px;border-radius:9px;font-size:12px;line-height:1.7}
+.account-page .recovery-panel{max-width:460px;margin:42px auto;padding:30px}.account-page .recovery-panel h1{font-size:28px;line-height:1.2;color:#21472e;margin:9px 0 13px}.account-page .recovery-panel>p{font-size:13px;line-height:1.8;color:#6b7e6d}.account-page .recovery-panel>a{display:block;border-top:1px solid #e2e9df;margin-top:22px;padding-top:18px;text-align:center}
+@media(max-width:850px){
+  .account-page .shell{padding:24px 20px 112px}.account-page .auth-wrap{display:block;padding:0;max-width:460px}.account-page .auth-panel{padding:2px 4px 22px}.account-page .auth-panel h1,.public-mobile-page.account-page .auth-panel h1{color:#f3f5e8;font-size:30px;line-height:1.15;margin:10px 0 12px}.account-page .auth-panel p,.public-mobile-page.account-page .auth-panel p{font-size:12px;color:#afc0a9;line-height:1.8;margin:0 0 12px}.account-page .auth-panel .eyebrow{color:#c7b279}
+  .account-page .auth-form,.public-mobile-page.account-page .auth-form,.account-page .recovery-panel{background:linear-gradient(145deg,#1c3826,#142c1e);border:1px solid #3b5640;border-top:3px solid #b99d5e;border-radius:21px;padding:25px 22px;box-shadow:0 16px 40px #07120b26}
+  .account-page .account-brand{margin-bottom:21px}.account-brand img{border-color:#e3e8d8}.account-page .account-brand span{color:#bfbd91}
+  .account-page .auth-form h2,.account-page .recovery-panel h1{color:#f3f5e8;font-size:23px;line-height:1.25}.account-page .account-intro,.account-page .recovery-panel>p{color:#adbea6;font-size:12px}
+  .account-page label{color:#d4dec9;font-size:11px;letter-spacing:.01em}.account-page input:not([type="checkbox"]){background:#10261a;border:1px solid #436047;color:#f0f3e6;border-radius:10px;min-height:48px;font-size:16px}.account-page input::placeholder{color:#8fa48b}.account-page input:focus{border-color:#b9a468;outline-color:#c7ae6929}
+  .account-page a,.account-page .auth-form a,.account-page .auth-panel a{color:#d4c48a}.account-page .auth-form>p:last-child{color:#adc0a7;border-color:#3c5540}.account-page .privacy-consent{color:#acbfa5;font-size:11px}.account-page .privacy-consent input{accent-color:#bba262}
+  .account-page .btn.primary{background:linear-gradient(105deg,#356a42,#508752);border-color:#6b965c;color:#fffbed;border-radius:10px;min-height:48px}.account-page .btn.primary:hover{background:#4b8050;color:#fffbed}
+  .account-page .password-toggle{color:#c3cf9c}.account-page .password-toggle:hover{background:#304d35}
+  .account-page .status.success:not(:empty){background:#244b31;border-color:#507b52;color:#e0efd1}.account-page .status.error:not(:empty){background:#422b24;border-color:#926a54;color:#ffdbc4}
+  .account-page .recovery-panel{margin:16px auto;max-width:460px}.account-page .recovery-panel>a{border-color:#3c5540}.account-page .recovery-panel .eyebrow{color:#c7b279}
+}
+@media(max-width:360px){.account-page .shell{padding-inline:14px}.account-page .auth-form,.public-mobile-page.account-page .auth-form,.account-page .recovery-panel{padding:23px 18px}.account-page .auth-panel h1{font-size:28px}}
+@media(max-width:850px){
+  body.account-page{background:#10251a;min-height:100dvh}
+  .account-page .shell{background:transparent;border-radius:0;padding-bottom:36px}
+  .account-page .auth-panel,.public-mobile-page.account-page .auth-panel{background:transparent;border:0;border-radius:0;box-shadow:none;padding:3px 4px 24px;min-height:0}
+  .account-page .auth-panel h1,.public-mobile-page.account-page .auth-panel h1{font-size:27px;line-height:1.2;margin:8px 0 10px}
+  .account-page .auth-panel .eyebrow{font-size:9px;letter-spacing:.1em}
+  .account-page .auth-panel>a{display:none}
+  .account-page .auth-panel p{margin-bottom:0}
+  .account-page .public-mobile-dock{display:none}
+  .account-page footer{padding-bottom:28px}
+}
+
+/* Readable account copy on both light and dark surfaces. */
+.account-page .account-intro,.account-page .recovery-panel>p,.account-page .privacy-consent{font-size:14px;line-height:1.7;color:#4d6252}
+.account-page label{font-size:14px;color:#324d3a}
+.account-page input::placeholder{color:#60715f;opacity:1}
+.account-page .account-brand span{color:#546347;font-size:11px}
+.account-page .auth-form>a,.account-page .auth-form>p:last-child,.account-page .recovery-panel>a{font-size:14px}
+.account-page .auth-form a,.account-page .recovery-panel a{color:#285c35;text-decoration:underline;text-underline-offset:3px}
+.account-page .btn.primary{font-size:14px;background:#285e39;color:#fff}
+.account-page .btn.primary:disabled{opacity:1;background:#405f48;border-color:#607b66;color:#fff;cursor:wait}
+.account-page .status:not(:empty){font-size:14px;line-height:1.7}
+@media(max-width:850px){
+  .account-page .account-intro,.account-page .recovery-panel>p,.account-page .privacy-consent,.account-page .auth-form>p:last-child{color:#d0ddc9;font-size:14px}
+  .account-page label{color:#ecf1e4;font-size:14px}
+  .account-page .account-brand span,.account-page .recovery-panel .eyebrow{color:#e3cf94}
+  .account-page input::placeholder{color:#b6c7ae;opacity:1}
+  .account-page .auth-form a,.account-page .recovery-panel a{color:#f0dba0}
+  .account-page .auth-panel p,.public-mobile-page.account-page .auth-panel p{color:#d0ddc9;font-size:14px}
+  .account-page .btn.primary,.account-page .btn.primary:hover{background:#32683f;color:#fff}
+  .account-page .btn.primary:disabled{background:#405f48;color:#fff;opacity:1}
+  .account-page footer{color:#becdb8;font-size:12px}
+}

@@ -50,12 +50,12 @@
     document.body.append(shade);
     const role=document.body.dataset.pageRole;
     const dock=document.createElement('nav');dock.className='mobile-dock';dock.setAttribute('aria-label','Mobile workspace');
-    const dockLinks=role==='farmer'?[['Home','farmer.html','home'],['Plantations','plantations.html','leaf'],['Map','atlas.html','map'],['Trees','trees.html','chart']]:[['Home',role+'.html','home'],['Farmers','farmers.html','people'],['Map','atlas.html','map'],['Harvests','harvests.html','harvest']];
+    const dockLinks=role==='farmer'?[['Home','farmer.html','home'],['Plantations','plantations.html','leaf'],['Map','atlas.html','map'],['Profile','farmers.html','people']]:[['Home',role+'.html','home'],['Farmers','farmers.html','people'],['Map','atlas.html','map'],['Reports','reports.html','chart']];
     for (const [label,href,image] of dockLinks) {
       const link=document.createElement('a');link.href=href;link.append(icon(image));
       const caption=document.createElement('span');caption.textContent=label;link.append(caption);
       if(image==='map')link.className='mobile-map-action';
-      if(location.pathname.endsWith('/'+href))link.setAttribute('aria-current','page');
+      if(location.pathname.replace(/\.html$/,'').endsWith('/'+href.replace(/\.html$/,'')))link.setAttribute('aria-current','page');
       dock.append(link);
     }
     dockMenu=document.createElement('button');dockMenu.type='button';dockMenu.setAttribute('aria-controls','workspace-nav');dockMenu.setAttribute('aria-expanded','false');
@@ -79,4 +79,10 @@
     document.documentElement.style.setProperty('--workspace-header', header.offsetHeight + 'px');
   }).observe(header);
   if (window.lucide) lucide.createIcons();
+  if(window.Chart&&window.matchMedia){
+    const mobileTheme=window.matchMedia('(max-width: 850px)');
+    const original={color:Chart.defaults.color,borderColor:Chart.defaults.borderColor};
+    const applyChartTheme=()=>{Chart.defaults.color=mobileTheme.matches?'#c6d4b2':original.color;Chart.defaults.borderColor=mobileTheme.matches?'#3a5740':original.borderColor;Object.values(Chart.instances).forEach(chart=>chart.update('none'));};
+    applyChartTheme();mobileTheme.addEventListener('change',applyChartTheme);
+  }
 })();

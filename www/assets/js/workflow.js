@@ -9,7 +9,7 @@ window.CacaoWorkflow = (() => {
   async function dashboard({farmers, plantations}) {
     document.getElementById('workflow-dashboard')?.remove();
     const role = currentAccount.profile.role;
-    const section = panel('Operational priorities', 'Review submissions, maintain plantation records, and coordinate field activities.'); section.id = 'workflow-dashboard';
+    const section = panel(role === 'farmer' ? 'My registration & mapping' : 'Operational priorities', role === 'farmer' ? 'Check your profile review and plantation registration progress.' : 'Review submissions, maintain plantation records, and coordinate field activities.'); section.id = 'workflow-dashboard';
     const process=node('details','','workflow-process');process.append(node('summary','Registration and monitoring workflow'),stages());section.append(process);
     const cards = node('div', '', 'workflow-grid'); section.append(cards);
     if (role === 'farmer') {

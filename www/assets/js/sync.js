@@ -162,7 +162,14 @@ window.CacaoSync = (() => {
     emit();
     if(window.CacaoOffline)await CacaoOffline.prepareLibraries();
   }
-  async function refreshBadge(){const badge=document.getElementById('field-sync-status');if(!badge)return;const queued=(await envelopes()).filter(row=>activeStates.includes(row.status));badge.textContent=(navigator.onLine?'Online':'Offline')+' · '+queued.length+' queued · '+(unlocked()?'unlocked':'locked');}
+  async function refreshBadge(){
+    const badge=document.getElementById('field-sync-status');if(!badge)return;
+    const rows=await envelopes(),queued=rows.filter(row=>activeStates.includes(row.status));
+    const attention=queued.filter(row=>row.status!=='pending').length;
+    const connection=navigator.onLine?'Online':'Offline';
+    const detail=attention?attention+' records need review in Sync & recovery.':queued.length?queued.length+' saved on this device — waiting to sync.':rows.some(row=>row.status==='synced')?'All queued submissions synced.':'No pending submissions on this device.';
+    badge.textContent=connection+' · '+detail+' '+(unlocked()?'Field data unlocked.':'Field data locked.');
+  }
   function accountReady(){
     if(actor&&actor!==account()?.user?.id)lock();refreshBadge().catch(()=>{});
     if(account()?.profile.role==='farmer'&&navigator.onLine)envelopes().then(rows=>{

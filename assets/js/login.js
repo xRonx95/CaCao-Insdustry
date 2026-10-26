@@ -74,7 +74,7 @@ async function start() {
     statusMessage('Loading the secure login service...');
     if(typeof ensureDatabaseClient==='function')await ensureDatabaseClient();
     if(!db)throw new Error('The login library is unavailable. Reload this page or contact the administrator.');
-    if(!signingIn&&version===initialization)statusMessage('Login service ready. Enter your email and password.');
+    if(!signingIn&&version===initialization)statusMessage('');
   }
   if(sessionStorage.getItem('cacao-logout-pending')||localStorage.getItem('cacao-logout-pending')) {
     if(!navigator.onLine)statusMessage('Connect to log in again after signing out.',true);
@@ -87,6 +87,7 @@ async function start() {
   }
   const {data,error}=await db.auth.getSession();if(error)throw error;
   if(signingIn||version!==initialization)return;
-  await redirectSession(data.session,false,version);
+  const restored=await redirectSession(data.session,false,version);
+  if(!restored&&!signingIn&&version===initialization)statusMessage('');
 }
 start().catch(error=>{if(!signingIn&&initialization===0)statusMessage(loginError(error),true);});

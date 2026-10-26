@@ -16,6 +16,6 @@ function fingerprint(html,directory){return html.replace(/\b(src|href)="([^"?#]+
   const hash=crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0,12);
   return attribute+'="'+reference+'?v='+hash+'"';
 });}
-for(const directory of [output,...['admin','farmer','field'].map(folder=>path.join(output,folder))])for(const file of fs.readdirSync(directory).filter(file=>file.endsWith('.html'))){const target=path.join(directory,file);fs.writeFileSync(target,fingerprint(fs.readFileSync(target,'utf8'),directory));}
+for(const directory of [output,...['admin','farmer','field'].map(folder=>path.join(output,folder))])for(const file of fs.readdirSync(directory).filter(file=>file.endsWith('.html'))){const target=path.join(directory,file);const html=fingerprint(fs.readFileSync(target,'utf8'),directory).replace(/\b(href|src)="([^":?#]+)\.html([?#][^"]*)?"/g,(_,attribute,reference,suffix)=>attribute+'="'+reference+(suffix||'')+'"');fs.writeFileSync(target,html);}
 execFileSync(process.execPath,[path.join(__dirname,'rebuild-offline-cache.cjs'),output],{stdio:'inherit'});
 console.log('Public release prepared in dist with versioned styles, scripts and images.');

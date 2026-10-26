@@ -2,24 +2,62 @@
 let mappingReady=false, mappingData={boundary:null,area_sqm:0,capture_method:'manual',gps_accuracy:[],gps_samples:[]};
 let originalFarm=null, registeredFarmers=[];
 let pendingRecordId=crypto.randomUUID(),pendingChangeId=crypto.randomUUID();
+let mappingTab=null,mappingTabReady=false;
+const mappingBridge=crypto.randomUUID();
 function sendBoundary(){
-  if(!mappingReady)return;
-  $('boundary-map').contentWindow.postMessage({type:'load-boundary',...mappingData,draftId:'walking-'+currentAccount.user.id+'-'+(originalFarm?.id||'new')},location.origin);
+  if(!currentAccount)return;
+  const payload={type:'load-boundary',...mappingData,draftId:'walking-'+currentAccount.user.id+'-'+(originalFarm?.id||pendingRecordId)};
+  if(mappingReady)$('boundary-map').contentWindow.postMessage(payload,location.origin);
+  if(mappingTabReady&&mappingTab&&!mappingTab.closed)mappingTab.postMessage({...payload,bridge:mappingBridge},location.origin);
 }
+function openMapping(){
+  if(!currentAccount)return;
+  if(mappingTab&&!mappingTab.closed){mappingTab.focus();return;}
+  mappingTabReady=false;
+  mappingTab=window.Capacitor?.isNativePlatform?.()?null:window.open('mapping.html?full=1&bridge='+encodeURIComponent(mappingBridge),'cacao-mapping-'+mappingBridge);
+  if(!mappingTab){
+    document.body.classList.add('mapping-expanded');
+    $('close-expanded-map').hidden=false;
+    notify('form-status','Your browser kept mapping in this page. Use Return to plantation form when finished.');
+  }
+}
+$('open-mapping').addEventListener('click',openMapping);
+$('close-expanded-map').addEventListener('click',()=>{document.body.classList.remove('mapping-expanded');$('close-expanded-map').hidden=true;});
 window.addEventListener('message',event=>{
-  if(event.origin!==location.origin||event.source!==$('boundary-map').contentWindow)return;
-  if(event.data?.type==='mapping-ready'){mappingReady=true;if(currentAccount)sendBoundary();}
-  if(event.data?.type==='boundary-change')mappingData=event.data.value;
+  if(event.origin!==location.origin)return;
+  const frame=event.source===$('boundary-map').contentWindow;
+  const tab=mappingTab&&event.source===mappingTab&&event.data?.bridge===mappingBridge;
+  if(!frame&&!tab)return;
+  if(event.data?.type==='open-mapping'&&frame){openMapping();return;}
+  if(event.data?.type==='mapping-ready'){if(frame)mappingReady=true;else mappingTabReady=true;sendBoundary();}
+  if(['boundary-change','mapping-finished'].includes(event.data?.type)&&event.data.value){
+    mappingData=event.data.value;
+    if(event.data.type==='mapping-finished'){
+      mappingReady=true;mappingTabReady=false;
+      $('boundary-map').contentWindow.postMessage({type:'load-boundary',...mappingData,draftId:'walking-'+currentAccount.user.id+'-'+(originalFarm?.id||pendingRecordId)},location.origin);
+      notify('form-status','Boundary returned from mapping. Review the plantation details and save the plantation.');
+    }
+  }
 });
+function useFarmerAccount(){
+  if(currentAccount.profile.role!=='farmer')return;
+  $('farmer-label').textContent='Farmer account';
+  $('owner-name').readOnly=true;
+  const select=$('farmer-record');select.value=registeredFarmers[0]?.id||'';select.disabled=registeredFarmers.length===1;
+  $('farmer-account-note').textContent='Using your signed-in farmer account: '+(currentAccount.user.email||currentAccount.profile.display_name||'Verified farmer')+'.';
+  setFarmer();
+}
 function setFarmer(){
   const farmer=registeredFarmers.find(row=>row.id===$('farmer-record').value);
   $('owner-name').value=farmer?.full_name||'';
   if(farmer&&!originalFarm){$('barangay').value=farmer.barangay||'';$('municipality').value=farmer.municipality||'Isabela City';$('province').value=farmer.province||'Basilan';}
 }
 function resetForm(){
-  pendingRecordId=crypto.randomUUID();pendingChangeId=crypto.randomUUID();originalFarm=null;history.replaceState(null,'','plantation-form.html');$('plantation-form').reset();$('plantation-id').value='';$('form-title').textContent='Register a plantation';$('plantation-photos').replaceChildren();
+  if(mappingTab&&!mappingTab.closed){notify('form-status','Finish mapping and return before starting a different plantation.',true);return;}
+  mappingTab=null;mappingTabReady=false;
+  pendingRecordId=crypto.randomUUID();pendingChangeId=crypto.randomUUID();originalFarm=null;history.replaceState(null,'',location.pathname);$('plantation-form').reset();$('plantation-id').value='';$('form-title').textContent='Register a plantation';$('plantation-photos').replaceChildren();
   mappingData={boundary:null,area_sqm:0,capture_method:'manual',gps_accuracy:[],gps_samples:[]};sendBoundary();
-  $('municipality').value='Isabela City';$('province').value='Basilan';notify('form-status','');
+  $('municipality').value='Isabela City';$('province').value='Basilan';useFarmerAccount();notify('form-status','');
 }
 $('farmer-record').addEventListener('change',setFarmer);
 $('reset-farm').addEventListener('click',resetForm);
@@ -27,14 +65,16 @@ $('plantation-form').addEventListener('submit',async event=>{
   event.preventDefault();$('save-farm').disabled=true;
   let saved=false,photoPath;
   try{
+    if(mappingTab&&!mappingTab.closed)throw new Error('Choose Use boundary and return in the mapping tab before saving this plantation.');
     const farmer=registeredFarmers.find(row=>row.id===$('farmer-record').value);
     if(!farmer)throw new Error('Select a registered farmer. Create their profile first if it is not listed.');
+    if(currentAccount.profile.role==='farmer'&&farmer.owner_id!==currentAccount.user.id)throw new Error('Choose a profile belonging to your signed-in farmer account.');
     if(originalFarm&&originalFarm.owner_id!==farmer.owner_id)throw new Error('Choose a farmer profile owned by the existing plantation account. Ownership cannot be transferred here.');
     if(!mappingReady||!mappingData.boundary)throw new Error('Draw or walk a valid boundary before saving.');
     const count=Number($('tree-count').value);if(!Number.isSafeInteger(count)||count<0)throw new Error('Tree count must be a non-negative whole number.');
     const record={
       ...(originalFarm?{id:originalFarm.id,revision:originalFarm.revision}:{id:pendingRecordId,revision:null}),_change_id:pendingChangeId,
-      owner_id:farmer.owner_id,farmer_id:farmer.id,farmer_name:farmer.full_name,
+      owner_id:farmer.owner_id,farmer_id:farmer.accountLink?null:farmer.id,farmer_name:farmer.full_name,
       name:$('farm-name').value.trim(),barangay:$('barangay').value.trim(),municipality:$('municipality').value.trim(),province:$('province').value.trim(),
       tree_count:count,variety:$('variety').value,notes:$('notes').value.trim(),address:$('plantation-address').value.trim(),land_tenure:$('land-tenure').value,
       established_on:$('established-on').value||null,status:$('plantation-status').value,
@@ -70,14 +110,23 @@ async function startForm(){
   if(!await requireSession())return;
   registeredFarmers=await listAll('farmers');
   if(window.CacaoSync)registeredFarmers=await CacaoSync.recordsForPicker('farmers',registeredFarmers);
-  for(const farmer of registeredFarmers){const option=document.createElement('option');option.value=farmer.id;option.textContent=farmer.full_name+' · '+(farmer.barangay||'')+' · '+(farmer._offline_pending?'queued':farmer.registration_status);$('farmer-record').append(option);}
+  if(currentAccount.profile.role==='farmer'){
+    registeredFarmers=registeredFarmers.filter(row=>row.owner_id===currentAccount.user.id);
+    if(!registeredFarmers.length)registeredFarmers=[{id:'account:'+currentAccount.user.id,owner_id:currentAccount.user.id,full_name:currentAccount.profile.display_name||currentAccount.user.user_metadata?.full_name||currentAccount.user.email||'Farmer account',accountLink:true}];
+  }
+  for(const farmer of registeredFarmers){const option=document.createElement('option');option.value=farmer.id;option.textContent=farmer.full_name+' - '+(farmer.accountLink?'Signed-in account':farmer._offline_pending?'Queued profile':farmer.registration_status||'Registered profile');$('farmer-record').append(option);}
   if(!registeredFarmers.length)notify('form-status','Create a farmer profile in Farmer profiles before registering a plantation.');
+  useFarmerAccount();
   $('verification-field').classList.add('hidden');
   const id=new URLSearchParams(location.search).get('id');
   if(id){
     const data=await getRecord('plantations',id);originalFarm=data;
     const values={'plantation-id':data.id,'farmer-record':data.farmer_id,'farm-name':data.name,'owner-name':data.farmer_name,'barangay':data.barangay,'municipality':data.municipality,'province':data.province,'tree-count':data.tree_count,'variety':data.variety,'notes':data.notes,'plantation-address':data.address,'land-tenure':data.land_tenure,'established-on':data.established_on,'plantation-status':data.status,'verification-status':data.verification_status};
     for(const [key,value]of Object.entries(values))$(key).value=value??'';
+    if(currentAccount.profile.role==='farmer'){
+      $('farmer-record').value=data.farmer_id||registeredFarmers[0]?.id||'';
+      setFarmer();
+    }
     mappingData={boundary:data.boundary,area_sqm:data.area_sqm,capture_method:data.capture_method,gps_accuracy:data.gps_accuracy||[],gps_samples:data.gps_samples||[]};
     $('form-title').textContent='Edit: '+data.name;
     const version=new URLSearchParams(location.search).get('version');

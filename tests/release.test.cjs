@@ -17,5 +17,9 @@ test('installable web app has stable identity and correctly sized local icons',(
 });
 test('Vercel builds the public release and includes required build inputs',()=>{
   const config=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));assert.equal(config.outputDirectory,'dist');assert.equal(config.buildCommand,'node scripts/prepare-release.cjs');
+  assert.equal(config.cleanUrls,true);
   const rules=fs.readFileSync(path.join(root,'.vercelignore'),'utf8');assert(rules.includes('!scripts/prepare-release.cjs'));assert(rules.includes('!scripts/rebuild-offline-cache.cjs'));
+});
+test('deployed navigation and mapping frames use extensionless paths',()=>{
+  const html=fs.readFileSync(path.join(root,'dist/farmer/plantation-form.html'),'utf8');assert(html.includes('href="plantations"'));assert(html.includes('src="mapping"'));assert(!/\b(?:href|src)="[^":]+\.html(?:[?#][^"]*)?"/.test(html));
 });

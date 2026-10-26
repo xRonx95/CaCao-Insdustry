@@ -298,13 +298,13 @@ window.CacaoApp = (() => {
     });await refresh();
   }
 
-  function chart(id,type,labels,data,label) {
+  function chart(id,type,labels,data,label,unavailable=false) {
     const canvas=el(id);if(!canvas)return;
     const box=canvas.parentElement;
-    if(!labels.length||!window.Chart){
+    if(unavailable||!labels.length||!window.Chart){
       canvas.hidden=true;box.classList.add('chart-empty');
-      const title=text('strong',!labels.length?'No records available':'Chart temporarily unavailable');
-      const detail=text('p',!labels.length?'This chart will appear after the first authorized record is submitted.':'Recorded totals remain available. Reconnect to load the chart library.');
+      const title=text('strong',unavailable?'Records could not be loaded':!labels.length?'No records available':'Chart temporarily unavailable');
+      const detail=text('p',unavailable?'Reconnect and reload to retry. No total has been inferred from this failed request.':!labels.length?'This chart will appear after the first authorized record is submitted.':'Recorded totals remain available. Reconnect to load the chart library.');
       box.append(title,detail);return;
     }
     state.charts.push(new Chart(el(id),{type,data:{labels,datasets:[{label,data,backgroundColor:['#287a4b','#754c32','#9fba85','#c3a561','#173d2b'],borderColor:'#287a4b',tension:.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut'}},scales:type==='doughnut'?{}:{y:{beginAtZero:true}}}}));
@@ -319,39 +319,42 @@ window.CacaoApp = (() => {
     };
     const [farmers,plantations,workers]=await Promise.all(['farmers','plantations','workers'].map(t=>t==='workers'&&!staff()?[]:listAll(t)));
     window.CacaoWorkflow?.dashboard({farmers,plantations}).catch(error=>message(error.message,true));
+    window.CacaoFarmerHome?.render({farmers,plantations}).catch(()=>message('Some farm reminders could not load. Your farm tools remain available.',true));
     const area=plantations.reduce((sum,farm)=>sum+Number(farm.area_sqm||0),0);
     const metrics={'farmers':farmers.length,'farms':plantations.length,'trees':plantations.reduce((s,f)=>s+Number(f.tree_count),0),'sqm':number(area),'ha':(area/10000).toFixed(4),'workers':workers.length,'active':plantations.filter(f=>f.status==='active').length,'pending':farmers.filter(f=>f.registration_status==='pending').length};
     for(const [key,value] of Object.entries(metrics))if(el('stat-'+key))el('stat-'+key).textContent=typeof value==='number'?number(value):value;
     el('stat-pending-maps').textContent=number(plantations.filter(row=>row.verification_status==='pending').length);
     drawMap(plantations,'dashboard-map');
     message('Overview loaded. Loading production and activity details…');
-    const [inventory,activity,harvests,gpsSessions]=await Promise.all([
+    const details=await Promise.allSettled([
       listAll('cacao_tree_inventories'),recent('activity_logs','id,action,record_type,created_at',6),
       listAll('harvests'),recent('gps_tracking_sessions','id,plantation_id,boundary_revision,created_at',5)
     ]);
-    el('stat-dry').textContent=number(harvests.reduce((sum,row)=>sum+Number(row.dry_bean_kg),0));
-    el('stat-wet').textContent=number(harvests.reduce((sum,row)=>sum+Number(row.wet_bean_kg),0));
+    const [inventory,activity,harvests,gpsSessions]=details.map(outcome=>outcome.status==='fulfilled'?outcome.value:[]);
+    el('stat-dry').textContent=details[2].status==='rejected'?'Unavailable':number(harvests.reduce((sum,row)=>sum+Number(row.dry_bean_kg),0));
+    el('stat-wet').textContent=details[2].status==='rejected'?'Unavailable':number(harvests.reduce((sum,row)=>sum+Number(row.wet_bean_kg),0));
     el('stat-pending-maps').textContent=number(plantations.filter(row=>row.verification_status==='pending').length);
     const monthlyProduction=group(harvests,row=>row.harvest_date.slice(0,7),row=>row.dry_bean_kg);
     const production=[...monthlyProduction].sort((a,b)=>a[0].localeCompare(b[0]));
-    chart('production-overview-chart','bar',production.map(row=>row[0]),production.map(row=>row[1]),'Dry beans harvested (kg)');
+    chart('production-overview-chart','bar',production.map(row=>row[0]),production.map(row=>row[1]),'Dry beans harvested (kg)',details[2].status==='rejected');
     const gpsList=el('recent-gps');gpsList.replaceChildren();
     for(const session of gpsSessions.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,5))gpsList.append(text('li',(plantations.find(farm=>farm.id===session.plantation_id)?.name||'Plantation')+' · revision '+(session.boundary_revision||'legacy')+' · '+dateTime(session.created_at)));
-    if(!gpsSessions.length)gpsList.append(text('li','No GPS sessions recorded. Saved mapping sessions will appear here.','empty-list-item'));
+    if(!gpsSessions.length)gpsList.append(text('li',details[3].status==='rejected'?'GPS history could not be loaded. Reconnect and reload to retry.':'No GPS sessions recorded. Saved mapping sessions will appear here.','empty-list-item'));
     const registrations=group(farmers,f=>f.created_at.slice(0,7));const monthly=[...registrations].sort((a,b)=>a[0].localeCompare(b[0]));
     chart('registration-chart','bar',monthly.map(v=>v[0]),monthly.map(v=>v[1]),'Farmer registrations');
     const barangays=group(plantations,f=>f.barangay);
     chart('distribution-chart','doughnut',[...barangays.keys()],[...barangays.values()],'Plantations');
     const latest=new Map();inventory.sort((a,b)=>a.inventory_date.localeCompare(b.inventory_date)||a.created_at.localeCompare(b.created_at));
     const trend=new Map();for(const entry of inventory){latest.set(entry.plantation_id,entry.total_trees);trend.set(entry.inventory_date,[...latest.values()].reduce((s,v)=>s+v,0));}
-    chart('tree-chart','line',[...trend.keys()],[...trend.values()],'Latest known inventory total over time');
+    chart('tree-chart','line',[...trend.keys()],[...trend.values()],'Latest known inventory total over time',details[0].status==='rejected');
     const list=el('recent-activity');list.replaceChildren();
     const recentActivity=activity.sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,6);
     for(const row of recentActivity)list.append(text('li',row.action+' · '+(row.record_type||'record')+' · '+dateTime(row.created_at)));
-    if(!recentActivity.length)list.append(text('li','No activity recorded. Authorized submissions and changes will appear here.','empty-list-item'));
+    if(!recentActivity.length)list.append(text('li',details[1].status==='rejected'?'Activity history could not be loaded. Reconnect and reload to retry.':'No activity recorded. Authorized submissions and changes will appear here.','empty-list-item'));
     const body=el('barangay-body');for(const [name,count] of barangays){const tr=document.createElement('tr');tr.append(text('td',name),text('td',count),text('td',humanArea(plantations.filter(f=>f.barangay===name).reduce((s,f)=>s+Number(f.area_sqm),0))));body.append(tr);}
     if(!barangays.size){const td=text('td','No plantations recorded.');td.colSpan=3;const tr=document.createElement('tr');tr.append(td);body.append(tr);}
-    message('Overview updated from records available to your account.');
+    const incomplete=details.some(outcome=>outcome.status==='rejected');
+    message(incomplete?'Some dashboard records could not load. Available records are shown; unavailable totals are not treated as zero. Reconnect and reload to retry.':'Overview updated from records available to your account.',incomplete);
   }
   function drawMap(plantations,id='atlas-map') {
     if(!window.L){if(el(id))el(id).textContent='Map library unavailable. Check your internet connection.';message('Map library unavailable. Statistics and records remain available; check your connection to load maps.',true);return false;}

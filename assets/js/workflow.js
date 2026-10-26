@@ -9,7 +9,7 @@ window.CacaoWorkflow = (() => {
   async function dashboard({farmers, plantations}) {
     document.getElementById('workflow-dashboard')?.remove();
     const role = currentAccount.profile.role;
-    const section = panel('Operational priorities', 'Review submissions, maintain plantation records, and coordinate field activities.'); section.id = 'workflow-dashboard';
+    const section = panel(role === 'farmer' ? 'My registration & mapping' : 'Operational priorities', role === 'farmer' ? 'Check your profile review and plantation registration progress.' : 'Review submissions, maintain plantation records, and coordinate field activities.'); section.id = 'workflow-dashboard';
     const process=node('details','','workflow-process');process.append(node('summary','Registration and monitoring workflow'),stages());section.append(process);
     const cards = node('div', '', 'workflow-grid'); section.append(cards);
     if (role === 'farmer') {
@@ -62,7 +62,7 @@ window.CacaoWorkflow = (() => {
       }
       const groups = panel('Farm records', 'Open a section to view records and add updates for this plantation.'); const grid = node('div', '', 'workflow-grid'); groups.append(grid);
       const suffix = '?plantation=' + encodeURIComponent(id);
-      const sections = [['Tree inventories','Latest counts and inventory history.','trees'],['Harvest & production','Pods, wet beans and dry beans.','harvests'],['Pest reports','Observations, severity and resolution.','pests'],['Treatments','Treatment records and next inspection dates.','treatments'],['Maintenance','Pruning, fertilizer, irrigation and weeding.','maintenance'],['Tree events','Planting, mortality and replacement.','tree-events'],['Tree tags','Individual tree records.','tree-tags']];
+      const sections = [['Tree inventories','Latest counts and inventory history.','trees'],['Harvest & production','Pods, wet beans and dry beans.','harvests'],['Harvest batches','Track fermentation, drying, quality, storage and sale.','batches'],['Pest reports','Observations, severity and resolution.','pests'],['Treatments','Treatment records and next inspection dates.','treatments'],['Maintenance','Pruning, fertilizer, irrigation and weeding.','maintenance'],['Tree events','Planting, mortality and replacement.','tree-events'],['Tree tags','Individual tree records.','tree-tags']];
       if (currentAccount.profile.role !== 'farmer') sections.push(['Tasks','Schedule work and track completion.','tasks'],['Inspections','Follow up on pest and disease reports.','inspections'],['Attendance','Worker attendance and hours.','attendance']);
       for (const [title, description, page] of sections) action(grid, title, description, page + '.html' + suffix);
       root.append(groups);

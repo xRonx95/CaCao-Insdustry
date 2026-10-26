@@ -10,6 +10,6 @@ form.addEventListener('submit',async event=>{
     const {data,error:sessionError}=await db.auth.getSession();
     if(sessionError||!data.session)throw new Error('Open a valid recovery or invitation link from your email first.');
     const {error}=await db.auth.updateUser({password});if(error)throw error;
-    await db.auth.signOut();form.reset();status.textContent='Password updated. You can now log in with your new password.';
-  }catch(error){status.textContent=error.message;}finally{button.disabled=false;}
+    await db.auth.signOut();form.reset();status.className='status success';status.setAttribute('role','status');status.textContent='Password updated. You can now log in with your new password.';
+  }catch(error){status.className='status error';status.setAttribute('role','alert');status.textContent=error.message;}finally{button.disabled=false;}
 });

@@ -4,3 +4,6 @@ textarea { width: 100%; resize: vertical; font: inherit; padding: 12px; border: 
 textarea:focus { outline: 2px solid #37865b; }
 #photo-preview { display: block; max-width: 100%; max-height: 320px; border-radius: 10px; object-fit: contain; }
 #publish-post { justify-self: start; }
+
+#confirm-public-post{width:20px;height:20px;min-height:20px;margin:0 10px 0 0;accent-color:#3b7448;vertical-align:middle;flex-shrink:0}
+label:has(>#confirm-public-post){display:flex;align-items:flex-start;gap:8px;line-height:1.7;font-size:14px}

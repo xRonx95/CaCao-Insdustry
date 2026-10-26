@@ -31,6 +31,7 @@ $('post-form').addEventListener('submit', async event => {
   let published = false;
   button.disabled = true;
   try {
+    if (!$('confirm-public-post').checked) throw new Error('Confirm that you want to share this update publicly before publishing.');
     const farmerName = $('farmer-name').value.trim();
     const caption = $('caption').value.trim();
     const file = $('photo').files[0];

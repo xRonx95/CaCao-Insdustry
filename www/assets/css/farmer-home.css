@@ -1,0 +1,12 @@
+.farmer-daily{margin:0 0 26px}.farmer-daily>h2{margin:0;font-size:22px;color:#21462f}.farmer-daily>p{color:#475f4f;font-size:14px;line-height:1.7}
+.farmer-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}.farmer-actions .btn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;font-size:14px;color:#fff;background:#285e39;border-color:#285e39;border-radius:10px}
+.farmer-home-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.farmer-home-grid .panel{margin:0;padding:22px;min-width:0}.farmer-home-grid h3{font-size:17px;color:#21462f}.farmer-home-grid p{font-size:14px;color:#475f4f;line-height:1.7}.farmer-home-grid .btn{font-size:14px;min-height:44px}
+.farmer-farm-row{padding:16px 0;border-bottom:1px solid #d9e4db}.farmer-farm-row:last-child{border:0}.farmer-farm-row strong{color:#21462f}.farmer-privacy{margin-top:20px}
+.farmer-reports>summary{padding:18px;margin-bottom:20px;border:1px solid #9bb29f;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;color:#21462f}
+.farmer-guide{margin-top:24px;padding:22px;background:#fff;border:1px solid #cddccd;border-radius:14px}.farmer-guide h3{color:#21462f;font-size:18px;margin-top:0}.farmer-guide label{max-width:230px;font-size:14px}.farmer-guide ol{padding-left:22px}.farmer-guide li{padding:12px 0;border-bottom:1px solid #d9e4db}.farmer-guide .btn{min-height:44px;font-size:14px}.guide-status{display:block;font-size:13px;font-weight:600;color:#475f4f;margin-bottom:6px}
+@media(max-width:850px){
+ .farmer-actions{grid-template-columns:1fr 1fr}.farmer-home-grid{grid-template-columns:1fr}.farmer-daily>h2,.farmer-home-grid h3,.farmer-farm-row strong{color:#f1f5e8}
+ .farmer-daily>p,.workspace-page .farmer-home-grid p{color:#d0ddc9;font-size:14px}.farmer-actions .btn{background:#32683f;color:#fff;border-color:#6a956a;font-size:14px}.farmer-actions .btn:hover{background:#3a744a;color:#fff}.farmer-farm-row{border-color:#3b5740}
+ .farmer-reports>summary{color:#edf3e4;border-color:#55745a}.workspace-page .farmer-actions .btn.secondary{background:#32683f;color:#fff;border-color:#6a956a}
+ .farmer-guide{background:#183323;border-color:#55745a}.farmer-guide h3{color:#f1f5e8}.guide-status{color:#d0ddc9}.farmer-guide li{border-color:#3b5740}
+}

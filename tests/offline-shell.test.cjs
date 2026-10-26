@@ -40,6 +40,10 @@ test('offline shell restores parameterized private-page shells without caching p
   }
   assert.equal(puts.length, 0);
 });
+test('extensionless plantation routes restore their cached HTML shell offline',async()=>{
+  const {listeners,stored}=shell();const expected={publicShell:true};stored.set('https://cacao.example/farmer/plantation-form.html',expected);let response;
+  listeners.fetch({request:{method:'GET',url:'https://cacao.example/farmer/plantation-form?id=record-a'},respondWith:promise=>response=promise});assert.equal(await response,expected);
+});
 test('directory filters combine farmer search, barangay, farm status and review status', () => {
   const context = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../assets/js/plantation-directory.js'), 'utf8'), context);

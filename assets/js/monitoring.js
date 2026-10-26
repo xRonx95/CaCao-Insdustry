@@ -68,11 +68,11 @@ window.CacaoMonitoring = (() => {
       });}
       const labels={plantation:'Plantation',pest:'Pest report',worker:'Worker',dry_kg_per_ha:'Dry kg/ha',wet_bean_kg:'Wet kg',dry_bean_kg:'Dry kg',estimated_value_php:'Value (PHP)'};
       function display(row,key){if(key==='plantation')return farms.find(f=>f.id===row.plantation_id)?.name||row.plantation_id;if(key==='worker')return workers.find(w=>w.id===row.worker_id)?.full_name||'—';if(key==='pest')return pests.find(p=>p.id===row.pest_report_id)?.pest_name||'—';if(key==='tree_age_months'){if(!row.planted_on)return 'Unknown';const planted=new Date(row.planted_on),now=new Date();return Math.max(0,(now.getFullYear()-planted.getFullYear())*12+now.getMonth()-planted.getMonth());}return typeof row[key]==='number'?Number(row[key]).toLocaleString(undefined,{maximumFractionDigits:3}):row[key]??'—';}
-      function render(){
+      function render(printing=false){
         const matches=filtered(),max=Math.max(0,Math.ceil(matches.length/15)-1);page=Math.min(page,max);
         $('monitor-head').replaceChildren(...definition.columns.map(key=>node('th',labels[key]||key.replaceAll('_',' '))),node('th','Actions'));
         const body=$('monitor-body');body.replaceChildren();
-        for(const row of matches.slice(page*15,page*15+15)){
+        for(const row of (printing?matches:matches.slice(page*15,page*15+15))){
           const tr=document.createElement('tr');for(const key of definition.columns)tr.append(node('td',display(row,key)));
           const actions=document.createElement('td');
           if(definition.mutable&&(!definition.staffOnly||staff())){
@@ -124,7 +124,12 @@ window.CacaoMonitoring = (() => {
           let saved;
           if(window.CacaoSync)saved=await CacaoSync.submit({changeId,entity:definition.table,recordId,expected:editing?.updated_at||null,payload:{...values,owner_id:farm.owner_id}});
           else {const query=editing?db.from(definition.table).update(values).eq('id',editing.id).eq('updated_at',editing.updated_at):db.from(definition.table).insert({...values,id:recordId,owner_id:farm.owner_id});const row=await get(query.select().maybeSingle());if(!row)throw new Error('This record changed. Refresh before editing again.');saved={status:'synced',record:row};}
-          reset();if(saved.status==='synced')await refresh();message(saved.status==='queued'?'Saved in the encrypted queue. It will retry when connected and unlocked.':'Agricultural record saved.');
+          reset();
+          if(saved.status==='synced'){
+            try{await refresh();}
+            catch(error){message('Your record was saved and confirmed, but the history could not reload. Refresh the history before entering it again.',true);return;}
+          }
+          message(saved.status==='queued'?'Saved on this device in the encrypted queue. Waiting to sync when connected and unlocked.':'Record saved and confirmed by the server.');
         }catch(error){message(error.message,true);}finally{button.disabled=false;}
       });
       function exportRows(summary=false){
@@ -134,7 +139,16 @@ window.CacaoMonitoring = (() => {
         const url=URL.createObjectURL(new Blob([content],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=feature+(summary?'-production':'')+'.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
       }
       $('monitor-export').addEventListener('click',()=>exportRows());$('production-export')?.addEventListener('click',()=>exportRows(true));
-      $('monitor-print').addEventListener('click',()=>window.print());
+      const printContext=node('p','');printContext.className='monitor-print-context';
+      $('monitor-print').closest('section')?.prepend(printContext);
+      function preparePrint(){
+        const farm=farms.find(row=>row.id===$('farm-filter').value);
+        printContext.textContent='CaAPs · '+feature.replaceAll('-',' ')+' · '+(farm?.name||'All authorized plantations')+' · '+($('monitor-from').value||'Any start date')+' to '+($('monitor-to').value||'Any end date')+' · Search: '+($('monitor-search').value.trim()||'None')+' · '+filtered().length+' matching records · Generated '+new Date().toLocaleString('en-PH',{timeZone:'Asia/Manila'})+' (Asia/Manila).';
+        render(true);
+      }
+      window.addEventListener('beforeprint',preparePrint);
+      window.addEventListener('afterprint',()=>render());
+      $('monitor-print').addEventListener('click',()=>{preparePrint();window.print();});
       if(feature==='tree-tags')$('tag-location').addEventListener('click',()=>{if(!navigator.geolocation)return message('Geolocation unavailable.',true);navigator.geolocation.getCurrentPosition(position=>{$('latitude').value=position.coords.latitude;$('longitude').value=position.coords.longitude;message('Tree location captured; reported accuracy ±'+Math.round(position.coords.accuracy)+' m.');},error=>message(error.message,true),{enableHighAccuracy:true,timeout:20000});});
       await refresh();
     }catch(error){message(error.message,true);}

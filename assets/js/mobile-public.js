@@ -29,8 +29,8 @@
   for(const [label,href,name]of [['Home','index.html','home'],['About','about.html','about'],['Share','login.html','share'],['Impact','impact.html','impact'],['Account','login.html','user']]){
     const link=document.createElement('a');link.href=href;link.append(icon(name));const caption=document.createElement('span');caption.textContent=label;link.append(caption);
     if(name==='share')link.className='public-share-action';
-    const page=location.pathname.split('/').pop()||'index.html';
-    if(page===href&&name!=='share')link.setAttribute('aria-current','page');
+    const page=(location.pathname.split('/').pop()||'index').replace(/\.html$/,'');
+    if(page===href.replace(/\.html$/,'')&&name!=='share')link.setAttribute('aria-current','page');
     dock.append(link);
   }
   document.body.append(dock);

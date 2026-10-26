@@ -66,8 +66,8 @@ async function main(){
   if(!fs.existsSync(chrome))throw new Error('Set CHROME_PATH to an installed Chromium browser.');
   browser=spawn(chrome,['--headless','--no-sandbox','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:'ignore',windowsHide:true});
   const portFile=path.join(profile,'DevToolsActivePort');
-  await waitFor(()=>fs.existsSync(portFile),'Chrome debugger startup');
-  const debugPort=fs.readFileSync(portFile,'utf8').split('\n')[0];
+  let debugPort;
+  await waitFor(()=>{try{debugPort=fs.readFileSync(portFile,'utf8').split('\n')[0];return /^\d+$/.test(debugPort);}catch{return false;}},'Chrome debugger startup');
   const target=await(await fetch('http://127.0.0.1:'+debugPort+'/json/new?about:blank',{method:'PUT'})).json();
   const ws=new WebSocket(target.webSocketDebuggerUrl);debugSocket=ws;await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
   let id=0;const pending=new Map(),events=new Map(),errors=[];

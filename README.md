@@ -175,3 +175,37 @@ Open `install.html` on the deployed HTTPS site and install CaAPs through the bro
 The existing Capacitor APK remains a bundled native app. It does not gain web-delivered updates simply because the website changes. Use the installable web app once for website-delivered updates without subsequent APK installations. Synchronize existing APK submissions before switching: browser and native device-local encrypted drafts are separate. Native plugin/permission changes and database migrations still need their own deployment process. No hosted `server.url` live-reload shortcut was added to the production APK.
 
 Chart.js is bundled locally. Empty dashboard charts show a record-specific empty state instead of misleading empty axes. Browser layout checks use isolated fixtures: `node tests/browser-design.cjs` verifies desktop/mobile widths, dashboard order, empty states and menu operation. Full automated checks include `tests/release.test.cjs` and `tests/app-updates.test.cjs`; run the build before release tests.
+
+## Farmer account ownership, mapping tabs and clean URLs
+
+Farmer plantation forms only list farmer profiles owned by the signed-in account and preselect the first linked profile. When no separate farmer registry profile exists, the form uses the verified account owner and display name with `farmer_id: null`; it does not create a fake registry entry or approval. The existing database schema supports this nullable link. Staff still choose a real authorized farmer profile. Multiple profiles belonging to one farmer account remain selectable.
+
+Use Start mapping in a new tab to open the dedicated, map-first editor. Keep the plantation form open, then choose Use boundary and return and save the plantation. Mapping messages check the origin, source window and a random per-form bridge token. GPS points and boundaries travel in memory; encrypted drafts remain opt-in. Blocked popups and native Capacitor containers use an expanded in-page editor so the form stays intact. Reopening a map with captured but unfinished GPS points keeps them available to resume.
+
+The bundled Turf geometry engine is pinned to 7.2.0 and tested with dynamic code generation disabled, keeping the existing CSP intact. Its feature-collection intersection interface is used for overlap checks.
+
+Vercel cleanUrls is enabled. Published HTML navigation and mapping frames use extensionless links; old `.html` requests remain compatible through Vercel redirects. Source files and the native bundle keep physical HTML filenames for local/native compatibility. Offline cache routing resolves clean paths to their public HTML shells. Existing authentication redirect URLs can continue using `.html`; test email recovery/invitation redirects on the deployed origin. Configuration reference: https://vercel.com/docs/project-configuration/vercel-json .
+
+Checks: `node --test tests/plantation-mapping.test.cjs tests/map-library.test.cjs tests/offline-shell.test.cjs tests/release.test.cjs` after building, and `node tests/browser-plantation.cjs` for the mapping-window boundary round trip with isolated account fixtures. Actual mobile GPS accuracy and native-container window behavior still need device verification.
+
+## Mobile app presentation
+
+`assets/css/mobile-app.css` is loaded after the shared professional theme. It applies only at widths up to 850 px: deep forest-green surfaces, leaf-green buttons and warm gold accents, gradient summary cards, horizontal action chips, a two-column work grid and compact bottom navigation. Desktop keeps the light presentation. Public, authentication, record, review and mapping pages share the mobile palette; map tiles remain unfiltered. Farmer bottom navigation provides Home, Plantations, Map, Profile and More; staff navigation provides Home, Farmers, Map, Reports and More. Chart labels adapt to the breakpoint.
+
+The preview at `docs/previews/mobile-dashboard.png` uses isolated test records and is excluded from the deployment. Publish the current release for installed web-app users to receive the theme on a subsequent online load. The prepared `www` bundle also contains the theme for future native builds; an already-installed bundled APK does not update its files from a website deployment.
+
+## Brand-aligned account pages
+
+Login, signup, forgotten-password and reset-password pages use `assets/css/account.css` after the shared styles. They share a CaAPs identity block, consistent labels, password visibility controls, green primary buttons and gold navigation accents. Mobile pages retain the dark app format with the logo?s green/gold palette; account screens omit the floating community navigation to keep forms unobstructed. The technical login-ready message is cleared, while actual login/recovery success and failure notifications remain visible.
+
+`node tests/browser-account.cjs` checks all four pages at 1280, 390 and 320 px using signed-out fixtures. Preview images in `docs/previews/account-*.png` are excluded from the public release.
+
+Farmer readiness additions: the home checklist derives progress from actual records and offers English/Filipino guidance. See help.html for field instructions and demo.html for a fictional, read-only presentation sample. Printing monitoring reports includes all filtered records rather than only the current page. See docs/RELEASE-READINESS.md for the separate live acceptance checks and operational setup that remain to be verified.
+
+## Harvest batch tracking (migration 010)
+
+Open Harvest batches from Farm records, the farmer home, or a plantation workspace. Create a batch from a harvest with a positive wet-bean weight. Track fermentation, drying, quality observations, storage and a whole-batch sale. Each stage keeps a dated, immutable event and supports CSV export and printing.
+
+Batch saving requires a connection. The server command enforces account scope, cumulative harvest allocation, sequential stages, nonincreasing weights, chronological dates, a quality pass before storage, and revision checks. A missing acknowledgement can be retried with the same submission ID. Sale amounts record agreed totals in PHP; payment collection, partial sales, batch mixing/splitting and QR labels are not included.
+
+Apply `sql/010_harvest_batches.sql` once after 001–009 in staging, then run `tests/batches-staging.sql`. This rollback-only script checks the database workflow, permissions and retry behavior. Neither the migration nor the staging script has been executed against the hosted database by this local change. Do not rerun the fresh-install bundle on an existing project.

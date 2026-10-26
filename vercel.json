@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": false,
+  "cleanUrls": true,
   "buildCommand": "node scripts/prepare-release.cjs",
   "outputDirectory": "dist",
   "headers": [

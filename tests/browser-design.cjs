@@ -10,7 +10,7 @@ const tables={
   plantations:[{id:farm,owner_id:owner,farmer_id:'33333333-3333-4333-8333-333333333333',name:'Integration test farm',farmer_name:'Test Farmer',barangay:'Test barangay',municipality:'Isabela City',province:'Basilan',area_sqm:10000,tree_count:10,revision:1,status:'active',created_at:'2026-01-01',updated_at:'2026-01-01',boundary:null}],
   harvests:[],farmers:[],workers:[],pest_reports:[]
 };
-const receipts=new Map();let dropped=false,rpcCalls=0,server,send,browser,debugSocket;
+const receipts=new Map(),unavailableTables=new Set();let dropped=false,rpcCalls=0,server,send,browser,debugSocket;
 function fixtures(){
   class Query{
     constructor(table){this.table=table;this.filters=[];this.from=0;this.to=9999;}
@@ -18,6 +18,7 @@ function fixtures(){
     range(from,to){this.from=from;this.to=to;return this;}
     async response(single=false){
       const data=await (await fetch('/__test_data?table='+encodeURIComponent(this.table))).json();
+      if(data.error)throw new Error(data.error);
       const rows=data.filter(row=>this.filters.every(([key,value])=>row[key]===value)).slice(this.from,this.to+1);
       return {data:single?rows[0]||null:rows,error:null};
     }
@@ -36,10 +37,29 @@ async function waitFor(callback,label,timeout=20000){const start=Date.now();whil
 async function main(){
   server=http.createServer(async(req,res)=>{
     const url=new URL(req.url,'http://localhost');
-    if(url.pathname==='/__test_data'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify(tables[url.searchParams.get('table')]||[]));return;}
+    if(url.pathname==='/__test_data'){const table=url.searchParams.get('table');res.setHeader('Content-Type','application/json');res.end(JSON.stringify(unavailableTables.has(table)?{error:'Fixture request failed'}:tables[table]||[]));return;}
     if(url.pathname==='/__test_rpc'){
       let body='';for await(const part of req)body+=part;
-      const command=JSON.parse(body).body;rpcCalls++;
+      const rpc=JSON.parse(body),command=rpc.body;rpcCalls++;
+      if(rpc.name==='save_harvest_batch'){
+        const payload=command.p_payload,key=command.p_request_id;
+        tables.harvest_batches??=[];tables.harvest_batch_events??=[];
+        if(!receipts.has(key)){
+          let batch;
+          if(payload.action==='create'){
+            const source=tables.harvests.find(row=>row.id===payload.harvest_id);
+            batch={id:key,owner_id:owner,plantation_id:source.plantation_id,harvest_id:source.id,code:payload.code,allocated_wet_kg:payload.weight_kg,current_weight_kg:payload.weight_kg,stage:'harvested',stage_on:payload.event_on,revision:1};tables.harvest_batches.push(batch);
+          }else{
+            batch=tables.harvest_batches.find(row=>row.id===payload.batch_id);
+            Object.assign(batch,{stage:payload.stage,stage_on:payload.event_on,current_weight_kg:payload.weight_kg,revision:batch.revision+1});
+            for(const key of ['quality_result','moisture_pct','buyer','sale_php'])if(payload[key]!=null)batch[key]=payload[key];
+          }
+          tables.harvest_batch_events.push({id:key,batch_id:batch.id,owner_id:owner,stage:batch.stage,event_on:payload.event_on,weight_kg:payload.weight_kg,revision:batch.revision,note:payload.note,quality_result:payload.quality_result,moisture_pct:payload.moisture_pct,buyer:payload.buyer,sale_php:payload.sale_php,created_at:new Date().toISOString()});
+          receipts.set(key,batch);
+        }
+        if(!dropped){dropped=true;res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:{message:'Acknowledgement unavailable after fixture commit'}}));return;}
+        res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:receipts.get(key),error:null}));return;
+      }
       if(!receipts.has(command.change_id)){
         const row={...command.payload,id:command.record_id,area_sqm_at_harvest:10000,dry_kg_per_ha:Number(command.payload.dry_bean_kg),updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
         (tables[command.entity]||=[]).push(row);receipts.set(command.change_id,row);
@@ -66,8 +86,8 @@ async function main(){
   if(!fs.existsSync(chrome))throw new Error('Set CHROME_PATH to an installed Chromium browser.');
   browser=spawn(chrome,['--headless','--no-sandbox','--disable-gpu','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:'ignore',windowsHide:true});
   const portFile=path.join(profile,'DevToolsActivePort');
-  await waitFor(()=>fs.existsSync(portFile),'Chrome debugger startup');
-  const debugPort=fs.readFileSync(portFile,'utf8').split('\n')[0];
+  let debugPort;
+  await waitFor(()=>{try{debugPort=fs.readFileSync(portFile,'utf8').split('\n')[0];return /^\d+$/.test(debugPort);}catch{return false;}},'Chrome debugger startup');
   const target=await(await fetch('http://127.0.0.1:'+debugPort+'/json/new?about:blank',{method:'PUT'})).json();
   const ws=new WebSocket(target.webSocketDebuggerUrl);debugSocket=ws;await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
   let id=0;const pending=new Map(),events=new Map(),errors=[];
@@ -95,6 +115,7 @@ async function main(){
     assert.equal(await evaluate('getComputedStyle(document.getElementById("nav-toggle")).display'),'none','Desktop menu must be hidden at '+width);
     assert.equal(await evaluate('document.querySelector(".topbar .brand").getBoundingClientRect().left<80'),true,'Brand must align left at '+width);
     assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'Desktop overflow at '+width);
+    assert.equal(await evaluate('getComputedStyle(document.body).backgroundColor'),'rgb(243, 246, 244)','Desktop keeps the light theme');
   }
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   let shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'cacao-professional-desktop.png'),Buffer.from(shot.data,'base64'));
@@ -102,6 +123,66 @@ async function main(){
   shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'cacao-professional-mobile-overview.png'),Buffer.from(shot.data,'base64'));
   await evaluate('document.getElementById("nav-toggle").click()');assert.equal(await evaluate('document.getElementById("nav-toggle").getAttribute("aria-expanded")'),'true');
   shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(os.tmpdir(),'cacao-professional-mobile.png'),Buffer.from(shot.data,'base64'));
-  assert.equal(errors.length,0,errors.join('\n'));console.log('PASS dashboard hierarchy, empty charts, desktop/mobile overflow, and menu behavior.');
+  tables.profiles[0].role='farmer';
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/farmer.html'});
+  await waitFor(()=>evaluate('!!document.querySelector("#farmer-daily .farmer-farm-row")'),'farmer daily home');
+  for(const width of [1440,390,320]){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<850});await pause(150);
+    assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'farmer home overflow '+width);
+    assert.equal(await evaluate('document.querySelectorAll(".farmer-actions a").length'),4);
+    assert.equal(await evaluate('document.querySelector(".farmer-farm-row strong").textContent'),'Integration test farm');
+    if(width===390){const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(os.tmpdir(),'caaps-farmer-home.png'),Buffer.from(shot.data,'base64'));}
+  }
+  await waitFor(()=>evaluate('!!document.querySelector(".farmer-guide")'),'getting started guide');
+  assert.equal(await evaluate('document.querySelectorAll(".farmer-guide li").length'),5);
+  await evaluate('document.querySelector(".farmer-guide select").value="fil";document.querySelector(".farmer-guide select").dispatchEvent(new Event("change"))');
+  assert.equal(await evaluate('document.querySelector(".farmer-guide h3").textContent'),'Gabay sa pagsisimula');
+  unavailableTables.add('harvests');
+  await send('Page.reload');
+  await waitFor(()=>evaluate('document.getElementById("stat-dry")?.textContent==="Unavailable"'),'failed harvest total');
+  assert.equal(await evaluate('document.getElementById("stat-farms").textContent'),'1');
+  assert.equal(await evaluate('document.getElementById("recent-activity").textContent.includes("No activity recorded")'),true);
+  assert.equal(await evaluate('document.getElementById("production-overview-chart").parentElement.textContent.includes("Records could not be loaded")'),true);
+  await waitFor(()=>evaluate('document.querySelector(".farmer-guide li:nth-child(4)")?.textContent.includes("Hindi makuha")'),'unavailable guide step');
+  unavailableTables.clear();
+  tables.harvests=Array.from({length:18},(_,index)=>({id:'harvest-'+index,owner_id:owner,plantation_id:farm,harvest_date:'2026-06-'+String(index+1).padStart(2,'0'),created_at:'2026-06-30',wet_bean_kg:30,dry_bean_kg:10,harvested_pods:100,estimated_value_php:0,area_sqm_at_harvest:10000}));
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/harvests.html'});
+  await waitFor(()=>evaluate('document.getElementById("monitor-count")?.textContent.startsWith("18 records")'),'harvest report records');
+  assert.equal(await evaluate('document.querySelectorAll("#monitor-body tr").length'),15);
+  await evaluate('window.dispatchEvent(new Event("beforeprint"))');
+  assert.equal(await evaluate('document.querySelectorAll("#monitor-body tr").length'),18,'Print includes all filtered rows');
+  assert.equal(await evaluate('document.querySelector(".monitor-print-context").textContent.includes("18 matching records")'),true);
+  await evaluate('window.dispatchEvent(new Event("afterprint"))');
+  assert.equal(await evaluate('document.querySelectorAll("#monitor-body tr").length'),15,'Normal pagination returns after printing');
+  await evaluate('document.getElementById("monitor-from").value="2026-06-15";document.getElementById("monitor-from").dispatchEvent(new Event("change"));window.dispatchEvent(new Event("beforeprint"))');
+  assert.equal(await evaluate('document.querySelectorAll("#monitor-body tr").length'),4,'Print respects date filters');
+  await evaluate('window.dispatchEvent(new Event("afterprint"))');
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/batches.html'});
+  await waitFor(()=>evaluate('document.getElementById("batch-harvest")?.options.length===19'),'batch source harvests');
+  for(const width of [1280,390,320]){await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<850});await pause(120);assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'batch page overflow '+width);}
+  await evaluate('document.getElementById("batch-harvest").selectedIndex=1;document.getElementById("batch-code").value="TEST-LOT-1";document.getElementById("batch-wet-kg").value="10";document.getElementById("batch-create-note").value="Isolated browser sample";document.getElementById("batch-create-form").requestSubmit()');
+  try{await waitFor(()=>evaluate('document.getElementById("batch-retry").hidden===false'),'uncertain batch confirmation');}catch(error){console.error(await evaluate('({status:document.getElementById("page-status").textContent,invalid:[...document.querySelectorAll("#batch-create-form :invalid")].map(el=>[el.id,el.value,el.validationMessage]),overview:document.getElementById("batch-overview").textContent})'));throw error;}
+  assert.equal(tables.harvest_batches.length,1);
+  await evaluate('document.getElementById("batch-retry").click()');
+  await waitFor(()=>evaluate('document.getElementById("batch-overview").textContent.includes("Revision 1")'),'confirmed batch creation');
+  assert.equal(tables.harvest_batches.length,1);assert.equal(tables.harvest_batch_events.length,1);
+  const advance=async(stage,weight,revision,quality)=>{
+    await evaluate(`(()=>{const $=id=>document.getElementById(id);$('batch-stage').value=${JSON.stringify(stage)};$('batch-stage').dispatchEvent(new Event('change'));$('batch-event-weight').value=${JSON.stringify(weight)};$('batch-event-note').value='Recorded field observation';${quality?"$('batch-moisture').value='7';$('batch-quality-result').value="+JSON.stringify(quality)+';':''}${stage==='sold'?"$('batch-buyer').value='Sample buyer';$('batch-sale-php').value='1200';":''}$('batch-advance-form').requestSubmit();})()`);
+    await waitFor(()=>evaluate('document.getElementById("batch-overview").textContent.includes("Revision '+revision+'")'),'batch '+stage);
+  };
+  await advance('fermenting','10',2);await advance('drying','4',3);await advance('quality_check','4',4,'hold');
+  assert.equal(await evaluate('[...document.getElementById("batch-stage").options].some(option=>option.value==="stored")'),false,'Hold cannot proceed to storage');
+  await advance('quality_check','4',5,'pass');await advance('stored','4',6);await advance('sold','4',7);
+  assert.equal(tables.harvest_batch_events.length,7);
+  assert.equal(await evaluate('document.getElementById("batch-advance-form").hidden'),true,'Sold batch is complete');
+  assert.equal(await evaluate('document.querySelectorAll("#batch-timeline li").length'),7);
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+  const batchShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.join(os.tmpdir(),'caaps-batch-tracking.png'),Buffer.from(batchShot.data,'base64'));
+  for(const page of ['help.html','demo.html']){
+    await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/'+page});
+    await waitFor(()=>evaluate('document.readyState==="complete"&&!!document.querySelector(".guide-header")'),'guide '+page);
+    assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,page+' overflow');
+  }
+  assert.equal(errors.length,0,errors.join('\n'));console.log('PASS dashboard hierarchy, daily farmer actions, responsive overflow, and menu behavior.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{if(send)await Promise.race([send('Browser.close').catch(()=>{}),pause(1000)]);debugSocket?.close();browser?.kill();server?.closeAllConnections();server?.close();});

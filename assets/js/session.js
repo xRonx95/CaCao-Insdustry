@@ -8,7 +8,7 @@ const notify = (id, message, error = false) => {
 };
 const humanArea = value => (Number(value || 0) / 10000).toFixed(4) + ' ha';
 let currentAccount;
-const farmerFeatures = new Set(['dashboard','reviews','plantation-workspace','farmers','plantations','plantation-form','atlas','trees','posts','history','harvests','pests','treatments','maintenance','tree-events','tree-tags','sync']);
+const farmerFeatures = new Set(['dashboard','reviews','plantation-workspace','farmers','plantations','plantation-form','atlas','trees','posts','history','harvests','batches','pests','treatments','maintenance','tree-events','tree-tags','sync']);
 async function requireSession() {
   if (!configured) throw new Error('Set your Supabase credentials in assets/js/config.js and run SQL migrations 001 through 007.');
   if(sessionStorage.getItem('cacao-logout-pending')||localStorage.getItem('cacao-logout-pending')){location.replace('../login.html?reason=locked');return false;}

@@ -1,5 +1,8 @@
 // Shared Leaflet Draw + GPS walking engine. All coordinates are [longitude, latitude] in GeoJSON.
 window.CacaoGPS = (() => {
+  let mappingHost=null,bridge=null;
+  let loadingBoundary=false;
+  const tellHost=message=>{if(mappingHost&&!mappingHost.closed)mappingHost.postMessage({...message,bridge},location.origin);};
   let map,drawn,polygon,trail,currentMarker,accuracyCircle,watchId=null;
   let points=[],samples=[],mode='manual',phase='ready',draftId='walking-unassigned',vault=null,draftTimer,lastDraftSave=0;
   let imported=[];
@@ -30,12 +33,13 @@ window.CacaoGPS = (() => {
       return {boundary:feature.geometry,area_sqm:turf.area(feature),capture_method:mode,gps_accuracy:points,gps_samples:samples};
     }catch{return {boundary:null,area_sqm:0,capture_method:mode,gps_accuracy:points,gps_samples:samples};}
   }
-  function publish() {
+  function publish(notifyHost=true) {
+    if(loadingBoundary)return;
     const value=data();
     $('area-sqm').textContent=value.area_sqm.toLocaleString(undefined,{maximumFractionDigits:2})+' m²';
     $('area-ha').textContent=(value.area_sqm/10000).toFixed(4)+' ha';
     $('gps-count').textContent=String(points.length);
-    if(parent!==window)parent.postMessage({type:'boundary-change',value},location.origin);
+    if(notifyHost)tellHost({type:'boundary-change',value});
     if(vault&&!draftTimer){draftTimer=setTimeout(()=>{draftTimer=null;lastDraftSave=Date.now();vault?.save({points,samples,mode,boundary:data().boundary}).catch(error=>status('gps-status','Draft autosave failed: '+error.message,true));},Math.max(0,750-(Date.now()-lastDraftSave)));}
   }
   function updateButtons() {
@@ -108,6 +112,8 @@ window.CacaoGPS = (() => {
     geoAvailable();return new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,maximumAge:0,timeout:20000}));
   }
   function start() {
+    mappingHost=parent!==window?parent:window.opener;
+    bridge=new URLSearchParams(location.search).get('bridge');
     try {
       if(!window.L||!window.turf)throw new Error('Map libraries could not load. Check your connection.');
       const settings=window.CACAO_MAP;
@@ -120,7 +126,7 @@ window.CacaoGPS = (() => {
       map.on(L.Draw.Event.CREATED,event=>{try{if(phase==='recording')throw new Error('Pause GPS before drawing a replacement boundary.');validateRing(ringFor(event.layer));clear();applyPolygon(event.layer);status('form-status','Manual boundary captured. Review and save.');}catch(error){status('form-status',error.message,true);}});
       map.on(L.Draw.Event.EDITED,()=>{try{validateRing(ringFor(polygon));polygon.setStyle({color:'#287a4b'});status('form-status','Boundary updated.');}catch(error){polygon?.setStyle({color:'#ad5144'});status('form-status',error.message,true);}publish();});
       map.on(L.Draw.Event.DELETED,()=>{polygon=null;publish();});
-      button('start-walk',async()=>{if((polygon||points.length)&&!confirm('Start a new walking boundary and clear the current map?'))return;await enableRecovery();clear();watch();});
+      button('start-walk',async()=>{if(parent!==window&&!parent.document.body.classList.contains('mapping-expanded')){tellHost({type:'open-mapping'});return;}if((polygon||points.length)&&!confirm('Start a new walking boundary and clear the current map?'))return;await enableRecovery();clear();watch();});
       button('pause-walk',()=>{stop();phase='paused';updateButtons();status('gps-status','GPS paused. Captured points are retained.');});
       button('resume-walk',watch);button('finish-walk',finish);
       button('cancel-walk',()=>{if(confirm('Cancel this walk and clear its points?'))clear();});
@@ -165,25 +171,43 @@ window.CacaoGPS = (() => {
         clear();mode='import';applyPolygon(L.polygon(parcel.geometry.coordinates[0].slice(0,-1).map(([lng,lat])=>[lat,lng])));
       });
       window.addEventListener('message',event=>{
-        if(event.origin!==location.origin||event.source!==parent)return;
+        if(event.origin!==location.origin||event.source!==mappingHost)return;
+        if(parent===window&&event.data?.bridge!==bridge)return;
         if(event.data?.type==='load-boundary'){
           try{
+            loadingBoundary=true;
             if(event.data.draftId && event.data.draftId!==draftId){vault=null;clearTimeout(draftTimer);draftTimer=null;}
             clear();draftId=event.data.draftId||draftId;mode=event.data.capture_method||'manual';points=event.data.gps_accuracy||[];samples=event.data.gps_samples||[];
             if(event.data.boundary)applyPolygon(L.polygon(event.data.boundary.coordinates[0].slice(0,-1).map(([lng,lat])=>[lat,lng])));
-            publish();
+            if(points.length&&!polygon){phase='paused';updateButtons();}
+            loadingBoundary=false;publish(false);
             CacaoDrafts.exists(draftId).then(exists=>{
               $('recovery-notice').classList.toggle('hidden',!exists);
               if(exists)$('recovery-notice').textContent='A saved walking session was detected for this parcel. Use Restore walking draft and unlock it to recover your recorded points.';
             }).catch(error=>status('gps-status','Local recovery check failed: '+error.message,true));
-          }catch(error){status('form-status',error.message,true);}
+          }catch(error){loadingBoundary=false;status('form-status',error.message,true);}
         }
       });
       const resize=()=>map.invalidateSize();window.addEventListener('resize',resize);
       if(window.ResizeObserver)new ResizeObserver(resize).observe(document.body);
       window.addEventListener('pagehide',stop);window.addEventListener('beforeunload',stop);
       document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='recording'){stop();phase='paused';updateButtons();status('gps-status','Tracking paused while the app was hidden. Return and Resume to continue.',true);}});
-      updateButtons();if(parent!==window)parent.postMessage({type:'mapping-ready'},location.origin);
+      if(parent===window){
+        document.body.classList.add('mapping-full');
+        const bar=document.createElement('div');bar.className='mapping-return-bar';
+        const use=document.createElement('button');use.type='button';use.className='btn primary';use.textContent='Use boundary and return';
+        use.addEventListener('click',()=>{
+          const value=data();if(!value.boundary){status('form-status','Finish and review a valid polygon before returning to the plantation form.',true);return;}
+          if(!mappingHost||mappingHost.closed){status('form-status','The plantation form is no longer open. Export this boundary or save an encrypted draft before closing.',true);return;}
+          stop();tellHost({type:'mapping-finished',value});mappingHost.focus();window.close();
+          status('form-status','Boundary sent. Return to the plantation form and save the plantation.');
+        });
+        bar.append(use);document.querySelector('.map-heading').append(bar);
+        // Put the map first on phones, with a compact return bar always available.
+        const heading=document.querySelector('.map-heading');heading.after($('map'));
+        map.invalidateSize();
+      }
+      updateButtons();tellHost({type:'mapping-ready'});
     }catch(error){status('form-status',error.message,true);}
   }
   return {start,validatePosition,validateRing};

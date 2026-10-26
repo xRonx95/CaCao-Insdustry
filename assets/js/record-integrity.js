@@ -40,7 +40,7 @@ window.CacaoIntegrity = (() => {
     const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
   function overlapArea(first,second) {
-    const intersection=turf.intersect(turf.feature(first),turf.feature(second));
+    const intersection=turf.intersect({type:'FeatureCollection',features:[turf.feature(first),turf.feature(second)]});
     return intersection?Math.max(0,turf.area(intersection)):0;
   }
   return {normalize,duplicates,parcels,download,overlapArea};
