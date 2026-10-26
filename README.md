@@ -15,6 +15,8 @@ An independent cacao registry, not an official DA, PSA or RSBSA service. The web
    - `sql/005_mapping_integrity.sql`
    - `sql/006_agricultural_monitoring.sql`
    - `sql/007_safe_sync.sql`
+   - `sql/008_farmer_feature_limits.sql`
+   - `sql/009_farmer_reviews.sql`
 
    If 001–004 are already installed, apply only 005–007, once, in order. Review staging results before upgrading production.
 3. Edit `assets/js/config.js` with your project URL and public publishable/anon key. Never enter a service-role or secret key. The static site does not read Vercel environment variables or `.env` automatically.
@@ -64,7 +66,7 @@ HTML remains in role folders. CSS and browser JavaScript remain under `assets/cs
 
 Workspace dashboards now include role-specific next actions and the registration-to-monitoring steps. Open a plantation name in the directory to access its plantation workspace: profile and boundary statuses, boundary map, recent farm activity, and links to related records. Monitoring links preselect the plantation in both the list filter and new-record form. Staff dashboards surface overdue tasks and unresolved pest reports within their existing authorized scope.
 
-These screens use the existing database permissions and review process. They do not introduce a new approval gate: profile approval is currently guidance rather than a new restriction on plantation creation. Farmer correction reasons still require contact with the reviewer; boundary review notes remain available in Boundary history & review. Offline staff account access is not supported by the current session implementation. The new workspace can show prepared farmer records offline, but activity sections may be unavailable until the device reconnects.
+These screens use the existing database permissions and review process. They do not introduce a new approval gate: profile approval is currently guidance rather than a new restriction on plantation creation. Farmer correction reasons and submission history are available in Profile review inbox after migration 009; boundary review notes remain available in Boundary history & review. Offline staff account access is not supported by the current session implementation. The new workspace can show prepared farmer records offline, but activity sections may be unavailable until the device reconnects.
 
 Workflow behavior checks: `node --test tests/workflow.test.cjs`.
 
@@ -135,3 +137,13 @@ Follow [Capacitor installation](https://capacitorjs.com/docs/getting-started) an
 Implementation follows [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [PostGIS on Supabase](https://supabase.com/docs/guides/database/extensions/postgis), [password recovery](https://supabase.com/docs/guides/auth/passwords), [private storage access](https://supabase.com/docs/guides/storage/security/access-control), [server-side user management](https://supabase.com/docs/guides/auth/users) and [PostGIS geometry validation](https://postgis.net/docs/ST_IsValid.html).
 
 The source briefs are preserved at `docs/PROJECT-BRIEF.md` and `docs/ENHANCEMENT-BRIEF.md`. See [enhancement status](docs/ENHANCEMENT-STATUS.md) and [backup/restore runbook](docs/BACKUP-RECOVERY.md). See `docs/RELEASE-STATUS.md` for the remaining launch work. This repository is a pilot implementation, not a production certification.
+
+## Profile review inbox
+
+Apply only pending numbered migrations in order through `sql/009_farmer_reviews.sql` in staging, then run `tests/reviews-staging.sql`. Migration 009 requires 001?008 and has not been applied automatically to a hosted database.
+
+Open **Profile review inbox** in a role workspace. Administrators and super administrators can approve pending profiles or request corrections with 10?2000 characters of feedback. Owners and assigned field personnel can read feedback, open the profile editor, and resubmit corrected profiles. Saving substantive profile changes also returns the record to pending review, including edits made by administrators. Decisions check the exact profile update timestamp; stale decisions require refreshing and reviewing the latest submission.
+
+Review history is owner-scoped and read-only through the authenticated API. Existing profiles receive a baseline entry; earlier unrecorded correction reasons cannot be recovered. Direct approval/rejection writes are replaced by the review RPC, so older clients must reload after migration 009. Reviews and resubmission require connectivity. Offline profile edits continue to use the existing encrypted queue and reopen review when synchronized.
+
+Local verification: `node --test tests/reviews.test.cjs tests/workflow.test.cjs tests/platform.test.cjs tests/enhancements.test.cjs tests/offline-sync.test.cjs tests/offline-shell.test.cjs`. The staging SQL checks assignment scope, owner isolation, feedback requirements, stale decisions, self-approval rejection, immutable history and resubmission; it requires a staging Supabase database.

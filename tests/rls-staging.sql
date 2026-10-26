@@ -55,7 +55,11 @@ select a.id,b.id from cacao_test_ids a,cacao_test_ids b where a.label='admin' an
 set local role authenticated;
 do $$ begin
   if (select count(*) from public.farmers)<>1 then raise exception 'FAIL: assigned admin scope'; end if;
-  update public.farmers set registration_status='approved';
+  if to_regprocedure('public.review_farmer_profile(uuid,timestamptz,text,text)') is not null then
+    perform public.review_farmer_profile(id,updated_at,'approved','Profile verified in staging test.') from public.farmers;
+  else
+    update public.farmers set registration_status='approved';
+  end if;
   if not exists(select 1 from public.farmers where registration_status='approved') then raise exception 'FAIL: assigned approval'; end if;
 end $$;
 reset role;

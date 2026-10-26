@@ -147,7 +147,7 @@ window.CacaoApp = (() => {
     if(isFarmer)farms=await listPlantations();
     if (!isFarmer && !staff()) el('editor-panel').classList.add('hidden');
     const columns = isFarmer ? [
-      {key:'full_name'}, {key:'barangay'}, {key:'contact_number'}, {key:'registration_status'},
+      {key:'full_name'}, {key:'barangay'}, {key:'contact_number'}, {value:row=>({pending:'Pending review',approved:'Approved',rejected:'Needs correction'})[row.registration_status]||row.registration_status},
       {value: row => row.farmer_code || 'CF-' + row.id.replaceAll('-','').toUpperCase()},
       {value: row => farms.filter(farm=>farm.farmer_id===row.id).length}
     ] : [{key:'full_name'},{key:'position'},{key:'phone'},{key:'employment_status'},{key:'employment_type'}];
@@ -163,21 +163,14 @@ window.CacaoApp = (() => {
         if(!documents.length)list.append(text('li','No supporting documents for '+row.full_name+'.'));
         list.scrollIntoView({block:'nearest'});
       }});
-      if (isFarmer && admin() && row.registration_status !== 'approved') {
-        list.push({label:'Approve',run:async()=>{
-          if (!confirm('Approve ' + row.full_name + '?')) return;
-          await result(db.from('farmers').update({registration_status:'approved'}).eq('id',row.id)); await refresh();
-        }});
-        list.push({label:'Reject',run:async()=>{
-          if (!confirm('Reject this farmer registration?')) return;
-          await result(db.from('farmers').update({registration_status:'rejected'}).eq('id',row.id)); await refresh();
-        }});
-      }
+      if (isFarmer) list.push({label:'Review & feedback',run:()=>{location.href='reviews.html?farmer='+encodeURIComponent(row.id);}});
       return list;
     };
+    const requestedProfile=isFarmer?new URLSearchParams(location.search).get('id'):null;
     const render = () => table(state.rows,columns,actions);
     async function refresh() {
       state.rows = await listAll(tableName); toolbar(state.rows); render();
+      if(requestedProfile&&!editing){const profile=state.rows.find(row=>row.id===requestedProfile);if(profile)loadForm(profile);}
     }
     bindTable(render);
     el('refresh-records').addEventListener('click', () => refresh().catch(error=>message(error.message,true)));

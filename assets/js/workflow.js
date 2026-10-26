@@ -14,10 +14,10 @@ window.CacaoWorkflow = (() => {
     if (role === 'farmer') {
       const own = farmers.filter(row => row.owner_id === currentAccount.user.id);
       if (!own.length) action(cards, 'Complete your farmer profile', 'Submit your details for staff review.', 'farmers.html');
-      for (const row of own) action(cards, row.full_name + ': ' + status(row.registration_status), row.registration_status === 'rejected' ? 'Update your profile and contact your assigned reviewer for correction details.' : row.registration_status === 'approved' ? 'Continue with plantation registration and farm records.' : 'Your profile is awaiting staff review.', row.registration_status === 'approved' ? 'plantations.html' : 'farmers.html');
+      for (const row of own) action(cards, row.full_name + ': ' + status(row.registration_status), row.registration_status === 'rejected' ? 'Read the reviewer?s feedback, update your profile, and resubmit.' : row.registration_status === 'approved' ? 'Continue with plantation registration and farm records.' : 'Your profile is awaiting staff review.', row.registration_status === 'approved' ? 'plantations.html' : 'reviews.html?farmer=' + encodeURIComponent(row.id));
     } else {
       const pending = farmers.filter(row => row.registration_status === 'pending').length;
-      action(cards, role === 'field' ? 'Visit assigned farmers' : 'Review farmer profiles', pending + ' profiles pending review within your authorized scope.', 'farmers.html');
+      action(cards, role === 'field' ? 'Visit assigned farmers' : 'Review farmer profiles', pending + ' profiles pending review within your authorized scope.', role === 'field' ? 'farmers.html' : 'reviews.html');
       if (role === 'super_admin') action(cards, 'Manage staff assignments', 'Keep farmer access and staff responsibilities current.', 'users.html');
     }
     const pendingMaps = plantations.filter(row => row.verification_status !== 'verified').length;

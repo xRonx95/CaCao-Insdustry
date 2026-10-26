@@ -2,8 +2,8 @@
 
 Choose exactly one route:
 
-- **New, empty Supabase project:** open fresh-install.sql, select all, copy and paste into Supabase Dashboard → SQL Editor → New query. Run as the postgres database role. It includes migrations 001–007, PostGIS, tables, indexes, functions, triggers, row-level security and Storage bucket policies.
-- **Existing project already at migration 004:** back up, then use upgrade-from-004.sql once. This contains migrations 005–007.
+- **New, empty Supabase project:** open fresh-install.sql, select all, copy and paste into Supabase Dashboard → SQL Editor → New query. Run as the postgres database role. It includes migrations 001–009, PostGIS, tables, indexes, functions, triggers, row-level security and Storage bucket policies.
+- **Existing project already at migration 004:** back up, then use upgrade-from-004.sql once. This contains migrations 005–009.
 - **Any other installed migration level:** use only the remaining individual numbered SQL files from the parent sql folder, in ascending order.
 
 Do not run both bundles. They check for incompatible existing application tables before starting. Stop on an error and record the message; do not repeatedly rerun the complete setup. Separate migration sections commit individually, so an error does not imply that every preceding section rolled back.
@@ -35,3 +35,5 @@ Regenerate these bundles after editing a canonical migration:
     node scripts/bundle-database.cjs
 
 Do not paste tests/rls-staging.sql into production setup; it contains test fixtures for an isolated staging project.
+
+For an existing installation at 007 or 008, apply only pending migrations 008 and 009 from the parent folder. Run `tests/reviews-staging.sql` in staging after installing 009. Existing review clients must reload after 009 because direct profile approval writes are now rejected.

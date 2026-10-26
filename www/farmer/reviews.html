@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile review inbox | CACAO INDUSTRY</title>
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/platform.css">
+    <link rel="stylesheet" href="../assets/css/farmer/farmer.css">
+    <link rel="stylesheet" href="../assets/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="../assets/css/sync.css">
+    <link rel="stylesheet" href="../assets/css/mobile-workspace.css">
+  <link rel="stylesheet" href="../assets/css/workflow.css">
+  </head>
+  <body data-page-role="farmer" data-feature="reviews" class="workspace-page">
+    <header class="topbar">
+      <a class="brand" href="farmer.html">
+        <img class="brand-logo" src="../images/cacao.png" width="56" height="56" alt="Cacao Industry logo">
+        <div>
+          <strong>CACAO INDUSTRY</strong>
+          <small>Farmer Profiling &amp; GPS Plantation Mapping</small>
+        </div>
+      </a>
+      <div class="account">
+        <span class="role-badge">farmer</span>
+        <span id="account-email">
+        </span>
+        <button id="logout" class="text-btn">Sign out</button>
+      </div>
+    </header>
+    <button id="nav-toggle" class="btn secondary mobile-menu" type="button" aria-expanded="false" aria-controls="workspace-nav">Menu</button>
+    <nav id="workspace-nav" class="feature-nav" aria-label="Farmer workspace navigation">
+      <div class="sidebar-heading">MY FARM</div>
+      <a href="farmer.html"><i data-local-icon="home" aria-hidden="true"></i>Overview</a>
+      <details class="nav-group"><summary><i data-local-icon="leaf" aria-hidden="true"></i>Plantation management</summary>
+        <a href="plantations.html"><i data-local-icon="leaf" aria-hidden="true"></i>My Plantation</a>
+        <a href="plantation-form.html"><i data-local-icon="map" aria-hidden="true"></i>Register Plantation</a>
+        <a href="atlas.html"><i data-local-icon="map" aria-hidden="true"></i>Plantation Map</a>
+        <a href="trees.html"><i data-local-icon="chart" aria-hidden="true"></i>Tree Inventories</a>
+      </details>
+      <details class="nav-group"><summary><i data-local-icon="harvest" aria-hidden="true"></i>Farm records</summary>
+        <a href="harvests.html"><i data-local-icon="harvest" aria-hidden="true"></i>Harvest & production</a>
+        <a href="pests.html"><i data-local-icon="leaf" aria-hidden="true"></i>Pest & disease reports</a>
+        <a href="treatments.html"><i data-local-icon="task" aria-hidden="true"></i>Treatment history</a>
+        <a href="maintenance.html"><i data-local-icon="task" aria-hidden="true"></i>Farm maintenance</a>
+        <a href="tree-events.html"><i data-local-icon="leaf" aria-hidden="true"></i>Planting & replacement</a>
+        <a href="tree-tags.html"><i data-local-icon="leaf" aria-hidden="true"></i>Cacao tree tags</a>
+        <a href="history.html"><i data-local-icon="map" aria-hidden="true"></i>Mapping history</a>
+      </details>
+      <details class="nav-group"><summary><i data-local-icon="people" aria-hidden="true"></i>Account & community</summary>
+        <a href="farmers.html"><i data-local-icon="people" aria-hidden="true"></i>My farmer profile</a>
+        <a href="posts.html"><i data-local-icon="leaf" aria-hidden="true"></i>Share cacao</a>
+        <a href="sync.html"><i data-local-icon="sync" aria-hidden="true"></i>Sync & recovery</a>
+        <a href="../index.html"><i data-local-icon="home" aria-hidden="true"></i>Public community</a>
+        <a href="../privacy.html"><i data-local-icon="shield" aria-hidden="true"></i>Privacy notice</a>
+      </details>
+      <a href="reviews.html" aria-current="page">Profile review inbox</a>
+      <div class="sidebar-location">Isabela City, Basilan<br>Philippines</div>
+    </nav>
+    <main class="shell">
+      <p id="page-status" class="status" role="status" aria-live="polite"></p>
+      <div id="page-content" class="hidden">
+        <h1>Profile review inbox</h1>
+        <p>Read feedback, correct farmer profiles, and track each submission. Administrators review only profiles within their assigned access.</p>
+        <section class="workflow-panel" aria-labelledby="review-list-title">
+          <h2 id="review-list-title">Submissions</h2>
+          <div class="fields">
+            <label>Search name or barangay<input id="review-search" type="search" maxlength="300"></label>
+            <label>Profile status<select id="review-status"><option value="">All statuses</option><option value="pending">Pending review</option><option value="rejected">Needs correction</option><option value="approved">Approved</option></select></label>
+          </div>
+          <button id="review-refresh" class="btn secondary" type="button">Refresh inbox</button>
+          <p id="review-count" role="status" aria-live="polite"></p>
+          <div id="review-profiles" class="workflow-grid"></div>
+        </section>
+        <section id="review-detail" class="workflow-panel hidden" aria-labelledby="review-title">
+          <h2 id="review-title">Profile review</h2>
+          <dl id="review-facts" class="workflow-details"></dl>
+          <p id="review-help"></p>
+          <a id="review-edit" class="btn secondary" href="farmers.html">Edit farmer profile</a>
+          <div id="review-attachments" class="button-row"></div>
+          <form id="review-decision-form" class="hidden">
+            <h3>Review this submission</h3>
+            <label>Decision<select id="review-decision" required><option value="">Choose a decision</option><option value="approved">Approve profile</option><option value="rejected">Request corrections</option></select></label>
+            <label>Feedback<textarea id="review-note" required minlength="10" maxlength="2000" rows="4" aria-describedby="review-note-help"></textarea></label>
+            <p id="review-note-help">Write 10?2000 characters. Explain what you checked or exactly what needs correcting. This feedback is visible to the farmer and authorized staff.</p>
+            <button id="review-submit" class="btn primary" type="submit">Save review decision</button>
+          </form>
+          <button id="resubmit-profile" class="btn primary hidden" type="button">Resubmit for review</button>
+          <h3>Submission and review history</h3>
+          <ol id="review-history" class="review-history"></ol>
+        </section>
+      </div>
+    </main>
+    <footer>Independent cacao management system &middot; Not an official DA or PSA registry. GPS areas are approximate.</footer>
+    <script defer src="../assets/vendor/supabase/supabase.min.js">
+    </script>
+    <script defer src="../assets/vendor/lucide/lucide.min.js">
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js">
+    </script>
+    <script defer src="../assets/vendor/leaflet/leaflet.js">
+    </script>
+    <script defer src="../assets/js/config.js">
+    </script>
+    <script defer src="../assets/js/db.js">
+    </script>
+    <script defer src="../assets/js/session.js">
+    </script>
+    <script defer src="../assets/js/sync.js">
+    </script>
+    <script defer src="../assets/js/ui.js">
+    </script>
+    <script defer src="../assets/js/workspace.js">
+    </script>
+    <script defer src="../assets/js/workflow.js"></script>
+    <script defer src="../assets/js/platform.js">
+    </script>
+    <script defer src="../assets/js/reviews.js">
+    </script>
+    <dialog id="field-unlock-dialog" class="field-dialog" aria-labelledby="field-unlock-title">
+      <form id="field-unlock-form">
+        <h2 id="field-unlock-title">Protect your field work</h2>
+        <p>Choose or enter this account's field-data passphrase for this device. It encrypts pending work and is required again after a page is reopened.</p>
+        <label>Field-data passphrase<input id="field-passphrase" type="password" minlength="12" maxlength="256" required autocomplete="off">
+        </label>
+        <p id="field-unlock-error" class="status error" role="status">
+        </p>
+        <div class="button-row">
+          <button class="btn primary" type="submit">Unlock field data</button>
+          <button id="field-unlock-cancel" class="btn secondary" type="button">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+    <script defer src="../assets/js/offline.js">
+    </script>
+  </body>
+</html>
