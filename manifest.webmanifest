@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "CaAPs — Cacao Industry",
+  "name": "CaAPs — Cacao Quality & Traceability",
   "short_name": "CaAPs",
-  "description": "Farmer profiles, GPS plantation mapping and agricultural monitoring for Isabela City, Basilan.",
+  "description": "Post-harvest process records, quality review and farm traceability.",
   "start_url": "./login.html?source=installed",
   "scope": "./",
   "display": "standalone",

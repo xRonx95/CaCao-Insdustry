@@ -26,6 +26,8 @@ const configured =
 
 // GPS / OpenStreetMap
 window.CACAO_MAP = {
+  center: [12, 123],
+  zoom: 6,
   tiles:
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 

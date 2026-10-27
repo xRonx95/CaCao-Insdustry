@@ -2,10 +2,10 @@
 window.CacaoBatches=(()=>{
   const stages=['harvested','fermenting','drying','quality_check','stored','sold'];
   const labels={harvested:'Harvested',fermenting:'Fermentation',drying:'Drying',quality_check:'Quality check',stored:'Storage',sold:'Sold'};
-  const next=batch=>batch.stage==='quality_check'?['quality_check',...(batch.quality_result==='pass'?['stored']:[])]:batch.stage==='sold'?[]:[stages[stages.indexOf(batch.stage)+1]].filter(Boolean);
-  const decimal=(value,places)=>Number.isFinite(Number(value))&&value!==''&&Math.abs(Number(value)*10**places-Math.round(Number(value)*10**places))<1e-6;
+  const next=batch=>!stages.includes(batch.stage)?[]:batch.stage==='quality_check'?['quality_check',...(batch.quality_result==='pass'?['stored']:[])]:batch.stage==='sold'?[]:[stages[stages.indexOf(batch.stage)+1]].filter(Boolean);
+  const decimal=(value,places)=>value!=null&&Number.isFinite(Number(value))&&value!==''&&Math.abs(Number(value)*10**places-Math.round(Number(value)*10**places))<1e-6;
   function validate(payload,batch,harvest,today){
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(payload.event_on)||!Number.isFinite(Date.parse(payload.event_on))||payload.event_on>today)throw Error('Choose a date that is not in the future.');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(payload.event_on)||!Number.isFinite(Date.parse(payload.event_on))||new Date(payload.event_on).toISOString().slice(0,10)!==payload.event_on||payload.event_on>today)throw Error('Choose a date that is not in the future.');
     if(!decimal(payload.weight_kg,3)||Number(payload.weight_kg)<=0||Number(payload.weight_kg)>999999999)throw Error('Enter a positive weight in kg, with at most 3 decimal places.');
     if(payload.note.trim().length<3||payload.note.trim().length>2000)throw Error('Write a note between 3 and 2000 characters.');
     if(payload.action==='create'){
@@ -64,7 +64,7 @@ window.CacaoBatches=(()=>{
       [farms,harvests,batches,events]=data;
       options($('batch-harvest'),[['','Select a harvest'],...harvests.filter(row=>Number(row.wet_bean_kg)>0).map(row=>[row.id,(farms.find(f=>f.id===row.plantation_id)?.name||'Plantation')+' · '+row.harvest_date+' · '+row.wet_bean_kg+' kg wet beans'])]);
       const noHarvest=!harvests.some(row=>Number(row.wet_bean_kg)>0);$('batch-create-button').disabled=noHarvest;$('batch-harvest-help').textContent=noHarvest?'Record a harvest with a wet-bean weight before creating a batch.':'Choose the harvest this batch came from. Previously allocated weight is checked when saving.';
-      render();if(selected)choose(batches.find(row=>row.id===selected.id)||null);
+      render();if(!selected){const requested=new URLSearchParams(location.search).get('batch');selected=batches.find(row=>row.id===requested)||null;}if(selected)choose(batches.find(row=>row.id===selected.id)||null);
     }
     function lockForms(lock){
       for(const form of [$('batch-create-form'),$('batch-advance-form')])for(const control of form.elements)control.disabled=lock;

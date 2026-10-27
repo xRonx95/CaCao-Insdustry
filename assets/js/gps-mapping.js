@@ -117,7 +117,7 @@ window.CacaoGPS = (() => {
     try {
       if(!window.L||!window.turf)throw new Error('Map libraries could not load. Check your connection.');
       const settings=window.CACAO_MAP;
-      map=L.map('map').setView([6.704,121.972],12);L.control.scale().addTo(map);
+      map=L.map('map').setView(window.CACAO_MAP?.center||[12,123],window.CACAO_MAP?.zoom||6);L.control.scale().addTo(map);
       const street=L.tileLayer(settings.tiles,{maxZoom:settings.maxZoom,attribution:settings.attribution}).addTo(map);
       const layers={'Street map':street};if(settings.imagery?.tiles)layers.Imagery=L.tileLayer(settings.imagery.tiles,{attribution:settings.imagery.attribution,maxZoom:settings.imagery.maxZoom||19});
       L.control.layers(layers).addTo(map);

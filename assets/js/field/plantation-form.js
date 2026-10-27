@@ -50,14 +50,14 @@ function useFarmerAccount(){
 function setFarmer(){
   const farmer=registeredFarmers.find(row=>row.id===$('farmer-record').value);
   $('owner-name').value=farmer?.full_name||'';
-  if(farmer&&!originalFarm){$('barangay').value=farmer.barangay||'';$('municipality').value=farmer.municipality||'Isabela City';$('province').value=farmer.province||'Basilan';}
+  if(farmer&&!originalFarm){$('barangay').value=farmer.barangay||'';$('municipality').value=farmer.municipality||'';$('province').value=farmer.province||'Zamboanga del Norte';}
 }
 function resetForm(){
   if(mappingTab&&!mappingTab.closed){notify('form-status','Finish mapping and return before starting a different plantation.',true);return;}
   mappingTab=null;mappingTabReady=false;
   pendingRecordId=crypto.randomUUID();pendingChangeId=crypto.randomUUID();originalFarm=null;history.replaceState(null,'',location.pathname);$('plantation-form').reset();$('plantation-id').value='';$('form-title').textContent='Register a plantation';$('plantation-photos').replaceChildren();
   mappingData={boundary:null,area_sqm:0,capture_method:'manual',gps_accuracy:[],gps_samples:[]};sendBoundary();
-  $('municipality').value='Isabela City';$('province').value='Basilan';useFarmerAccount();notify('form-status','');
+  $('municipality').value='';$('province').value='Zamboanga del Norte';useFarmerAccount();notify('form-status','');
 }
 $('farmer-record').addEventListener('change',setFarmer);
 $('reset-farm').addEventListener('click',resetForm);
@@ -132,7 +132,7 @@ async function startForm(){
     const version=new URLSearchParams(location.search).get('version');
     if(version){const {data:historical,error:versionError}=await db.from('plantation_boundaries').select('*').eq('id',version).eq('plantation_id',data.id).single();if(versionError)throw versionError;mappingData={boundary:historical.boundary_geojson,area_sqm:historical.area_sqm,capture_method:'import',gps_accuracy:[],gps_samples:[]};notify('form-status','Historical boundary loaded as a draft. Review it before saving a new revision.');}
     await loadPhotos(data.id);
-  }else{$('municipality').value='Isabela City';$('province').value='Basilan';}
+  }else{$('municipality').value='';$('province').value='Zamboanga del Norte';}
   sendBoundary();$('save-farm').disabled=false;
 }
 $('save-farm').disabled=true;

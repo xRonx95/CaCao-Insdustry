@@ -34,7 +34,7 @@ test('farmers cannot open staff features online or offline', async () => {
   }
 });
 test('farm tools remain available and staff keep their features', async () => {
-  for (const feature of ['dashboard','farmers','plantations','plantation-form','atlas','trees','posts','harvests','pests','sync']) assert.equal((await access('farmer', feature)).allowed, true, feature);
+  for (const feature of ['postharvest','dashboard','farmers','plantations','plantation-form','atlas','trees','posts','harvests','pests','sync']) assert.equal((await access('farmer', feature)).allowed, true, feature);
   for (const role of ['admin','super_admin','field']) assert.equal((await access(role, 'workers')).allowed, true, role);
 });
 test('farmer menus omit staff features on every page', () => {
@@ -71,11 +71,12 @@ test('staff cannot use offline work and farmers are routed to mapping tools', as
 test('farmer plantation tools share an accessible dropdown with local icons', () => {
   for (const file of fs.readdirSync('farmer').filter(file => file.endsWith('.html') && file !== 'mapping.html')) {
     const html=fs.readFileSync('farmer/'+file,'utf8');
-    const group=html.match(/<details class="nav-group"[^>]*>[\s\S]*?<\/details>/)?.[0];
+    const groups=html.match(/<details class="nav-group"[^>]*>[\s\S]*?<\/details>/g)||[];
+    const group=groups.find(markup=>markup.includes('Plantations &amp; mapping'));
     assert(group,file);
     assert.match(group,/<summary>/,file);
-    for(const href of ['plantations.html','plantation-form.html','atlas.html','trees.html']) assert(group.includes('href="'+href+'"'),file+' '+href);
+    for(const href of ['plantations.html','plantation-form.html','atlas.html','history.html']) assert(group.includes('href="'+href+'"'),file+' '+href);
     assert.match(group,/data-local-icon=/,file);
-    assert.equal((html.match(/class="nav-group"/g)||[]).length,3,file);
+    assert.equal(groups.length,6,file);
   }
 });

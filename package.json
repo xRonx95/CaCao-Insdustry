@@ -1,7 +1,7 @@
 {
   "name": "cacaoindustry-web",
   "version": "1.0.0",
-  "description": "Farmer Profiling and GPS Plantation Mapping System for Isabela City, Basilan, Philippines.",
+  "description": "CaAPs: cacao post-harvest quality, cooperative records and farm traceability.",
   "main": "service-worker.js",
   "directories": {
     "doc": "docs",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "node scripts/prepare-release.cjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node scripts/prepare-release.cjs && node --test --test-concurrency=1 tests/*.test.cjs"
   },
   "repository": {
     "type": "git",

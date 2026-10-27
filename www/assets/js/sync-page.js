@@ -38,7 +38,7 @@ window.CacaoSyncPage = (() => {
     if(!local&&!server?.boundary){element.classList.add('hidden');return;}
     element.classList.remove('hidden');
     if(!window.L){element.textContent='Map library is unavailable. Export both boundaries and review them before approving a revised submission.';return;}
-    if(!comparisonMap){comparisonMap=L.map(element).setView([6.704,121.972],12);L.tileLayer(CACAO_MAP.tiles,{attribution:CACAO_MAP.attribution,maxZoom:CACAO_MAP.maxZoom}).addTo(comparisonMap);comparisonMap.records=L.featureGroup().addTo(comparisonMap);}
+    if(!comparisonMap){comparisonMap=L.map(element).setView(window.CACAO_MAP?.center||[12,123],window.CACAO_MAP?.zoom||6);L.tileLayer(CACAO_MAP.tiles,{attribution:CACAO_MAP.attribution,maxZoom:CACAO_MAP.maxZoom}).addTo(comparisonMap);comparisonMap.records=L.featureGroup().addTo(comparisonMap);}
     comparisonMap.records.clearLayers();
     if(server?.boundary)comparisonMap.records.addLayer(L.geoJSON(server.boundary,{style:{color:'#287a4b',weight:4,fillOpacity:.1}}));
     if(local)comparisonMap.records.addLayer(L.geoJSON(local,{style:{color:'#ad762a',weight:2,dashArray:'6 5',fillOpacity:.12}}));

@@ -50,7 +50,7 @@
     document.body.append(shade);
     const role=document.body.dataset.pageRole;
     const dock=document.createElement('nav');dock.className='mobile-dock';dock.setAttribute('aria-label','Mobile workspace');
-    const dockLinks=role==='farmer'?[['Home','farmer.html','home'],['Plantations','plantations.html','leaf'],['Map','atlas.html','map'],['Profile','farmers.html','people']]:[['Home',role+'.html','home'],['Farmers','farmers.html','people'],['Map','atlas.html','map'],['Reports','reports.html','chart']];
+    const dockLinks=role==='farmer'?[['Home','postharvest.html','home'],['Batches','batches.html','harvest'],['Map','atlas.html','map'],['Profile','farmers.html','people']]:[['Home','postharvest.html','home'],['Farmers','farmers.html','people'],['Map','atlas.html','map'],['Reports','reports.html','chart']];
     for (const [label,href,image] of dockLinks) {
       const link=document.createElement('a');link.href=href;link.append(icon(image));
       const caption=document.createElement('span');caption.textContent=label;link.append(caption);

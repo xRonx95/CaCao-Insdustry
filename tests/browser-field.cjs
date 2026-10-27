@@ -8,13 +8,13 @@ const owner='11111111-1111-4111-8111-111111111111',farm='22222222-2222-4222-8222
 const tables={
   profiles:[{id:owner,display_name:'Test Farmer',role:'farmer',account_status:'active'}],
   plantations:[{id:farm,owner_id:owner,farmer_id:'33333333-3333-4333-8333-333333333333',name:'Integration test farm',farmer_name:'Test Farmer',barangay:'Test barangay',municipality:'Isabela City',province:'Basilan',area_sqm:10000,tree_count:10,revision:1,status:'active',created_at:'2026-01-01',updated_at:'2026-01-01',boundary:null}],
-  harvests:[],farmers:[],workers:[],pest_reports:[]
+  harvests:[],cacao_tree_inventories:[],farmers:[],workers:[],pest_reports:[]
 };
 const receipts=new Map();let dropped=false,rpcCalls=0,server,send,browser,debugSocket;
 function fixtures(){
   class Query{
     constructor(table){this.table=table;this.filters=[];this.from=0;this.to=9999;}
-    select(){return this;}order(){return this;}eq(key,value){this.filters.push([key,value]);return this;}
+    select(){return this;}order(){return this;}limit(size){this.to=size-1;return this;}eq(key,value){this.filters.push([key,value]);return this;}
     range(from,to){this.from=from;this.to=to;return this;}
     async response(single=false){
       const data=await (await fetch('/__test_data?table='+encodeURIComponent(this.table))).json();
@@ -41,7 +41,7 @@ async function main(){
       let body='';for await(const part of req)body+=part;
       const command=JSON.parse(body).body;rpcCalls++;
       if(!receipts.has(command.change_id)){
-        const row={...command.payload,id:command.record_id,area_sqm_at_harvest:10000,dry_kg_per_ha:Number(command.payload.dry_bean_kg),updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
+        const row={...command.payload,id:command.record_id,total_trees:Number(command.payload.seedling||0)+Number(command.payload.young||0)+Number(command.payload.mature||0),updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
         (tables[command.entity]||=[]).push(row);receipts.set(command.change_id,row);
       }
       // Deliberately lose the first acknowledgement after the fixture server commits.
@@ -85,17 +85,17 @@ async function main(){
   await send('Page.addScriptToEvaluateOnNewDocument',{source:'('+fixtures.toString()+')()'});
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   const loaded=new Promise(resolve=>events.set('Page.loadEventFired',resolve));
-  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/harvests.html'});await loaded;
-  await waitFor(()=>evaluate('document.getElementById("plantation_id").options.length===2'),'harvest form initialization');
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/trees.html'});await loaded;
+  await waitFor(()=>evaluate('document.getElementById("plantation_id").options.length===2'),'inventory form initialization');
   assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true);
   await evaluate('document.getElementById("nav-toggle").click()');
   assert.equal(await evaluate('document.getElementById("nav-toggle").getAttribute("aria-expanded")'),'true');
   await evaluate('document.getElementById("nav-toggle").click()');
   await evaluate('CacaoSync.unlock("a browser integration passphrase")');
-  await evaluate('Promise.all(["plantations","harvests"].map(async table=>CacaoSync.cache(table,await listAll(table))))');
+  await evaluate('CacaoSync.prepare()');
   await waitFor(()=>evaluate('!!navigator.serviceWorker.controller'),'public offline shell activation');
   await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
-  await evaluate('(()=>{const form=document.getElementById("monitor-form");form.elements.plantation_id.value="22222222-2222-4222-8222-222222222222";form.elements.harvest_date.value="2026-01-05";form.elements.wet_bean_kg.value="50";form.elements.dry_bean_kg.value="20";form.requestSubmit();})()');
+  await evaluate('(()=>{const form=document.getElementById("record-form");form.elements.plantation_id.value="22222222-2222-4222-8222-222222222222";form.elements.inventory_date.value="2026-01-05";form.elements.seedling.value="0";form.elements.young.value="0";form.elements.mature.value="5";form.elements.productive.value="3";form.elements.non_productive.value="2";form.elements.dead.value="0";form.requestSubmit();})()');
   await waitFor(()=>evaluate('CacaoSync.envelopes().then(rows=>rows.length===1&&rows[0].status==="pending")'),'encrypted offline enqueue');
   assert.equal(rpcCalls,0);
   const reloaded=new Promise(resolve=>events.set('Page.loadEventFired',resolve));await send('Page.reload');await reloaded;
@@ -105,8 +105,8 @@ async function main(){
   assert.equal(await evaluate('CacaoSync.envelopes().then(rows=>rows[0].status)'),'pending');
   await send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
   await waitFor(()=>evaluate('CacaoSync.envelopes().then(rows=>rows[0].status==="synced")'),'automatic retry and confirmed receipt',20000);
-  assert.equal(tables.harvests.length,1);assert.equal(receipts.size,1);assert(rpcCalls>=2);
-  await waitFor(()=>evaluate('document.getElementById("monitor-count").textContent.startsWith("1 records")'),'confirmed harvest appears in history');
+  assert.equal(tables.cacao_tree_inventories.length,1);assert.equal(receipts.size,1);assert(rpcCalls>=2);
+  await waitFor(()=>evaluate('document.querySelectorAll("#records-body tr").length===1&&document.getElementById("records-body").textContent.includes("2026-01-05")'),'confirmed inventory appears in history');
   assert.equal(errors.length,0,errors.join('\n'));
   const screenshot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});const screenshotPath=path.join(os.tmpdir(),'cacao-field-sync-mobile.png');fs.writeFileSync(screenshotPath,Buffer.from(screenshot.data,'base64'));
   console.log('PASS browser: mobile navigation, real IndexedDB encryption, offline reload/unlock, reconnect retry and lost-confirmation recovery without a duplicate fixture record.');

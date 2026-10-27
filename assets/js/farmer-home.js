@@ -44,7 +44,7 @@ window.CacaoFarmerHome = (() => {
     const root=node('section','','farmer-daily');root.id='farmer-daily';root.setAttribute('aria-label','My daily farm work');
     const title=node('h2','Your farm, at a glance');root.append(title,node('p','Choose a plantation, record today’s work, or review an update.'));
     const actions=node('nav','','farmer-actions');actions.setAttribute('aria-label','Daily farm actions');
-    for(const [label,href] of [['Map my farm','plantation-form.html'],['Record harvest','harvests.html'],['Report a problem','pests.html'],['Add farm activity','maintenance.html']])actions.append(link(label,href));
+    for(const [label,href] of [['Process checks','postharvest.html'],['Harvest batches','batches.html'],['Record harvest','harvests.html'],['My plantations','plantations.html']])actions.append(link(label,href));
     root.append(actions);
     const grid=node('div','','farmer-home-grid');root.append(grid);
     const own=owned(data.plantations,currentAccount.user.id);
@@ -69,7 +69,7 @@ window.CacaoFarmerHome = (() => {
     const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Manila',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
     const summary=model({...data,harvests:outcomes[0].status==='fulfilled'?outcomes[0].value:[],treatments:outcomes[1].status==='fulfilled'?outcomes[1].value:[],reports:outcomes[2].status==='fulfilled'?outcomes[2].value:[]},currentAccount.user.id,today);
     detail.remove();
-    root.append(guide(summary,outcomes[0].status==='fulfilled'),link('Track harvest batches','batches.html')); 
+    root.append(guide(summary,outcomes[0].status==='fulfilled'),link('Track harvest batches','batches.html'));
     updates.append(node('p',outcomes[0].status==='rejected'?'Latest harvest unavailable. Open harvest records to retry.':summary.latestHarvest?'Latest harvest: '+summary.latestHarvest.harvest_date+' · '+Number(summary.latestHarvest.dry_bean_kg||0).toLocaleString()+' kg dry beans.':'No harvest recorded yet. Use Record harvest after your first harvest.'));
     if(outcomes[1].status==='rejected'||outcomes[2].status==='rejected')updates.append(node('p','Farm-health reminders unavailable. Open treatments to check follow-up dates.'));
     else{

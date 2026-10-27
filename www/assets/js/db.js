@@ -5,7 +5,7 @@ function accountRole(user) {
 }
 function roleHome(role, prefix = '') {
   const folder = role === 'super_admin' ? 'admin' : role;
-  return prefix + folder + '/' + folder + '.html';
+  return prefix + folder + '/postharvest.html';
 }
 function initializeDatabase() {
   return configured && typeof window.supabase?.createClient === 'function' ? window.supabase.createClient(window.CACAO_SUPABASE_URL, window.CACAO_SUPABASE_KEY, {

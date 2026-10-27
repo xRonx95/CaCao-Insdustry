@@ -53,6 +53,6 @@ if (db) db.auth.getSession().then(({ data }) => {
   const role = accountRole(data.session.user);
   document.getElementById('dashboard-link').href = roleHome(role);
   document.getElementById('dashboard-link').classList.remove('hidden');
-  document.getElementById('share-link').href = role === 'farmer' ? 'farmer/posts.html' : roleHome(role);
+  document.getElementById('share-link').href = roleHome(role);
 }).catch(() => {});
 loadFeed(true);

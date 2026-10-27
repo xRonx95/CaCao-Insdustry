@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Follow-up inspections | CACAO INDUSTRY</title>
+    <title>Follow-up inspections | CaAPs</title>
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/ui.css">
@@ -18,14 +18,15 @@
     <link rel="manifest" href="../manifest.webmanifest">
     <link rel="apple-touch-icon" href="../images/app-icon-192.png">
       <link rel="stylesheet" href="../assets/css/mobile-app.css">
+  <link rel="stylesheet" href="../assets/css/access.css">
   </head>
   <body data-page-role="field" data-feature="inspections" class="workspace-page">
     <header class="topbar">
-      <a class="brand" href="field.html">
+      <a class="brand" href="postharvest.html">
         <img class="brand-logo" src="../images/caaps-mark.png" width="56" height="56" alt="Cacao Industry logo">
         <div>
-          <strong>CACAO INDUSTRY</strong>
-          <small>Farmer Profiling &amp; GPS Plantation Mapping</small>
+          <strong>CaAPs</strong>
+          <small>Cacao quality, post-harvest &amp; farm traceability</small>
         </div>
       </a>
       <div class="account">
@@ -38,7 +39,11 @@
     <button id="nav-toggle" class="mobile-menu" type="button" aria-expanded="false" aria-controls="workspace-nav">Menu</button>
     <nav id="workspace-nav" class="feature-nav" aria-label="Field personnel workspace navigation">
       <div class="sidebar-heading">FIELD WORKSPACE</div>
-      <a href="field.html"><i data-local-icon="home" aria-hidden="true"></i><span>Overview</span></a>
+      <a href="postharvest.html"><i data-local-icon="home" aria-hidden="true"></i><span>Quality overview</span></a>
+      <details class="nav-group"><summary><i data-local-icon="harvest" aria-hidden="true"></i><span>Post-harvest operations</span></summary>
+        <a href="batches.html"><i data-local-icon="harvest" aria-hidden="true"></i><span>Harvest batches</span></a>
+        <a href="harvests.html"><i data-local-icon="harvest" aria-hidden="true"></i><span>Harvest &amp; production</span></a>
+      </details>
       <details class="nav-group"><summary><i data-local-icon="people" aria-hidden="true"></i><span>Profiles &amp; reviews</span></summary>
         <a href="farmers.html"><i data-local-icon="people" aria-hidden="true"></i><span>Farmer profiles</span></a>
         <a href="reviews.html"><i data-local-icon="shield" aria-hidden="true"></i><span>Profile review inbox</span></a>
@@ -48,11 +53,10 @@
         <a href="plantation-form.html"><i data-local-icon="map" aria-hidden="true"></i><span>Register plantation</span></a>
         <a href="atlas.html"><i data-local-icon="map" aria-hidden="true"></i><span>Plantation map</span></a>
         <a href="history.html"><i data-local-icon="map" aria-hidden="true"></i><span>Boundary history &amp; review</span></a>
+        <a href="field.html"><i data-local-icon="chart" aria-hidden="true"></i><span>Farm dashboard</span></a>
       </details>
       <details class="nav-group" open><summary><i data-local-icon="harvest" aria-hidden="true"></i><span>Farm records</span></summary>
         <a href="trees.html"><i data-local-icon="chart" aria-hidden="true"></i><span>Tree inventories</span></a>
-        <a href="harvests.html"><i data-local-icon="harvest" aria-hidden="true"></i><span>Harvest &amp; production</span></a>
-        <a href="batches.html"><i data-local-icon="harvest" aria-hidden="true"></i><span>Harvest batches</span></a>
         <a href="pests.html"><i data-local-icon="leaf" aria-hidden="true"></i><span>Pest &amp; disease reports</span></a>
         <a href="treatments.html"><i data-local-icon="task" aria-hidden="true"></i><span>Treatments</span></a>
         <a href="inspections.html" aria-current="page"><i data-local-icon="task" aria-hidden="true"></i><span>Follow-up inspections</span></a>
@@ -79,7 +83,7 @@
         <a href="../index.html"><i data-local-icon="home" aria-hidden="true"></i><span>Public community</span></a>
         <a href="../privacy.html"><i data-local-icon="shield" aria-hidden="true"></i><span>Privacy notice</span></a>
       </details>
-      <div class="sidebar-location">Isabela City, Basilan<br>Philippines</div>
+      <div class="sidebar-location">Zamboanga del Norte<br>Philippines</div>
     </nav>
     <main class="shell">
       <p id="page-status" class="status" role="status" aria-live="polite">
@@ -186,6 +190,7 @@
     </script>
     <script defer src="../assets/js/ui.js">
     </script>
+    <script defer src="../assets/js/access.js"></script>
     <script defer src="../assets/js/workspace.js">
     </script>
     <script defer src="../assets/js/module-definitions.js">

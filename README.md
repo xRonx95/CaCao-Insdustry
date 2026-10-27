@@ -1,6 +1,10 @@
-# CACAO INDUSTRY
+# CaAPs — Cacao Quality & Traceability
 
-Farmer Profiling and GPS Plantation Mapping System for Isabela City, Basilan, Philippines.
+Post-harvest process records, quality review, cooperative handovers and farm traceability. Pilot focus: the Zamboanga del Norte cacao industry challenge.
+
+The primary workspace is now `postharvest.html` in each role directory. It records agreed protocols, fermentation and drying checks, quality observations, staff grades, handovers and post-harvest costs. Existing farmer profiles, mapping and farm records remain available. Existing stored locations are not rewritten.
+
+The editable five-minute Research Learning pitch, PDF, source appendix and speaker notes are in `docs/pitch/`. Proposed pilot participation and outcome claims are clearly separated from implemented prototype features.
 
 An independent cacao registry, not an official DA, PSA or RSBSA service. The web application uses plain HTML, CSS and JavaScript with Supabase. Local preview does not require a bundler. Deployment uses `npm run build` to create a versioned public release in `dist/`.
 
@@ -17,6 +21,8 @@ An independent cacao registry, not an official DA, PSA or RSBSA service. The web
    - `sql/007_safe_sync.sql`
    - `sql/008_farmer_feature_limits.sql`
    - `sql/009_farmer_reviews.sql`
+   - `sql/010_harvest_batches.sql`
+   - `sql/011_postharvest_learning.sql`
 
    If 001–004 are already installed, apply only 005–007, once, in order. Review staging results before upgrading production.
 3. Edit `assets/js/config.js` with your project URL and public publishable/anon key. Never enter a service-role or secret key. The static site does not read Vercel environment variables or `.env` automatically.
@@ -208,4 +214,4 @@ Open Harvest batches from Farm records, the farmer home, or a plantation workspa
 
 Batch saving requires a connection. The server command enforces account scope, cumulative harvest allocation, sequential stages, nonincreasing weights, chronological dates, a quality pass before storage, and revision checks. A missing acknowledgement can be retried with the same submission ID. Sale amounts record agreed totals in PHP; payment collection, partial sales, batch mixing/splitting and QR labels are not included.
 
-Apply `sql/010_harvest_batches.sql` once after 001�009 in staging, then run `tests/batches-staging.sql`. This rollback-only script checks the database workflow, permissions and retry behavior. Neither the migration nor the staging script has been executed against the hosted database by this local change. Do not rerun the fresh-install bundle on an existing project.
+Apply `sql/010_harvest_batches.sql` once after 001–009 in staging, then run `tests/batches-staging.sql`. This rollback-only script checks the database workflow, permissions and retry behavior. Neither the migration nor the staging script has been executed against the hosted database by this local change. Do not rerun the fresh-install bundle on an existing project.

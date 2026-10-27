@@ -58,8 +58,8 @@ test('account access rejects suspended accounts and missing profile schema',asyn
 });
 test('roles redirect field and super admins to their correct dashboards',()=>{
   const {context}=databaseContext();
-  assert.equal(vm.runInContext("roleHome('field')",context),'field/field.html');
-  assert.equal(vm.runInContext("roleHome('super_admin')",context),'admin/admin.html');
+  assert.equal(vm.runInContext("roleHome('field')",context),'field/postharvest.html');
+  assert.equal(vm.runInContext("roleHome('super_admin')",context),'admin/postharvest.html');
   assert.equal(vm.runInContext("accountRole({user_metadata:{role:'super_admin'}})",context),'farmer');
 });
 test('plantation updates preserve optimistic revisions and reject conflicts',async()=>{

@@ -260,6 +260,15 @@ window.CacaoApp = (() => {
     const columns=[{value:row=>farms.find(f=>f.id===row.plantation_id)?.name || row.plantation_id},{key:'inventory_date'},{key:'total_trees'},{key:'productive'},{key:'dead'},{key:'variety'}];
     const render=()=>table(state.rows,columns);
     const refresh=async()=>{state.rows=await listAll('cacao_tree_inventories');state.rows.sort((a,b)=>b.inventory_date.localeCompare(a.inventory_date));render();};
+    const shownConfirmations=new Set();
+    window.addEventListener('cacao-sync-change',()=>{
+      if(!navigator.onLine||!window.CacaoSync?.unlocked())return;
+      CacaoSync.envelopes().then(async rows=>{
+        const confirmed=rows.filter(row=>row.entity==='cacao_tree_inventories'&&row.status==='synced'&&!shownConfirmations.has(row.id));
+        if(!confirmed.length)return;
+        confirmed.forEach(row=>shownConfirmations.add(row.id));await refresh();message('Tree inventory synchronization confirmed. History is updated.');
+      }).catch(error=>message('Synchronization status changed, but inventory history could not reload. '+error.message,true));
+    });
     bindTable(render);
     el('refresh-records').addEventListener('click',()=>refresh().catch(error=>message(error.message,true)));
     el('record-form').addEventListener('submit',async event=>{
@@ -271,7 +280,9 @@ window.CacaoApp = (() => {
         if(values.productive+values.non_productive!==values.mature)throw new Error('Productive plus non-productive trees must equal mature trees.');
         if(values.inventory_date>new Date().toISOString().slice(0,10))throw new Error('Inventory date cannot be in the future.');
         const response=window.CacaoSync?await CacaoSync.submit({changeId,entity:'cacao_tree_inventories',recordId,payload:{...values,owner_id:farm.owner_id}}):{status:'synced',record:await result(db.from('cacao_tree_inventories').insert({...values,owner_id:farm.owner_id,recorded_by:currentAccount.user.id}))};
-        recordId=crypto.randomUUID();changeId=crypto.randomUUID();event.target.reset();if(response.status==='synced')await refresh();message(response.status==='queued'?'Inventory saved in the encrypted queue.':'Inventory recorded. History is preserved; the latest inventory updates the plantation total.');
+        recordId=crypto.randomUUID();changeId=crypto.randomUUID();event.target.reset();
+        if(response.status==='synced'){try{await refresh();}catch{message('Inventory saved and confirmed, but history could not reload. Refresh records before entering it again.',true);return;}}
+        message(response.status==='queued'?'Inventory saved on this device. Waiting to sync when connected and unlocked.':'Inventory saved and confirmed. The latest inventory updates the plantation total.');
       }catch(error){message(error.message,true);}finally{busy(el('save-record'),false);}
     });
     await refresh();
@@ -359,7 +370,7 @@ window.CacaoApp = (() => {
   function drawMap(plantations,id='atlas-map') {
     if(!window.L){if(el(id))el(id).textContent='Map library unavailable. Check your internet connection.';message('Map library unavailable. Statistics and records remain available; check your connection to load maps.',true);return false;}
     if(!state.map){
-      state.map=L.map(id).setView([6.704,121.972],11);L.control.scale().addTo(state.map);
+      state.map=L.map(id).setView(window.CACAO_MAP?.center||[12,123],window.CACAO_MAP?.zoom||6);L.control.scale().addTo(state.map);
       const settings=window.CACAO_MAP;
       const streets=L.tileLayer(settings.tiles,{attribution:settings.attribution,maxZoom:settings.maxZoom}).addTo(state.map);
       const layers={'Street map':streets};
@@ -448,7 +459,13 @@ window.CacaoApp = (() => {
       el('target-user').value=row.id;el('new-role').value=row.role;el('new-status').value=row.account_status;
       el('access-form').scrollIntoView({block:'start'});
     }}]);bindTable(render);render();
-    setOptions('target-user',users,'id','display_name');setOptions('staff-id',users.filter(u=>['admin','field'].includes(u.role)),'id','display_name');setOptions('farmer-owner',users,'id','display_name');
+    function accountPickers(){
+      const choices=users.map(user=>({...user,account_label:(user.display_name?.trim()||'Unnamed account')+' · '+user.role+' · '+user.id}));
+      setOptions('target-user',choices,'id','account_label');
+      setOptions('staff-id',choices.filter(user=>['admin','field'].includes(user.role)&&user.account_status==='active'),'id','account_label');
+      setOptions('farmer-owner',choices.filter(user=>user.role==='farmer'&&user.account_status==='active'),'id','account_label');
+    }
+    accountPickers();
     const assignmentsList=el('staff-assignment-list');
     async function refreshAssignments(){
       const assigned=await listAllAssignments();assignmentsList.replaceChildren();
@@ -456,15 +473,19 @@ window.CacaoApp = (() => {
         const remove=text('button','Remove','text-btn');remove.type='button';remove.addEventListener('click',async()=>{try{if(!confirm('Remove staff access to this farmer account?'))return;await result(db.from('staff_farmer_assignments').delete().eq('staff_id',assignment.staff_id).eq('farmer_owner_id',assignment.farmer_owner_id));await refreshAssignments();}catch(error){message(error.message,true);}});li.append(remove);assignmentsList.append(li);}
       if(!assigned.length)assignmentsList.append(text('li','No staff assignments yet.'));
     }
-    async function listAllAssignments(){return result(db.from('staff_farmer_assignments').select('*'));}
+    async function listAllAssignments(){const rows=[];for(let offset=0;;offset+=500){const page=await result(db.from('staff_farmer_assignments').select('*').order('staff_id').order('farmer_owner_id').range(offset,offset+499));rows.push(...page);if(page.length<500)return rows;}}
     el('access-form').addEventListener('submit',async event=>{
       event.preventDefault();const button=event.submitter;busy(button,true);
-      try{if(!confirm('Apply these role and account status changes?'))return;await result(db.rpc('set_account_access',{target:el('target-user').value,new_role:el('new-role').value,new_status:el('new-status').value}));message('Account access updated. The user should sign in again.');users=await listAll('profiles');state.rows=users;render();}
+      try{if(!confirm('Apply these role and account status changes?'))return;await result(db.rpc('set_account_access',{target:el('target-user').value,new_role:el('new-role').value,new_status:el('new-status').value}));message('Account access updated. The user should sign in again.');users=await listAll('profiles');state.rows=users;render();accountPickers();}
       catch(error){message(error.message,true);}finally{busy(button,false);}
     });
     el('staff-form').addEventListener('submit',async event=>{
       event.preventDefault();busy(event.submitter,true);
-      try{await result(db.from('staff_farmer_assignments').upsert({staff_id:el('staff-id').value,farmer_owner_id:el('farmer-owner').value},{onConflict:'staff_id,farmer_owner_id'}));await refreshAssignments();message('Staff assignment saved.');}catch(error){message(error.message,true);}finally{busy(event.submitter,false);}
+      try{
+        const staffAccount=users.find(user=>user.id===el('staff-id').value),farmer=users.find(user=>user.id===el('farmer-owner').value);
+        if(!staffAccount||!['admin','field'].includes(staffAccount.role)||staffAccount.account_status!=='active'||farmer?.role!=='farmer'||farmer.account_status!=='active')throw new Error('Select an active administrator or field account and an active farmer account.');
+        await result(db.from('staff_farmer_assignments').upsert({staff_id:staffAccount.id,farmer_owner_id:farmer.id},{onConflict:'staff_id,farmer_owner_id'}));await refreshAssignments();message('Assigned access saved. The staff member can now choose Refresh history to load this farmer’s plantations.');
+      }catch(error){message(error.message,true);}finally{busy(event.submitter,false);}
     });
     el('invite-form').addEventListener('submit',async event=>{
       event.preventDefault();busy(event.submitter,true);
