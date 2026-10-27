@@ -113,6 +113,7 @@ async function main(){
   tables.farmers=[{id:'33333333-3333-4333-8333-333333333333',owner_id:owner,full_name:'Sample Farmer',first_name:'Sample',last_name:'Farmer',barangay:'Test barangay',registration_status:'approved',created_at:'2026-01-01'}];
   tables.harvests=[{id:'sample-harvest',owner_id:owner,plantation_id:farm,harvest_date:'2026-01-02',created_at:'2026-01-02',wet_bean_kg:30,dry_bean_kg:10,harvested_pods:100,estimated_value_php:0,area_sqm_at_harvest:10000}];
   const farmerFeatures=new Set(['postharvest','dashboard','reviews','plantation-workspace','farmers','plantations','plantation-form','atlas','trees','posts','history','harvests','batches','pests','treatments','maintenance','tree-events','tree-tags','sync']);
+  tables.workers=[{id:'worker-fixture',owner_id:owner,full_name:'Test Worker',position:'Farm worker',employment_status:'active',created_at:'2026-01-01'}];
   let checked=0;const failures=[];
   for(const role of ['farmer','field','admin','super_admin']){
     tables.profiles[0].role=role;const folder=role==='super_admin'?'admin':role;
@@ -125,6 +126,26 @@ async function main(){
       await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/'+folder+'/'+file+suffix});
       await waitFor(()=>evaluate('document.readyState==="complete"&&location.pathname.endsWith('+JSON.stringify('/'+folder+'/'+file)+')'),'audit '+role+'/'+file);
       await pause(200);
+      const modal=await evaluate('!!document.querySelector(".record-launch")');
+      if(modal){
+        await evaluate('document.querySelector(".record-launch").click()');
+        assert.equal(await evaluate('document.getElementById("record-dialog").open'),true,role+'/'+file+' modal opens');
+        assert.equal(await evaluate('(()=>{const d=document.getElementById("record-dialog");return d.scrollWidth<=d.clientWidth+1&&d.getBoundingClientRect().right<=innerWidth+1})()'),true,role+'/'+file+' modal overflow');
+        if(await evaluate('!!document.getElementById("plantation_id-search")&&document.getElementById("plantation_id").options.length>1')){
+          await evaluate('document.getElementById("plantation_id-search").value="Integration";document.getElementById("plantation_id-search").dispatchEvent(new Event("input",{bubbles:true}))');
+          assert.equal(await evaluate('document.getElementById("plantation_id").value'),'',role+'/'+file+' typing clears selection');
+          assert.equal(await evaluate('document.getElementById("plantation_id-search").checkValidity()'),false,role+'/'+file+' free text cannot be saved');
+          await evaluate('document.querySelector("#plantation_id-results button").click()');
+          assert.equal(await evaluate('document.getElementById("plantation_id").value'),farm,role+'/'+file+' search chooses plantation ID');
+          assert.equal(await evaluate('document.getElementById("plantation_id-search").checkValidity()'),true);
+        }
+        if(await evaluate('!!document.getElementById("worker_id-search")&&document.getElementById("worker_id").options.length>1')){
+          await evaluate('document.getElementById("worker_id-search").value="Test Worker";document.getElementById("worker_id-search").dispatchEvent(new Event("input",{bubbles:true}));document.querySelector("#worker_id-results button").click()');
+          assert.equal(await evaluate('document.getElementById("worker_id").value'),'worker-fixture',role+'/'+file+' worker search chooses correct ID');
+        }
+        await evaluate('document.querySelector(".record-dialog-bar button").click()');
+        assert.equal(await evaluate('document.getElementById("record-dialog").open'),false);
+      }
       const state=await evaluate('({status:document.getElementById("page-status")?.textContent||"",formErrors:[...document.querySelectorAll(".status.error")].map(el=>el.textContent.trim()).filter(Boolean),overflow:document.documentElement.scrollWidth>innerWidth+1})');
       if(errors.length>before||state.formErrors.length||state.overflow)failures.push({page:role+'/'+file,...state,errors:errors.slice(before)});
       checked++;

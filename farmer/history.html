@@ -19,6 +19,7 @@
     <link rel="apple-touch-icon" href="../images/app-icon-192.png">
       <link rel="stylesheet" href="../assets/css/mobile-app.css">
   <link rel="stylesheet" href="../assets/css/access.css">
+  <link rel="stylesheet" href="../assets/css/history-search.css">
   </head>
   <body data-page-role="farmer" data-feature="history" class="workspace-page">
     <header class="topbar">
@@ -92,10 +93,11 @@
           </div>
         </div>
         <section class="panel">
-          <label>Plantation<select id="history-farm">
-              <option value="">Select a plantation</option>
-            </select>
-          </label>
+          <label for="history-search">Search plantation or farmer</label>
+          <input id="history-search" type="search" placeholder="Type a plantation or farmer name?" autocomplete="off" aria-controls="history-results" aria-describedby="history-search-help">
+          <p id="history-search-help" class="muted small">Type a name, then choose a matching plantation to view its history.</p>
+          <div id="history-results" class="history-search-results" role="region" aria-label="Matching plantations" hidden></div>
+          <select id="history-farm" hidden aria-hidden="true" tabindex="-1"><option value="">Select a plantation</option></select>
           <button id="history-refresh" type="button" class="btn secondary">Refresh history</button><p id="mapping-decision" class="notice" role="status" aria-live="polite"></p>
           <p id="history-summary">
           </p>

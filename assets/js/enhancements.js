@@ -24,16 +24,42 @@ window.CacaoEnhance = (() => {
     $('review-panel').classList.add('hidden');
     for(const control of $('mapping-review-form').elements)control.disabled=!privileged;
     let currentFarm,selectionVersion=0,reviewing=false;
+    const search=$('history-search'),results=$('history-results');
+    const plantationLabel=farm=>farm.name+' · '+farm.farmer_name;
+    function searchResults(){
+      if(!search||!results)return;
+      const query=search.value.trim().toLocaleLowerCase();results.replaceChildren();results.hidden=!query;
+      if(!query)return;
+      const matches=allowed.filter(farm=>[farm.name,farm.farmer_name,farm.barangay].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
+      for(const farm of matches.slice(0,30)){
+        const button=action(plantationLabel(farm),async()=>{
+          if(reviewing||$('history-farm').disabled)return;
+          $('history-farm').value=farm.id;results.hidden=true;await load();search.focus();
+        });results.append(button);
+      }
+      if(!matches.length)results.append(node('p','No matching plantations. Try another plantation or farmer name.'));
+      if(matches.length>30)results.append(node('p',matches.length+' matches. Keep typing to narrow your search.'));
+    }
+    search?.addEventListener('input',()=>{
+      if(reviewing)return;
+      $('history-farm').value='';selectionVersion++;clear();displaySections(false);searchResults();
+    });
+    search?.addEventListener('focus',()=>search.select());
+    search?.addEventListener('keydown',event=>{
+      if(event.key==='ArrowDown'){results?.querySelector('button')?.focus();event.preventDefault();}
+      if(event.key==='Escape'&&results)results.hidden=true;
+    });
     function displaySections(show){
       for(const id of ['boundary-body','gps-session-list','review-list','history-log'])$(id).closest?.('section')?.classList.toggle('hidden',!show);
       $('history-map').classList.toggle('hidden',!show);$('overlap-list').classList.toggle('hidden',!show);$('overlap-list').previousElementSibling?.classList.toggle('hidden',!show);
     }
     function empty(){
       clear();displaySections(false);$('history-farm').disabled=true;
+      if(search){search.value='';search.disabled=true;search.placeholder='No plantations available to this account';}if(results)results.hidden=true;
       const option=$('history-farm').children[0];if(option)option.textContent='No plantations available to this account';
       const role=currentAccount.profile.role;
-      $('mapping-decision').textContent=role==='farmer'?'No saved plantations are available under your farmer account. Register a plantation or confirm that you are using the account that saved it.':role==='super_admin'?'No plantations match this view. Check the plantation directory and remove any farmer filter.':'No plantations are visible to this staff account. Check Account access & review visibility above. A super administrator can assign the farmer account in Users & access; then choose Refresh history.';
-      status(role==='farmer'?'No saved plantations for this farmer account.':'No authorized plantations in this view. Check account assignments; this does not mean farmers have no plantations.');
+      $('mapping-decision').textContent=role==='farmer'?'No saved plantations are available under your farmer account. Register a plantation or confirm that you are using the account that saved it.':canReview(role)?'No plantations match this view. Check the plantation directory and remove any farmer filter. If farmers have saved plantations, apply database migration 014 and refresh history.':'No plantations are visible to this staff account. Check Account access & review visibility above. A super administrator can assign the farmer account in Users & access; then choose Refresh history.';
+      status(role==='farmer'?'No saved plantations for this farmer account.':canReview(role)?'No plantations in this view. Check filters and confirm database migration 014 is installed.':'No authorized plantations in this view. Check account assignments; this does not mean farmers have no plantations.');
     }
     function clear(){
       currentFarm=null;$('review-panel').classList.add('hidden');
@@ -46,6 +72,7 @@ window.CacaoEnhance = (() => {
       displaySections(false);
       try{
       if(!allowed.some(row=>row.id===id)){status('Select a plantation to review its boundary and GPS history.');return;}
+      if(search){search.value=plantationLabel(allowed.find(row=>row.id===id));search.disabled=false;search.placeholder='Type a plantation or farmer name…';}if(results)results.hidden=true;
       status('Loading selected plantation history…');
       const farm=await get(db.from('plantations').select('*').eq('id',id).single());
       if(version!==selectionVersion)return;
@@ -101,19 +128,21 @@ window.CacaoEnhance = (() => {
     $('history-farm').addEventListener('change',()=>load().catch(error=>status(error.message,true)));
     $('history-refresh').addEventListener('click',async()=>{
       if(reviewing)return;const previous=$('history-farm').value;selectionVersion++;clear();displaySections(false);$('history-farm').disabled=true;$('history-refresh').disabled=true;
+      if(search)search.disabled=true;
       try{
         farms=await accessible();allowed=farmerId?farms.filter(farm=>farm.farmer_id===farmerId):farms;
         const blank=node('option','Select a plantation');blank.value='';$('history-farm').replaceChildren(blank);
         for(const farm of allowed){const option=node('option',farm.name+' · '+farm.farmer_name);option.value=farm.id;$('history-farm').append(option);}
         window.CacaoAccess?.refresh(currentAccount).catch(()=>{});
         if(allowed.length){$('history-farm').disabled=false;$('history-farm').value=allowed.some(farm=>farm.id===previous)?previous:allowed[0].id;await load();}else empty();
-      }catch(error){status('Plantation access could not reload. '+error.message,true);}finally{$('history-refresh').disabled=false;}
+      }catch(error){status('Plantation access could not reload. '+error.message,true);}finally{$('history-refresh').disabled=false;if(search)search.disabled=!allowed.length;}
     });
     $('mapping-review-form').addEventListener('submit',async event=>{
       event.preventDefault();if(reviewing)return;
       if(!privileged){status('Only administrators may verify or reject a boundary.',true);return;}
       const button=event.submitter||event.target.querySelector('button[type="submit"]');if(button)button.disabled=true;
       reviewing=true;$('history-farm').disabled=true;$('history-refresh').disabled=true;
+      if(search)search.disabled=true;if(results)results.hidden=true;
       try{
         if(!currentFarm)throw new Error('Select a plantation.');
         if(!confirm('Submit this mapping review for revision '+currentFarm.revision+'?'))return;
@@ -121,7 +150,7 @@ window.CacaoEnhance = (() => {
         Object.assign(currentFarm,updated);$('review-note').value='';
         try{await load();status('Administrator decision saved. The farmer can view it in boundary history.');}
         catch{status('Decision saved, but history could not reload. Refresh before submitting another review.',true);}
-      }catch(error){status(error.message,true);}finally{reviewing=false;$('history-farm').disabled=false;$('history-refresh').disabled=false;if(button)button.disabled=false;}
+      }catch(error){status(error.message,true);}finally{reviewing=false;$('history-farm').disabled=false;$('history-refresh').disabled=false;if(search)search.disabled=false;if(button)button.disabled=false;}
     });
     if(allowed.length){const selected=new URLSearchParams(location.search).get('plantation');$('history-farm').value=allowed.some(farm=>farm.id===selected)?selected:allowed[0].id;await load();}
     else empty();

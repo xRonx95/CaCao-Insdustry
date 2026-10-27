@@ -3,7 +3,8 @@ window.CacaoAccess=(()=>{
   const node=(tag,text)=>{const el=document.createElement(tag);el.textContent=text??'';return el;};
   function message(role,count){
     if(role==='farmer')return 'Your account shows only your own farm records. Share your farm account ID with your super administrator when requesting staff review.';
-    if(role==='super_admin')return 'You can review all farmer accounts. Assign administrators and field staff to farmers in Users & access.';
+    if(role==='admin')return 'You can access all farmer records and plantations, review farmer profiles and field staff profiles, and approve plantation boundaries. Farmer assignments are not required for administrators.';
+    if(role==='super_admin')return 'You can access all farmer records and review profiles. Manage roles, account status and field staff assignments in Users & access.';
     if(count===0)return 'No farmer accounts are assigned to this staff account. You can see records you own. A super administrator must grant assigned access before you can review another farmer’s plantations.';
     return 'Assigned access: '+count+' farmer account'+(count===1?'':'s')+'. Records remain limited to these assignments and records you own.';
   }
@@ -18,7 +19,7 @@ window.CacaoAccess=(()=>{
     if(role==='super_admin'){const link=node('a','Manage staff assignments');link.href='users.html';section.append(link);}
     try{
       let count=null;
-      if(['admin','field'].includes(role)){
+      if(role==='field'){
         const assigned=new Set();
         for(let offset=0;;offset+=500){
           const {data,error}=await db.from('staff_farmer_assignments').select('farmer_owner_id').eq('staff_id',account.user.id).order('farmer_owner_id').range(offset,offset+499);

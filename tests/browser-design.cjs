@@ -41,6 +41,16 @@ async function main(){
     if(url.pathname==='/__test_rpc'){
       let body='';for await(const part of req)body+=part;
       const rpc=JSON.parse(body),command=rpc.body;rpcCalls++;
+      if(['save_field_profile','review_field_profile'].includes(rpc.name)){
+        tables.field_profiles??=[];tables.field_profile_reviews??=[];
+        let row=tables.field_profiles.find(row=>row.id===(command.target||owner));
+        if(rpc.name==='save_field_profile'){
+          if(!row){row={id:owner,created_at:new Date().toISOString()};tables.field_profiles.push(row);}
+          Object.assign(row,command.p_payload,{registration_status:'pending',updated_at:new Date().toISOString()});
+        }else Object.assign(row,{registration_status:command.decision,updated_at:new Date().toISOString()});
+        tables.field_profile_reviews.push({profile_id:row.id,decision:rpc.name==='save_field_profile'?'submitted':command.decision,note:command.note||'Submitted for admin review',created_at:new Date().toISOString()});
+        res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:row,error:null}));return;
+      }
       if(rpc.name==='record_postharvest'){
         tables.postharvest_records??=[];
         if(!receipts.has(command.p_request_id)){
@@ -167,6 +177,15 @@ async function main(){
   tables.harvests=Array.from({length:18},(_,index)=>({id:'harvest-'+index,owner_id:owner,plantation_id:farm,harvest_date:'2026-06-'+String(index+1).padStart(2,'0'),created_at:'2026-06-30',wet_bean_kg:30,dry_bean_kg:10,harvested_pods:100,estimated_value_php:0,area_sqm_at_harvest:10000}));
   await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/harvests.html'});
   await waitFor(()=>evaluate('document.getElementById("monitor-count")?.textContent.startsWith("18 records")'),'harvest report records');
+  assert.equal(await evaluate('document.getElementById("record-dialog").open'),false);
+  await evaluate('[...document.querySelectorAll("#monitor-body button")].find(button=>button.textContent==="Edit").click()');
+  assert.equal(await evaluate('document.getElementById("record-dialog").open'),true,'Edit opens the existing record modal');
+  assert.equal(await evaluate('document.getElementById("plantation_id-search").disabled'),true,'Editing keeps plantation fixed');
+  await evaluate('document.querySelector(".record-dialog-bar button").click();document.querySelector(".record-launch").click()');
+  assert.equal(await evaluate('document.getElementById("monitor-form-title").textContent'),'New record','New record leaves edit mode');
+  assert.equal(await evaluate('document.getElementById("plantation_id-search").disabled'),false);
+  await evaluate('document.querySelector(".record-dialog-bar button").click()');
+
   assert.equal(await evaluate('document.querySelectorAll("#monitor-body tr").length'),15);
   await evaluate('window.dispatchEvent(new Event("beforeprint"))');
   assert.equal(await evaluate('document.querySelectorAll("#monitor-body tr").length'),18,'Print includes all filtered rows');
@@ -190,7 +209,12 @@ async function main(){
     await evaluate(`(()=>{const $=id=>document.getElementById(id);$('batch-stage').value=${JSON.stringify(stage)};$('batch-stage').dispatchEvent(new Event('change'));$('batch-event-weight').value=${JSON.stringify(weight)};$('batch-event-note').value='Recorded field observation';${quality?"$('batch-moisture').value='7';$('batch-quality-result').value="+JSON.stringify(quality)+';':''}${stage==='sold'?"$('batch-buyer').value='Sample buyer';$('batch-sale-php').value='1200';":''}$('batch-advance-form').requestSubmit();})()`);
     await waitFor(()=>evaluate('document.getElementById("batch-overview").textContent.includes("Revision '+revision+'")'),'batch '+stage);
   };
-  await advance('fermenting','10',2);await advance('drying','4',3);await advance('quality_check','4',4,'hold');
+  await advance('fermenting','10',2);await advance('drying','4',3);
+  assert.equal(await evaluate('document.getElementById("batch-advance-form").hidden'),true,'Farmers must wait for administrator quality decisions');
+  tables.profiles[0].role='admin';
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/admin/batches.html?batch='+tables.harvest_batches[0].id});
+  await waitFor(()=>evaluate('document.getElementById("batch-overview").textContent.includes("Revision 3")'),'administrator batch loaded');
+  await advance('quality_check','4',4,'hold');
   assert.equal(await evaluate('[...document.getElementById("batch-stage").options].some(option=>option.value==="stored")'),false,'Hold cannot proceed to storage');
   await advance('quality_check','4',5,'pass');
   await evaluate('document.getElementById("batch-stage").value="stored";document.getElementById("batch-stage").dispatchEvent(new Event("change"));document.getElementById("batch-event-note").value="Attempt without supporting evidence";document.getElementById("batch-advance-form").requestSubmit()');
@@ -211,13 +235,18 @@ async function main(){
   tables.gps_tracking_sessions=[{id:'session-1',plantation_id:farm,created_at:'2026-06-01',boundary_revision:1},{id:'session-2',plantation_id:secondFarm,created_at:'2026-06-02',boundary_revision:2}];
   tables.gps_tracking_points=[{id:'point-1',session_id:'session-1',sequence_no:1,latitude:6.7,longitude:121.9,accuracy:5,accepted:true,captured_at:'2026-06-01'}];
   tables.mapping_reviews=[{id:'review-1',plantation_id:farm,decision:'rejected',reviewed_revision:1,note:'Please correct the eastern corner.',created_at:'2026-06-01'}];
+  tables.profiles[0].role='farmer';
   await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/history.html?plantation='+farm});
   await waitFor(()=>evaluate('document.getElementById("mapping-decision")?.textContent.includes("eastern corner")'),'farmer administrator feedback');
   assert.equal(await evaluate('[...document.getElementById("history-farm").options].some(option=>option.value==="unrelated")'),false);
   assert.equal(await evaluate('document.getElementById("review-panel").classList.contains("hidden")'),true);
   await evaluate('document.querySelector("#gps-session-list button").click()');
   await waitFor(()=>evaluate('document.querySelectorAll("#gps-points-body tr").length===1'),'selected plantation GPS samples');
-  await evaluate('document.getElementById("history-farm").value='+JSON.stringify(secondFarm)+';document.getElementById("history-farm").dispatchEvent(new Event("change"))');
+  assert.equal(await evaluate('getComputedStyle(document.getElementById("history-farm")).display'),'none');
+  await evaluate('document.getElementById("history-search").value="Second";document.getElementById("history-search").dispatchEvent(new Event("input"))');
+  assert.equal(await evaluate('document.querySelectorAll("#history-results button").length'),1);
+  assert.equal(await evaluate('document.getElementById("review-panel").classList.contains("hidden")'),true);
+  await evaluate('document.querySelector("#history-results button").click()');
   await waitFor(()=>evaluate('document.getElementById("history-summary").textContent.includes("Second test farm")'),'changed plantation history');
   assert.equal(await evaluate('document.querySelectorAll("#gps-points-body tr").length'),0);
   assert.equal(await evaluate('document.querySelector("#boundary-body td").textContent'),'2');
@@ -235,13 +264,13 @@ async function main(){
   await waitFor(()=>evaluate('!document.getElementById("review-panel").classList.contains("hidden")'),'restore current boundary for review');
   const restoredPlantations=tables.plantations;tables.plantations=[];
   await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/admin/history.html'});
-  await waitFor(()=>evaluate('document.getElementById("history-farm")?.disabled&&document.getElementById("mapping-decision").textContent.includes("super administrator")'),'empty administrator access guidance');
+  await waitFor(()=>evaluate('document.getElementById("history-farm")?.disabled&&document.getElementById("mapping-decision").textContent.includes("migration 014")'),'empty administrator access guidance');
   assert.equal(await evaluate('getComputedStyle(document.getElementById("history-map")).display'),'none','Empty history does not show a blank map');
-  await waitFor(()=>evaluate('document.getElementById("workspace-access")?.textContent.includes("No farmer accounts are assigned")'),'assignment diagnosis');
-  tables.plantations=restoredPlantations;tables.staff_farmer_assignments=[{staff_id:owner,farmer_owner_id:'newly-assigned-farmer'}];
+  await waitFor(()=>evaluate('document.getElementById("workspace-access")?.textContent.includes("all farmer records")'),'assignment diagnosis');
+  tables.plantations=restoredPlantations;tables.staff_farmer_assignments=[];
   await evaluate('document.getElementById("history-refresh").click()');
   await waitFor(()=>evaluate('!document.getElementById("history-farm").disabled&&document.getElementById("history-farm").options.length===3'),'directory refresh after access changes');
-  await waitFor(()=>evaluate('document.getElementById("workspace-access").textContent.includes("1 farmer account")'),'updated assignment guidance');
+  await waitFor(()=>evaluate('document.getElementById("workspace-access").textContent.includes("not required for administrators")'),'updated assignment guidance');
   tables.harvest_batches=[{id:'quality-demo',owner_id:owner,plantation_id:farm,code:'DEMO-ZDN-001',stage:'sold',current_weight_kg:40,allocated_wet_kg:120,sale_php:4000}];
   const observation=(id,kind,detail,date)=>({id,batch_id:'quality-demo',owner_id:owner,actor_role:'field',kind,detail,observed_at:date,created_at:date,weight_snapshot_kg:40,note:'Fictional demonstration record'});
   tables.postharvest_records=[observation('protocol','protocol',{facility:'Sample cooperative facility',reference:'Demonstration targets — not a buyer contract',started_at:'2026-06-01T00:00:00Z',min_hours:120,turn_hours:24,max_moisture:8,max_defects:5},'2026-06-01T00:00:00Z'),observation('dry-1','drying',{moisture_pct:24,method:'solar',weather:'dry',protected:true},'2026-06-07T00:00:00Z'),observation('dry-2','drying',{moisture_pct:12,method:'solar',weather:'dry',protected:true},'2026-06-08T00:00:00Z'),observation('grade','quality',{moisture_pct:7,sample_beans:100,moldy:0,slaty:1,insect_damaged:1,grade:'premium',assessor:'Sample assigned reviewer'},'2026-06-09T00:00:00Z')];
@@ -261,9 +290,27 @@ async function main(){
   await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/postharvest.html'});
   await waitFor(()=>evaluate('!!document.querySelector("#process-kind option")'),'farmer process controls');
   assert.equal(await evaluate('[...document.getElementById("process-kind").options].some(option=>option.value==="protocol")'),false);
-  await evaluate('document.getElementById("process-kind").value="quality";document.getElementById("process-kind").dispatchEvent(new Event("change"))');
-  assert.equal(await evaluate('document.getElementById("process-grade").options.length'),1);
-  assert.equal(await evaluate('document.getElementById("process-grade").value'),'ungraded');
+  assert.deepEqual(await evaluate('[...document.getElementById("process-kind").options].map(option=>option.value)'),['fermentation','drying']);
+  tables.profiles[0].role='field';
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/field/field-profiles.html'});
+  await waitFor(()=>evaluate('document.getElementById("staff-save")?.disabled===false'),'staff profile ready');
+  await evaluate('document.getElementById("staff-phone").value="09123456789";document.getElementById("staff-address").value="Test address";document.getElementById("staff-position").value="Field officer";document.getElementById("staff-profile-form").requestSubmit()');
+  try{await waitFor(()=>evaluate('document.getElementById("staff-title").textContent.includes("Pending administrator")'),'staff submission pending');}catch(error){console.log(await evaluate('({status:document.getElementById("page-status").textContent,invalid:[...document.querySelectorAll("#staff-profile-form :invalid")].map(el=>[el.id,el.value,el.validationMessage])})'));console.log(errors);throw error;}
+  assert.equal(await evaluate('document.getElementById("staff-review-form").classList.contains("hidden")'),true);
+  tables.profiles[0].role='admin';
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/admin/field-profiles.html'});
+  await waitFor(()=>evaluate('document.querySelector("#staff-list button")?.disabled===false'),'admin staff inbox');
+  await evaluate('document.querySelector("#staff-list button").click()');
+  await waitFor(()=>evaluate('!document.getElementById("staff-review-form").classList.contains("hidden")'),'staff approval controls');
+  await evaluate('document.getElementById("staff-feedback").value="Staff profile details have been checked.";document.getElementById("staff-decision").value="approved";document.getElementById("staff-review-form").requestSubmit()');
+  await waitFor(()=>evaluate('document.getElementById("staff-title").textContent.includes("Approved")'),'staff profile approved');
+  tables.profiles[0].role='field';
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/field/field-profiles.html'});
+  await waitFor(()=>evaluate('document.getElementById("staff-title")?.textContent.includes("Approved")'),'field reads approval');
+  assert.equal(await evaluate('document.getElementById("staff-history").textContent.includes("Staff profile details have been checked.")'),true);
+  for(const width of [1280,390,320]){await send('Emulation.setDeviceMetricsOverride',{width,height:850,deviceScaleFactor:1,mobile:width<850});await pause(100);assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'staff profile overflow '+width);}
+  await evaluate('document.getElementById("staff-address").value="Updated test address";document.getElementById("staff-profile-form").requestSubmit()');
+  await waitFor(()=>evaluate('document.getElementById("staff-title").textContent.includes("Pending administrator")'),'staff edits reopen review');
   for(const page of ['help.html','demo.html','postharvest-guide.html']){
     await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/'+page});
     await waitFor(()=>evaluate('document.readyState==="complete"&&!!document.querySelector(".guide-header")'),'guide '+page);

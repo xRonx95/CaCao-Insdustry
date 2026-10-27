@@ -87,6 +87,14 @@ async function main(){
   await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/plantation-form.html'});
   await waitFor(()=>evaluate('document.getElementById("owner-name")?.value==="Test Farmer"'),'account selected');
   assert.equal(await evaluate('document.getElementById("farmer-record").disabled'),true);
+  assert.equal(await evaluate('document.getElementById("farmer-form-dialog").open'),false);
+  await evaluate('document.getElementById("open-farmer-form").click()');
+  assert.equal(await evaluate('document.getElementById("farmer-form-dialog").open'),true);
+  for(const width of [1280,390,320]){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:844,deviceScaleFactor:1,mobile:width<850});
+    await pause(150);
+    assert.equal(await evaluate('(()=>{const d=document.getElementById("farmer-form-dialog");return d.scrollWidth<=d.clientWidth+1&&d.getBoundingClientRect().right<=innerWidth})()'),true,'Plantation modal overflow '+width);
+  }
   await send('Runtime.evaluate',{expression:'document.getElementById("open-mapping").click()',userGesture:true});
   let popupTarget;
   await waitFor(async()=>{const targets=await(await fetch('http://127.0.0.1:'+debugPort+'/json/list')).json();popupTarget=targets.find(item=>item.type==='page'&&item.url.includes('/farmer/mapping.html?full=1'));return !!popupTarget;},'mapping tab');
@@ -105,6 +113,27 @@ async function main(){
   popupEvaluate('document.querySelector(".mapping-return-bar button").click()').catch(()=>{});
   await waitFor(()=>evaluate('document.getElementById("form-status").textContent.includes("Boundary returned")'),'boundary returned to form');
   assert.equal(await evaluate('mappingData.area_sqm>0'),true);popupSocket.close();assert.equal(errors.length,0,errors.join('\n'));
-  console.log('PASS account-linked farmer, dedicated mapping tab, mobile map layout and boundary round trip.');
+  await send('Page.navigate',{url:'http://127.0.0.1:'+port+'/farmer/farmers.html'});
+  await waitFor(()=>evaluate('document.getElementById("owner_id")?.options.length>1'),'profile account options');
+  assert.equal(await evaluate('document.getElementById("farmer-form-dialog").open'),false);
+  await evaluate('document.getElementById("open-farmer-form").click()');
+  assert.equal(await evaluate('document.getElementById("farmer-form-dialog").open'),true);
+  await evaluate('document.getElementById("first_name").value="Retained draft";document.getElementById("close-farmer-form").click();document.getElementById("open-farmer-form").click()');
+  assert.equal(await evaluate('document.getElementById("first_name").value'),'Retained draft');
+  for(const width of [1280,390,320]){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:844,deviceScaleFactor:1,mobile:width<850});await pause(150);
+    assert.equal(await evaluate('(()=>{const d=document.getElementById("farmer-form-dialog");return d.scrollWidth<=d.clientWidth+1&&d.getBoundingClientRect().right<=innerWidth})()'),true,'Profile modal overflow '+width);
+  }
+  await evaluate('document.getElementById("close-farmer-form").click()');
+  tables.farmers=[{id:'33333333-3333-4333-8333-333333333333',owner_id:owner,first_name:'Existing',last_name:'Farmer',full_name:'Existing Farmer',registration_status:'approved',created_at:'2026-01-01',updated_at:'2026-01-01'}];
+  await evaluate('document.getElementById("refresh-records").click()');
+  await waitFor(()=>evaluate('document.getElementById("records-body").textContent.includes("Existing Farmer")'),'existing profile refreshed');
+  await evaluate('document.getElementById("open-farmer-form").click()');
+  assert.equal(await evaluate('document.getElementById("first_name").value'),'Existing','Profile button must load the saved profile');
+  assert.equal(await evaluate('document.getElementById("form-heading").textContent'),'Edit record');
+  await evaluate('document.getElementById("first_name").value="Unsaved change";document.getElementById("close-farmer-form").click();document.getElementById("open-farmer-form").click()');
+  assert.equal(await evaluate('document.getElementById("first_name").value'),'Unsaved change');
+  assert.equal(errors.length,0,errors.join('\n'));
+  console.log('PASS farmer modals, retained drafts, responsive form layout and mapping round trip.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{if(send)await Promise.race([send('Browser.close').catch(()=>{}),pause(1000)]);debugSocket?.close();browser?.kill();server?.closeAllConnections();server?.close();});

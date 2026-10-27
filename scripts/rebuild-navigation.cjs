@@ -8,7 +8,7 @@ for(const role of ['admin','field','farmer']){
   const farmer=role==='farmer';
   const groups=[
     ['Post-harvest operations','harvest',[item('batches','Harvest batches','harvest'),item('harvests','Harvest & production','harvest')]],
-    ['Profiles & reviews','people',[item('farmers',farmer?'My farmer profile':'Farmer profiles','people'),item('reviews','Profile review inbox','shield')]],
+    ['Profiles & reviews','people',[item('farmers',farmer?'My farmer profile':'Farmer profiles','people'),item('reviews','Profile review inbox','shield'),...(!farmer?[item('field-profiles',role==='field'?'My field staff profile':'Field staff approvals','shield')]:[])]],
     ['Plantations & mapping','map',[item('plantations',farmer?'My plantations':'Plantation directory','leaf'),item('plantation-form','Register plantation','map'),item('atlas','Plantation map','map'),item('history','Boundary history & review','map'),item(role,'Farm dashboard','chart')]],
     ['Farm records','harvest',[item('trees','Tree inventories','chart'),item('pests','Pest & disease reports','leaf'),item('treatments','Treatments','task'),...(!farmer?[item('inspections','Follow-up inspections','task')]:[]),item('maintenance','Farm maintenance','task'),item('tree-events','Planting & replacement','leaf'),item('tree-tags','Individual tree tags','leaf')]],
     ...(!farmer?[

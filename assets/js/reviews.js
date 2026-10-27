@@ -78,6 +78,7 @@ window.CacaoReviews = (() => {
         event.preventDefault();if(loading||!selected)return;
         const current=selected;
         try {
+          if(!canReview)throw new Error('Only administrators may approve or request corrections to profiles.');
           const note=validateNote($('review-note').value);
           if(!navigator.onLine)throw new Error('Connect to submit a review decision.');
           toggleBusy(true);

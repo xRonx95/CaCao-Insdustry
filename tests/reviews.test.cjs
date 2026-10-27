@@ -36,6 +36,7 @@ test('farmers can read correction feedback and resubmit without reviewer control
 });
 test('field personnel have no approval controls and oversized feedback is rejected',async()=>{
   const s=setup({role:'field'});await s.api.start();assert(s.elements.get('review-decision-form').classes.has('hidden'));
+  s.elements.get('review-note').value='Attempt to approve a profile.';s.elements.get('review-decision').value='approved';await s.elements.get('review-decision-form').fire('submit');assert.equal(s.calls.length,0);assert.match(s.messages.at(-1)[1],/Only administrators/);
   assert.throws(()=>s.api.validateNote('x'.repeat(2001)),/2000/);
 });
 test('offline decisions preserve the note without sending a request',async()=>{

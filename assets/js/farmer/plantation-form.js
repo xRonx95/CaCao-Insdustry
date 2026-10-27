@@ -134,6 +134,7 @@ async function startForm(){
     await loadPhotos(data.id);
   }else{$('municipality').value='';$('province').value='Zamboanga del Norte';}
   sendBoundary();$('save-farm').disabled=false;
+  if(id)window.CacaoRecordModal?.open();
   if(id)window.CacaoFarmerModal?.open();
 }
 $('save-farm').disabled=true;

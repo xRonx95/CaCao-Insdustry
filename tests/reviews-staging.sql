@@ -1,4 +1,4 @@
--- STAGING ONLY after migrations 001-009. Fixtures and decisions roll back.
+-- STAGING ONLY after migrations 001-014. Fixtures and decisions roll back.
 begin;
 create temp table review_test_ids(label text primary key,id uuid default gen_random_uuid());
 insert into review_test_ids(label) values('farmer'),('other'),('admin'),('field'),('profile');
@@ -13,18 +13,12 @@ select p.id,f.id,'Review Test Farmer','Review','Farmer','Test',now() from review
 insert into public.staff_farmer_assignments(staff_id,farmer_owner_id)
 select s.id,f.id from review_test_ids s,review_test_ids f where s.label='field' and f.label='farmer';
 
--- Unassigned administrator cannot review or see history.
+-- Administrators read submissions and history without farmer assignments.
 select set_config('request.jwt.claims',jsonb_build_object('sub',(select id from review_test_ids where label='admin'),'role','authenticated')::text,true);
 set local role authenticated;
-do $$ declare denied boolean=false; begin
-  if exists(select 1 from public.farmer_profile_reviews) then raise exception 'FAIL: unassigned history visible'; end if;
-  begin perform public.review_farmer_profile((select id from review_test_ids where label='profile'),now(),'approved','Reviewed and approved.'); exception when raise_exception then denied=true; end;
-  if not denied then raise exception 'FAIL: unassigned approval'; end if;
+do $$ begin
+ if not exists(select 1 from public.farmer_profile_reviews where farmer_id=(select id from review_test_ids where label='profile')) then raise exception 'FAIL: administrator cannot see unassigned profile history';end if;
 end $$;
-reset role;
-insert into public.staff_farmer_assignments(staff_id,farmer_owner_id)
-select s.id,f.id from review_test_ids s,review_test_ids f where s.label='admin' and f.label='farmer';
-set local role authenticated;
 do $$ declare p public.farmers; denied boolean=false; before_review timestamptz; begin
   select * into p from public.farmers where id=(select id from review_test_ids where label='profile'); before_review=p.updated_at;
   begin update public.farmers set registration_status='approved' where id=p.id; exception when raise_exception then denied=true; end;

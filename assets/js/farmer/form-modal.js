@@ -2,6 +2,7 @@
 window.CacaoFarmerModal=(()=>{
   const dialog=document.getElementById('farmer-form-dialog');
   const trigger=document.getElementById('open-farmer-form');
+  let launch=open;
   function open(){
     if(!dialog||dialog.open)return;
     dialog.showModal();
@@ -10,7 +11,7 @@ window.CacaoFarmerModal=(()=>{
     form?.querySelector('input:not([type="hidden"]):not([disabled]),select:not([disabled]),textarea')?.focus({preventScroll:true});
   }
   function close(){dialog?.close();}
-  trigger?.addEventListener('click',open);
+  trigger?.addEventListener('click',()=>launch());
   document.getElementById('close-farmer-form')?.addEventListener('click',close);
   dialog?.addEventListener('close',()=>{
     document.body.classList.remove('mapping-expanded');
@@ -23,5 +24,5 @@ window.CacaoFarmerModal=(()=>{
     const copy=document.getElementById('modal-page-status');
     copy.textContent=status.textContent;copy.className=status.className;
   }).observe(status,{childList:true,subtree:true,attributes:true});
-  return {open,close};
+  return {open,close,setLauncher(callback){launch=callback;}};
 })();

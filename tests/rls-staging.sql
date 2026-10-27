@@ -1,4 +1,4 @@
--- Run ONLY against a staging Supabase database after migrations 001-007.
+-- Run ONLY against a staging Supabase database after migrations 001-014.
 -- All fixtures and changes roll back. This is not a production migration.
 begin;
 create temp table cacao_test_ids(label text primary key,id uuid default gen_random_uuid());
@@ -45,16 +45,16 @@ do $$ declare denied boolean=false; area double precision; begin
 end $$;
 reset role;
 
--- Unassigned admin sees no farmer records; assignment grants only the assigned account.
+-- Administrators see all operational records without assignments after migration 014.
 select set_config('request.jwt.claims',jsonb_build_object('sub',(select id from cacao_test_ids where label='admin'),'role','authenticated')::text,true);
 set local role authenticated;
-do $$ begin if exists(select 1 from public.farmers) then raise exception 'FAIL: unassigned admin bypass'; end if; end $$;
+do $$ begin if (select count(*) from public.farmers)<>2 then raise exception 'FAIL: administrator access requires assignment'; end if; end $$;
 reset role;
 insert into public.staff_farmer_assignments(staff_id,farmer_owner_id)
 select a.id,b.id from cacao_test_ids a,cacao_test_ids b where a.label='admin' and b.label='farmer_a';
 set local role authenticated;
 do $$ begin
-  if (select count(*) from public.farmers)<>1 then raise exception 'FAIL: assigned admin scope'; end if;
+  if (select count(*) from public.farmers)<>2 then raise exception 'FAIL: assignment incorrectly narrows admin scope'; end if;
   if to_regprocedure('public.review_farmer_profile(uuid,timestamptz,text,text)') is not null then
     perform public.review_farmer_profile(id,updated_at,'approved','Profile verified in staging test.') from public.farmers;
   else

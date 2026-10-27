@@ -1,0 +1,4 @@
+.history-search-results { margin: 8px 0 16px; max-height: 300px; overflow-y: auto; border: 1px solid #cbdcd1; border-radius: 8px; }
+.history-search-results button { display: block; width: 100%; padding: 12px 16px; border: 0; border-bottom: 1px solid #dce6df; background: transparent; color: inherit; text-align: left; font: inherit; overflow-wrap: anywhere; cursor: pointer; }
+.history-search-results button:hover,.history-search-results button:focus-visible { background: #e8f3eb; color: #173f30; }
+.history-search-results p { padding: 8px 16px; }

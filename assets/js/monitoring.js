@@ -79,7 +79,7 @@ window.CacaoMonitoring = (() => {
             const edit=node('button','Edit');edit.className='text-btn';edit.type='button';edit.addEventListener('click',()=>{
               editing=row;recordId=row.id;changeId=crypto.randomUUID();$('monitor-form').reset();$('plantation_id').value=row.plantation_id;dependents();
               for(const [key,value]of Object.entries(row)){const control=$('monitor-form').elements.namedItem(key);if(control&&control.type!=='file')control.value=value??'';}
-              $('plantation_id').disabled=true;$('monitor-form-title').textContent='Edit record';$('monitor-form').scrollIntoView({block:'start'});
+              $('plantation_id').disabled=true;$('monitor-form-title').textContent='Edit record';window.CacaoRecordModal?.open();$('monitor-form').scrollIntoView({block:'start'});
             });actions.append(edit);
           }
           if(row.evidence_path){const photo=node('button','Evidence');photo.type='button';photo.className='text-btn';photo.addEventListener('click',()=>CacaoApp.viewPhoto(row.evidence_path).catch(error=>message(error.message,true)));actions.append(photo);}

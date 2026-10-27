@@ -2,9 +2,9 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 function setup(role='farmer'){
  class Element{
   constructor(){this.children=[];this.value='';this.textContent='';this.disabled=false;this.listeners={};const classes=new Set(['hidden']);this.classList={add:c=>classes.add(c),remove:c=>classes.delete(c),contains:c=>classes.has(c),toggle:(c,on)=>on?classes.add(c):classes.delete(c)};}
-  append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}addEventListener(name,fn){this.listeners[name]=fn;}querySelector(){return this.button;}setAttribute(){}
+  append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}addEventListener(name,fn){this.listeners[name]=fn;}querySelector(){return this.button;}setAttribute(){}focus(){}select(){}
  }
- const ids=['history-farm','history-map','review-panel','mapping-review-form','boundary-body','overlap-list','gps-session-list','gps-points-body','review-list','history-log','gps-points-panel','history-summary','mapping-decision','history-refresh','review-note','review-decision'];
+ const ids=['history-search','history-results','history-farm','history-map','review-panel','mapping-review-form','boundary-body','overlap-list','gps-session-list','gps-points-body','review-list','history-log','gps-points-panel','history-summary','mapping-decision','history-refresh','review-note','review-decision'];
  const elements=Object.fromEntries(ids.map(id=>[id,new Element()]));elements['mapping-review-form'].elements=[new Element(),new Element()];elements['mapping-review-form'].button=new Element();
  const calls=[],rpc=[],maps=[],messages=[];
  const farms=[{id:'mine',owner_id:'owner',name:'My farm',farmer_name:'Farmer',revision:2,verification_status:'rejected',area_sqm:100},{id:'other',owner_id:'other-owner',name:'Other farm',farmer_name:'Other',revision:1,verification_status:'pending',area_sqm:200}];
@@ -40,9 +40,21 @@ test('field staff cannot review; changing selection clears the old GPS samples',
  s.elements['gps-points-body'].append({textContent:'old samples'});s.elements['history-farm'].value='';await s.elements['history-farm'].listeners.change();
  assert.equal(s.elements['gps-points-body'].children.length,0);assert.equal(s.elements['mapping-decision'].textContent,'');assert.equal(s.elements['review-panel'].classList.contains('hidden'),true);
 });
-test('empty administrator directory explains assignments and refresh discovers newly authorized farms',async()=>{
+test('empty administrator directory explains migration setup and refresh reloads farms',async()=>{
  const s=setup('admin');s.setAuthorized([]);await s.api.start('history');
- assert.equal(s.elements['history-farm'].disabled,true);assert.match(s.elements['mapping-decision'].textContent,/super administrator/);
+ assert.equal(s.elements['history-farm'].disabled,true);assert.match(s.elements['mapping-decision'].textContent,/migration 014/);
  s.setAuthorized([s.farms[0]]);await s.elements['history-refresh'].listeners.click();
  assert.equal(s.elements['history-farm'].disabled,false);assert.equal(s.elements['history-farm'].value,'mine');assert.match(s.elements['mapping-decision'].textContent,/eastern corner/);
 });
+
+test('empty field directory still explains assigned farmer access',async()=>{const s=setup('field');s.setAuthorized([]);await s.api.start('history');assert.match(s.elements['mapping-decision'].textContent,/super administrator/);});
+
+test('search filters authorized plantations and clears the old review before choosing a result',async()=>{
+ const s=setup('admin');s.setAuthorized(s.farms);await s.api.start('history');
+ s.elements['history-search'].value='OTHER';s.elements['history-search'].listeners.input();
+ assert.equal(s.elements['history-results'].children.length,1);assert.match(s.elements['history-results'].children[0].textContent,/Other farm/);
+ assert.equal(s.elements['review-panel'].classList.contains('hidden'),true);assert.equal(s.elements['history-summary'].textContent,'');
+ await s.elements['history-results'].children[0].listeners.click();assert.equal(s.elements['history-farm'].value,'other');assert.match(s.elements['history-summary'].textContent,/Other farm/);assert.equal(s.elements['history-results'].hidden,true);
+ s.elements['history-search'].value='missing';s.elements['history-search'].listeners.input();assert.match(s.elements['history-results'].children[0].textContent,/No matching/);
+});
+test('farmer search never offers another owner plantation',async()=>{const s=setup();await s.api.start('history');s.elements['history-search'].value='Other';s.elements['history-search'].listeners.input();assert.match(s.elements['history-results'].children[0].textContent,/No matching/);});

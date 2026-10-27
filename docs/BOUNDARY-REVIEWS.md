@@ -1,7 +1,7 @@
 # Boundary history and review behavior
 
 - Farmers load plantations with `owner_id` equal to their authenticated account ID. A second client ownership check prevents unrelated rows from entering the selector.
-- Administrators use the existing row-level security and staff assignments to load only authorized plantations. The interface does not infer authority from a URL parameter.
+- Administrators and super administrators load all plantations after migration 014. Field personnel load their own and assigned farmer accounts. The interface does not infer authority from a URL parameter.
 - Boundary revisions, GPS sessions, overlap flags and administrator decisions are fetched with the selected plantation ID. GPS points are fetched through a session from that selected plantation.
 - Changing plantations immediately clears old results and GPS samples. Selection tokens prevent late responses from restoring the previous plantation's data.
 - Only admin and super_admin accounts may submit verification or rejection. Field staff and farmers have read-only review access. The existing `review_plantation` RPC in migration 005 independently checks the authenticated database role, authorized owner scope and expected revision.

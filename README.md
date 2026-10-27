@@ -23,6 +23,9 @@ An independent cacao registry, not an official DA, PSA or RSBSA service. The web
    - `sql/009_farmer_reviews.sql`
    - `sql/010_harvest_batches.sql`
    - `sql/011_postharvest_learning.sql`
+   - `sql/012_admin_process_permissions.sql`
+   - `sql/013_field_profile_reviews.sql`
+   - `sql/014_admin_operational_access.sql`
 
    If 001–004 are already installed, apply only 005–007, once, in order. Review staging results before upgrading production.
 3. Edit `assets/js/config.js` with your project URL and public publishable/anon key. Never enter a service-role or secret key. The static site does not read Vercel environment variables or `.env` automatically.
@@ -31,7 +34,7 @@ An independent cacao registry, not an official DA, PSA or RSBSA service. The web
 6. Bootstrap your first super administrator using the SQL examples at the bottom of `004_platform.sql`. Sign out and sign back in. Later role/status changes and staff assignments are managed in **Users & access**.
 7. Run `tests/rls-staging.sql` in staging and complete the acceptance checks in [docs/RELEASE-STATUS.md](docs/RELEASE-STATUS.md) before using real personal data.
 
-Migration 004 replaces the old unrestricted admin bypass. Administrators and field personnel see their own records plus farmer accounts explicitly assigned by a super administrator. Super administrators see all private operational records. Account roles/status come from protected database profiles; user-editable metadata cannot grant permission.
+Migration 014 gives administrators and super administrators access to all private operational records without farmer assignments. Field personnel see their own records plus explicitly assigned farmer accounts. Only super administrators manage roles, account status, invitations and staff assignments. Account roles/status come from protected database profiles; user-editable metadata cannot grant permission.
 
 ## Main pages and folders
 
@@ -77,7 +80,7 @@ These screens use the existing database permissions and review process. They do 
 Workflow behavior checks: `node --test tests/workflow.test.cjs`.
 
 1. Create a farmer account, or have an authorized staff member register a farmer profile under the appropriate owner account. Record required names, address, barangay and contact details. Photos/supporting files are private.
-2. An assigned administrator or super administrator reviews and approves the profile. Farmer edits to substantive profile information return it to pending review.
+2. An administrator or super administrator reviews and approves the profile. Farmer edits to substantive profile information return it to pending review.
 3. Register a plantation and select its farmer profile. A farmer can have multiple plantations, each with its own boundary. Existing legacy plantations without a farmer link can be linked from the form without deleting them.
 4. Draw a polygon manually or use **Start GPS mapping**. Walk the perimeter; Pause/Resume as needed; Finish and review the polygon with the edit tool. The map skips low-accuracy readings, rejects near-duplicate points, checks self-intersections, and retains accepted point accuracy/timestamps.
 5. Save the farm. PostGIS validates geometry and calculates the stored area. Turf.js provides the map preview. Small preview/server differences are expected because their geographic area models differ. Areas are approximate, not legal cadastral surveys.

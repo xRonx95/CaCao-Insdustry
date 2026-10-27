@@ -107,6 +107,7 @@ window.CacaoApp = (() => {
     }
     el('form-heading').textContent = 'Edit record';
     window.CacaoFarmerModal?.open();
+    window.CacaoRecordModal?.open();
     form.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   }
   async function upload(file, owner, allowPdf = false) {
@@ -127,11 +128,11 @@ window.CacaoApp = (() => {
     const allFarmers = await listAll('farmers');
     const owners = new Map([[currentAccount.user.id, 'My account']]);
     for (const farmer of allFarmers) owners.set(farmer.owner_id, farmer.full_name + ' · ' + farmer.owner_id.slice(0,8));
-    if(staff()&&currentAccount.profile.role!=='super_admin'){
+    if(currentAccount.profile.role==='field'){
       const assignments=!navigator.onLine&&window.CacaoSync?await CacaoSync.cached('staff_farmer_assignments'):await result(db.from('staff_farmer_assignments').select('farmer_owner_id').eq('staff_id',currentAccount.user.id));
       for(const assignment of assignments)if(!owners.has(assignment.farmer_owner_id))owners.set(assignment.farmer_owner_id,'Assigned account · '+assignment.farmer_owner_id.slice(0,8));
     }
-    if (currentAccount.profile.role === 'super_admin') {
+    if (admin()) {
       users = await listAll('profiles');
       for (const profile of users.filter(user => user.role === 'farmer')) owners.set(profile.id, profile.display_name || profile.id);
     }
@@ -173,6 +174,12 @@ window.CacaoApp = (() => {
       state.rows = await listAll(tableName); toolbar(state.rows); render();
       if(requestedProfile&&!editing){const profile=state.rows.find(row=>row.id===requestedProfile);if(profile)loadForm(profile);}
     }
+    if(isFarmer&&currentAccount.profile.role==='farmer')window.CacaoFarmerModal?.setLauncher(()=>{
+      const own=state.rows.find(row=>row.owner_id===currentAccount.user.id);
+      // Reopening an editor must keep unsaved changes. Load saved data only once.
+      if(own&&!editing)loadForm(own);
+      else window.CacaoFarmerModal.open();
+    });
     bindTable(render);
     el('refresh-records').addEventListener('click', () => refresh().catch(error=>message(error.message,true)));
     el('reset-record').addEventListener('click',()=>{
