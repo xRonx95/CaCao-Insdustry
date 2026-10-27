@@ -9,6 +9,7 @@ window.CacaoPostharvest=(()=>{
   handover:[['from_facility','From facility / storage location','text'],['to_facility','To cooperative / facility','text'],['recipient','Recorded recipient name','text']],
   cost:[['category','Cost category','select',['labor','materials','energy','transport','testing','other']],['amount_php','Amount (PHP)','number',0,999999999999,.01]]
  };
+ const canRecord=(kind,role)=>['admin','super_admin'].includes(role)||(['farmer','field'].includes(role)&&['fermentation','drying'].includes(kind));
  const effective=records=>{const replaced=new Set(records.map(row=>row.supersedes_id).filter(Boolean));return records.filter(row=>!replaced.has(row.id)).sort((a,b)=>(b.observed_at||'').localeCompare(a.observed_at||'')||(b.created_at||'').localeCompare(a.created_at||'')||(b.id||'').localeCompare(a.id||''));};
  const latest=(rows,kind)=>effective(rows).find(row=>row.kind===kind);
  function metrics(batches,records){
@@ -36,7 +37,7 @@ window.CacaoPostharvest=(()=>{
  }
  function validate(kind,detail,role){
   if(!fields[kind])throw Error('Choose a supported record type.');
-  if(kind==='protocol'&&role==='farmer')throw Error('Assigned staff must record the agreed protocol.');
+  if(!canRecord(kind,role))throw Error('Only administrators can record protocols, quality assessments, handovers and costs.');
   for(const [key,label,type,options,max,step] of fields[kind]){
    const value=detail[key];if(value===undefined||value===null||value==='')throw Error(label+' is required.');
    if(type==='number'&&(!Number.isFinite(Number(value))||Number(value)<options||Number(value)>max||(step===1&&!Number.isInteger(Number(value)))))throw Error(label+' is outside its permitted range.');
@@ -78,7 +79,7 @@ window.CacaoPostharvest=(()=>{
    for(const text of checks(batch,records))list.append(node('li',text));
    const relevant=records.filter(row=>row.batch_id===batch.id).sort((a,b)=>b.observed_at.localeCompare(a.observed_at)),activeIds=new Set(effective(relevant).map(row=>row.id)),body=$('process-history');body.replaceChildren();
    for(const row of relevant){const tr=node('tr');tr.append(node('td',new Date(row.observed_at).toLocaleString('en-PH',{timeZone:'Asia/Manila'})),node('td',kinds[row.kind]+(activeIds.has(row.id)?'':' (corrected)')),node('td',Object.entries(row.detail).map(([key,value])=>key.replaceAll('_',' ')+': '+value).join(' · ')),node('td',row.note));const td=node('td');
-    if(activeIds.has(row.id)&&!(currentAccount.profile.role==='farmer'&&(['protocol'].includes(row.kind)||row.kind==='quality'&&row.detail.grade!=='ungraded'))){const button=node('button','Correct','text-btn');button.type='button';button.addEventListener('click',()=>{if(pending)return tell('Retry the pending submission first.',true);correction=row;$('process-kind').value=row.kind;$('process-kind').disabled=true;controls(row.detail);$('process-observed-at').value=localDate(row.observed_at);$('process-note').value='';$('process-correction').textContent='Correcting a '+kinds[row.kind].toLowerCase()+'. Original history will be retained. Add the reason in Notes.';$('process-form').scrollIntoView({block:'start'});});td.append(button);}tr.append(td);body.append(tr);}
+    if(activeIds.has(row.id)&&canRecord(row.kind,currentAccount.profile.role)){const button=node('button','Correct','text-btn');button.type='button';button.addEventListener('click',()=>{if(pending)return tell('Retry the pending submission first.',true);correction=row;$('process-kind').value=row.kind;$('process-kind').disabled=true;controls(row.detail);$('process-observed-at').value=localDate(row.observed_at);$('process-note').value='';$('process-correction').textContent='Correcting a '+kinds[row.kind].toLowerCase()+'. Original history will be retained. Add the reason in Notes.';$('process-form').scrollIntoView({block:'start'});});td.append(button);}tr.append(td);body.append(tr);}
    if(!relevant.length){const tr=node('tr'),td=node('td','No process records yet. Add an agreed protocol and your first check.');td.colSpan=5;tr.append(td);body.append(tr);}
    chart?.destroy();const readings=effective(relevant).filter(row=>['drying','quality'].includes(row.kind)).reverse(),target=latest(relevant,'protocol')?.detail.max_moisture;
    $('process-chart-empty').hidden=readings.length>0&&!!window.Chart;$('process-chart').hidden=!readings.length||!window.Chart;
@@ -101,7 +102,7 @@ window.CacaoPostharvest=(()=>{
    }catch(error){tell(error.message+(pending?' Confirmation is uncertain. Retry the same submission before changing it.':''),true);$('process-retry').hidden=!pending;}finally{busy=false;}
   }
   try{
-   if(!await requireSession())return;options($('process-kind'),Object.entries(kinds).filter(([kind])=>currentAccount.profile.role!=='farmer'||kind!=='protocol'));reset();
+   if(!await requireSession())return;options($('process-kind'),Object.entries(kinds).filter(([kind])=>canRecord(kind,currentAccount.profile.role)));reset();
    $('process-kind').addEventListener('change',()=>controls());$('process-batch').addEventListener('change',()=>{if(!pending){reset();render();}});
    $('process-reset').addEventListener('click',()=>{if(!pending)reset();});$('process-retry').addEventListener('click',()=>pending&&save(pending.payload));
    $('process-refresh').addEventListener('click',async()=>{if(pending)return tell('Retry the pending submission first.',true);try{await load();tell('Process records updated.');}catch(error){tell('Records could not reload; previously displayed figures may be out of date. '+error.message,true);}});
@@ -114,6 +115,6 @@ window.CacaoPostharvest=(()=>{
    $('process-print').addEventListener('click',()=>window.print());tell('Loading post-harvest records…');await load();tell('Showing authorized batch observations and recorded outcomes.');
   }catch(error){tell('Post-harvest records are unavailable. Check your connection or ask your administrator to enable this workspace. Farm records remain available.'+(currentAccount?.profile?.role==='super_admin'?' Verify migrations 010 and 011 in staging, then reload.':''),true);$('process-record-button').disabled=true;for(const id of ['process-sales','process-costs','process-margin','process-downgrade'])$(id).textContent='Unavailable';}
  }
- return {start,fields,kinds,effective,latest,metrics,checks,validate};
+ return {start,fields,kinds,canRecord,effective,latest,metrics,checks,validate};
 })();
 CacaoPostharvest.start();

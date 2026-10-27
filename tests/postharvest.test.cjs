@@ -10,8 +10,8 @@ test('no quality assessments do not become a zero-percent downgrade claim',()=>{
 });
 test('farmer observations cannot assign final grades or protocols',()=>{
  const detail={moisture_pct:7,sample_beans:100,moldy:0,slaty:1,insect_damaged:0,grade:'premium',assessor:'Reviewer'};
- assert.throws(()=>api.validate('quality',detail,'farmer'),/Assigned staff/);assert.equal(api.validate('quality',{...detail,grade:'ungraded'},'farmer').grade,'ungraded');
- assert.throws(()=>api.validate('quality',{...detail,moldy:100},'admin'),/sample size/);assert.throws(()=>api.validate('protocol',{},'farmer'),/Assigned staff/);
+ assert.throws(()=>api.validate('quality',detail,'farmer'),/Only administrators/);assert.throws(()=>api.validate('quality',{...detail,grade:'ungraded'},'farmer'),/Only administrators/);
+ assert.throws(()=>api.validate('quality',{...detail,moldy:100},'admin'),/sample size/);assert.throws(()=>api.validate('protocol',{},'farmer'),/Only administrators/);
 });
 test('turning reminders and moisture exceptions use the agreed protocol',()=>{
  const rows=[record('p','protocol',{started_at:'2026-01-01T00:00:00Z',min_hours:48,turn_hours:12,max_moisture:8,max_defects:5}),record('d','drying',{moisture_pct:12})];const result=api.checks({id:'batch',stage:'fermenting'},rows,Date.parse('2026-01-02T00:00:00Z'));assert(result.some(text=>text.includes('Turning check is due')));assert(result.some(text=>text.includes('exceeds')));
@@ -22,3 +22,5 @@ test('a corrected false turning observation does not postpone the reminder',()=>
 test('SQL guards scope, corrections, final grades and storage evidence',()=>{
  const sql=fs.readFileSync('sql/011_postharvest_learning.sql','utf8');assert.match(sql,/private\.can_access\(b.owner_id\)/);assert.match(sql,/supersedes_id uuid unique/);assert.match(sql,/Assigned staff must record the final grade/);assert.match(sql,/guard_postharvest_storage/);assert.match(sql,/minimum fermentation time/);assert.match(sql,/new.moisture_pct>/);assert.doesNotMatch(sql,/grant (insert|update|delete)/i);
 });
+
+test('only administrators can enter reviewed and commercial process records',()=>{for(const role of ['farmer','field','admin','super_admin','unknown'])for(const kind of Object.keys(api.kinds)){assert.equal(api.canRecord(kind,role),['admin','super_admin'].includes(role)||(['farmer','field'].includes(role)&&['fermentation','drying'].includes(kind)));}});

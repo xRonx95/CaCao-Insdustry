@@ -1,0 +1,11 @@
+.form-launch { margin: 20px 0; }
+.farmer-form-dialog { width: min(1040px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 32px); padding: 20px; border: 1px solid #d8e4dc; border-radius: 16px; background: #f5f8f5; color: #173f30; overflow: auto; box-sizing: border-box; }
+.farmer-form-dialog::backdrop { background: rgb(10 32 24 / 65%); }
+.farmer-modal-bar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+.farmer-form-dialog .panel { width: 100%; max-width: none; margin: 0; box-sizing: border-box; }
+body:has(.farmer-form-dialog[open]) { overflow: hidden; }
+.mapping-expanded .farmer-form-dialog { width: 100vw; max-height: 100dvh; height: 100dvh; margin: 0; border-radius: 0; }
+@media (max-width: 600px) {
+  .farmer-form-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); padding: 12px; border-radius: 12px; }
+  .farmer-form-dialog .form-grid { grid-template-columns: 1fr; }
+}

@@ -49,7 +49,7 @@ begin
   if nullif(trim(d->>'reference'),'') is null or nullif(trim(d->>'facility'),'') is null then raise exception 'Name the facility and buyer/agronomist reference';end if;
   foreach field in array array['min_hours','turn_hours','max_moisture','max_defects'] loop
    v=nullif(d->>field,'')::numeric;
-   if v is null or v<0 or v>case when field in ('min_hours','turn_hours') then 1000 else 100 end then raise exception 'Enter valid agreed protocol targets';end if;
+   if v is null or v<0 or v>(case when field in ('min_hours','turn_hours') then 1000 else 100 end) then raise exception 'Enter valid agreed protocol targets';end if;
    if field='min_hours' and v<=0 then raise exception 'Agreed minimum fermentation time must be positive';end if;
   end loop;
   started=nullif(d->>'started_at','')::timestamptz;

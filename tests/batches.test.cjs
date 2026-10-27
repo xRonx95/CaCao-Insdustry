@@ -36,3 +36,5 @@ test('migration keeps batch writes behind a scoped, locked, retry-safe command',
  assert.doesNotMatch(sql,/grant (?:insert|update|delete)/i);
  assert.match(sql,/new.wet_bean_kg<allocated/);assert.match(sql,/batch_id,revision/);
 });
+
+test('farmers and field staff cannot approve quality, storage or sales',()=>{for(const role of ['farmer','field','unknown'])for(const batch of [{stage:'drying'},{stage:'quality_check',quality_result:'pass'},{stage:'stored'}])assert.deepEqual([...api.permitted(batch,role)],[]);for(const role of ['admin','super_admin'])assert.deepEqual([...api.permitted({stage:'stored'},role)],['sold']);assert.deepEqual([...api.permitted({stage:'harvested'},'farmer')],['fermenting']);});

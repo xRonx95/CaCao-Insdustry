@@ -1,4 +1,4 @@
--- CACAO INDUSTRY: COMPLETE DATABASE SETUP (001 through 011)
+-- CACAO INDUSTRY: COMPLETE DATABASE SETUP (001 through 012)
 -- For a NEW Supabase project only. Run once as postgres in SQL Editor.
 -- Includes tables, functions, triggers, RLS, indexes and Storage buckets/policies.
 -- Does not create Auth users, configure SMTP, or deploy the invite-team function.
@@ -1394,7 +1394,7 @@ begin
   if nullif(trim(d->>'reference'),'') is null or nullif(trim(d->>'facility'),'') is null then raise exception 'Name the facility and buyer/agronomist reference';end if;
   foreach field in array array['min_hours','turn_hours','max_moisture','max_defects'] loop
    v=nullif(d->>field,'')::numeric;
-   if v is null or v<0 or v>case when field in ('min_hours','turn_hours') then 1000 else 100 end then raise exception 'Enter valid agreed protocol targets';end if;
+   if v is null or v<0 or v>(case when field in ('min_hours','turn_hours') then 1000 else 100 end) then raise exception 'Enter valid agreed protocol targets';end if;
    if field='min_hours' and v<=0 then raise exception 'Agreed minimum fermentation time must be positive';end if;
   end loop;
   started=nullif(d->>'started_at','')::timestamptz;
@@ -1466,4 +1466,33 @@ begin
 end;$$;
 revoke all on function private.guard_postharvest_storage() from public;
 create trigger guard_postharvest_storage before update on public.harvest_batches for each row execute function private.guard_postharvest_storage();
+commit;
+
+
+-- ============================================================
+-- 012_admin_process_permissions.sql
+-- ============================================================
+
+-- Apply once after 001-011. Preserve scoped reads and farmer process observations.
+begin;
+create function private.require_admin_process_action()
+returns trigger language plpgsql security definer set search_path='' as $$
+begin
+  if auth.uid() is not null and coalesce(private.user_role(),'') not in ('admin','super_admin') then
+    if tg_table_name='postharvest_records' then
+      if new.kind not in ('fermentation','drying') then
+        raise exception 'Only administrators can record protocols, quality assessments, handovers and costs';
+      end if;
+    elsif new.stage in ('quality_check','stored','sold') then
+      raise exception 'Only administrators can record quality decisions, storage and sales';
+    end if;
+  end if;
+  return new;
+end;$$;
+revoke all on function private.require_admin_process_action() from public;
+-- Triggers also enforce permissions inside security-definer RPC calls.
+create trigger require_admin_process_action before insert or update on public.postharvest_records
+for each row execute function private.require_admin_process_action();
+create trigger require_admin_process_action before insert or update on public.harvest_batches
+for each row execute function private.require_admin_process_action();
 commit;

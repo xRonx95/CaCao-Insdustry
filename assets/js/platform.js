@@ -106,6 +106,7 @@ window.CacaoApp = (() => {
       if (control && control.type !== 'file') control.value = value ?? '';
     }
     el('form-heading').textContent = 'Edit record';
+    window.CacaoFarmerModal?.open();
     form.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   }
   async function upload(file, owner, allowPdf = false) {

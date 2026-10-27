@@ -18,6 +18,7 @@
     <link rel="apple-touch-icon" href="../images/app-icon-192.png">
       <link rel="stylesheet" href="../assets/css/mobile-app.css">
   <link rel="stylesheet" href="../assets/css/access.css">
+  <link rel="stylesheet" href="../assets/css/farmer/form-modal.css">
   </head>
   <body data-page-role="farmer" data-feature="farmers" class="workspace-page">
     <header class="topbar">
@@ -91,7 +92,8 @@
           </div>
         </div>
         <p class="notice">Personal information is private to authorized account owners and assigned staff. This independent registry is not an official RSBSA registration. See the <a href="../privacy.html">privacy notice</a>.</p>
-        <section id="editor-panel" class="panel record-editor">
+        <div class="form-launch"><p>Add your profile or choose Edit beside an existing profile to update it.</p><button id="open-farmer-form" type="button" class="btn primary" aria-haspopup="dialog" aria-controls="farmer-form-dialog">Enter / update my profile</button></div>
+        <dialog id="farmer-form-dialog" class="farmer-form-dialog" aria-labelledby="form-heading"><div class="farmer-modal-bar"><button id="close-farmer-form" type="button" class="btn secondary">Close</button></div><section id="editor-panel" class="panel record-editor">
           <h2 id="form-heading">New record</h2>
           <p id="duplicate-notice" class="notice" role="status">
           </p>
@@ -168,7 +170,7 @@
               <button id="reset-record" type="button" class="btn secondary">New record</button>
             </div>
           </form>
-        </section>
+        </section><p id="modal-page-status" class="status" role="status" aria-live="polite"></p></dialog>
         <section class="panel">
           <div class="section-title">
             <h2>Recorded farmers</h2>
@@ -243,6 +245,7 @@
     </script>
     <script defer src="../assets/js/record-integrity.js">
     </script>
+    <script defer src="../assets/js/farmer/form-modal.js"></script>
     <script defer src="../assets/js/platform.js">
     </script>
     <script defer src="../assets/js/farmer/farmers.js">

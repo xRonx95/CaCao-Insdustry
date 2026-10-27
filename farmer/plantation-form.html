@@ -20,6 +20,7 @@
     <link rel="apple-touch-icon" href="../images/app-icon-192.png">
       <link rel="stylesheet" href="../assets/css/mobile-app.css">
   <link rel="stylesheet" href="../assets/css/access.css">
+  <link rel="stylesheet" href="../assets/css/farmer/form-modal.css">
   </head>
   <body data-page-role="farmer" data-feature="plantation-form" class="workspace-page">
     <header class="topbar">
@@ -88,7 +89,8 @@
         <div class="page-heading">
           <h1>Plantation profile</h1>
         </div>
-        <section class="panel editor">
+        <div class="form-launch"><p>Register your plantation details and map its boundary.</p><button id="open-farmer-form" type="button" class="btn primary" aria-haspopup="dialog" aria-controls="farmer-form-dialog">Register a plantation</button></div>
+        <dialog id="farmer-form-dialog" class="farmer-form-dialog" aria-labelledby="form-title"><div class="farmer-modal-bar"><button id="close-farmer-form" type="button" class="btn secondary">Close</button></div><section class="panel editor">
           <div class="section-title">
             <div>
               <h2 id="form-title">Register a plantation</h2>
@@ -165,7 +167,7 @@
               <button class="btn secondary" type="button" id="reset-farm">Reset form</button>
             </div>
           </form>
-        </section>
+        </section><p id="modal-page-status" class="status" role="status" aria-live="polite"></p></dialog>
       </div>
     </main>
     <footer>CaAPs &middot; GPS areas are estimates, not legal surveys.</footer>
@@ -179,6 +181,7 @@
     </script>
     <script defer src="../assets/js/sync.js">
     </script>
+    <script defer src="../assets/js/farmer/form-modal.js"></script>
     <script defer src="../assets/js/platform.js">
     </script>
     <script defer src="../assets/js/farmer/plantation-form.js">

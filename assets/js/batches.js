@@ -3,6 +3,7 @@ window.CacaoBatches=(()=>{
   const stages=['harvested','fermenting','drying','quality_check','stored','sold'];
   const labels={harvested:'Harvested',fermenting:'Fermentation',drying:'Drying',quality_check:'Quality check',stored:'Storage',sold:'Sold'};
   const next=batch=>!stages.includes(batch.stage)?[]:batch.stage==='quality_check'?['quality_check',...(batch.quality_result==='pass'?['stored']:[])]:batch.stage==='sold'?[]:[stages[stages.indexOf(batch.stage)+1]].filter(Boolean);
+  const permitted=(batch,role)=>next(batch).filter(stage=>['admin','super_admin'].includes(role)||(['farmer','field'].includes(role)&&['fermenting','drying'].includes(stage)));
   const decimal=(value,places)=>value!=null&&Number.isFinite(Number(value))&&value!==''&&Math.abs(Number(value)*10**places-Math.round(Number(value)*10**places))<1e-6;
   function validate(payload,batch,harvest,today){
     if(!/^\d{4}-\d{2}-\d{2}$/.test(payload.event_on)||!Number.isFinite(Date.parse(payload.event_on))||new Date(payload.event_on).toISOString().slice(0,10)!==payload.event_on||payload.event_on>today)throw Error('Choose a date that is not in the future.');
@@ -46,9 +47,11 @@ window.CacaoBatches=(()=>{
       for(const event of events.filter(row=>row.batch_id===batch.id).sort((a,b)=>a.revision-b.revision)){
         const li=node('li');li.append(node('strong',labels[event.stage]+' · '+event.event_on),node('p',event.weight_kg+' kg'+(event.quality_result?' · '+event.quality_result+' · moisture '+event.moisture_pct+'%':'')+(event.buyer?' · Buyer: '+event.buyer+' · PHP '+Number(event.sale_php).toLocaleString():'')+' · '+event.note),node('small','Revision '+event.revision+' · Recorded '+new Date(event.created_at).toLocaleString('en-PH',{timeZone:'Asia/Manila'})));timeline.append(li);
       }
-      const permitted=next(batch);$('batch-advance-form').hidden=!permitted.length;
+      const allowed=permitted(batch,currentAccount.profile.role);$('batch-advance-form').hidden=!allowed.length;
       $('batch-sold-notice').hidden=batch.stage!=='sold';
-      options($('batch-stage'),permitted.map(stage=>[stage,stage==='quality_check'&&batch.stage==='quality_check'?'Repeat quality check':labels[stage]]));
+      document.getElementById('batch-admin-notice')?.remove();
+      if(!allowed.length&&batch.stage!=='sold'&&!['admin','super_admin'].includes(currentAccount.profile.role)){const notice=node('p','An administrator must record the quality decision, storage or sale. You can continue viewing batch history.');notice.id='batch-admin-notice';$('batch-advance-form').before(notice);}
+      options($('batch-stage'),allowed.map(stage=>[stage,stage==='quality_check'&&batch.stage==='quality_check'?'Repeat quality check':labels[stage]]));
       $('batch-advance-form').reset();$('batch-event-on').value=today();$('batch-event-on').min=batch.stage_on;$('batch-event-on').max=today();$('batch-event-weight').value=batch.current_weight_kg;formState();
     }
     function render(){
@@ -71,6 +74,7 @@ window.CacaoBatches=(()=>{
       if(!lock){formState();$('batch-create-button').disabled=!harvests.some(row=>Number(row.wet_bean_kg)>0);}
     }
     async function submit(command){
+      if(command.action==='advance'&&!permitted(selected,currentAccount.profile.role).includes(command.stage))return tell('Only administrators can record quality decisions, storage and sales.',true);
       if(busy)return;if(!navigator.onLine){tell('Connect to save batch records. Nothing has been submitted.',true);return;}
       if(pending&&JSON.stringify(command)!==JSON.stringify(pending.payload)){tell('Retry the original submission before changing its contents.',true);return;}
       pending??={id:crypto.randomUUID(),payload:command};busy=true;lockForms(true);$('batch-retry').hidden=true;
@@ -105,6 +109,6 @@ window.CacaoBatches=(()=>{
       tell('Loading batch records…');await load();tell('Batch records loaded. Stage changes require a connection.');
     }catch(error){tell('Batch records unavailable. If this feature is new, ask your administrator to apply migration 010 after 001–009. '+error.message,true);$('batch-create-button').disabled=true;}
   }
-  return {start,next,validate,stages};
+  return {start,next,permitted,validate,stages};
 })();
 CacaoBatches.start();
